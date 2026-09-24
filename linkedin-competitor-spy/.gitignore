@@ -1,0 +1,4 @@
+.env
+service_account.json
+manual_posts.csv
+__pycache__/
