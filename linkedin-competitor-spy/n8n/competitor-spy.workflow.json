@@ -1,0 +1,523 @@
+{
+  "name": "LinkedIn Competitor Spy",
+  "nodes": [
+    {
+      "id": "e8da319e-cca0-4a3d-a6ba-0f9e73a1da12",
+      "name": "Setup notes",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -40,
+        -380
+      ],
+      "parameters": {
+        "width": 640,
+        "height": 320,
+        "content": "## LinkedIn Competitor Spy\n1. **Settings** node: paste your Google Sheet ID and niche.\n2. Sheet needs 3 tabs with header rows: **Competitors** (name, linkedin_url), **Posts** and **Insights** (see README).\n3. Credentials:\n   - Google Sheets OAuth2 on the 4 sheet nodes\n   - Header Auth `Apify token`: name `Authorization`, value `Bearer <APIFY_TOKEN>`\n   - Header Auth `Anthropic API key`: name `x-api-key`, value `<ANTHROPIC_API_KEY>`\n4. Click **Test workflow**, then activate for the weekly schedule."
+      }
+    },
+    {
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {},
+      "id": "94b9a326-88d0-4681-ae62-90efcdb50436"
+    },
+    {
+      "name": "Every Monday 9am",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        200
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtDay": [
+                1
+              ],
+              "triggerAtHour": 9
+            }
+          ]
+        }
+      },
+      "id": "250b71e5-a438-4644-a739-bc33e1aa68b0"
+    },
+    {
+      "name": "Settings",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        240,
+        100
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6964ffee-9b58-4cd5-99f5-1c500bb238a0",
+              "name": "sheetId",
+              "value": "PASTE_YOUR_GOOGLE_SHEET_ID",
+              "type": "string"
+            },
+            {
+              "id": "52942c3a-421e-4483-83ac-b9965a95ea13",
+              "name": "niche",
+              "value": "PASTE_YOUR_NICHE, e.g. B2B lead gen for SaaS founders",
+              "type": "string"
+            },
+            {
+              "id": "32b9e45c-33d2-4c2c-8b8b-e9a6c0a728db",
+              "name": "maxPosts",
+              "value": 10,
+              "type": "number"
+            },
+            {
+              "id": "d2943e3e-5b62-4055-bf32-65a2487a9f90",
+              "name": "days",
+              "value": 30,
+              "type": "number"
+            },
+            {
+              "id": "c255dfa8-4208-468b-bd02-7119d9e586a0",
+              "name": "model",
+              "value": "claude-opus-5",
+              "type": "string"
+            },
+            {
+              "id": "79b9685f-fdd9-4dd2-a9e5-3a30b01c59bc",
+              "name": "apifyActor",
+              "value": "harvestapi~linkedin-profile-posts",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "7cddaa5e-5e46-484a-a78d-3bc0f14cf002"
+    },
+    {
+      "name": "Read Competitors",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        480,
+        100
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "Google Sheets account"
+        }
+      },
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('Settings').first().json.sheetId }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Competitors",
+          "mode": "name"
+        },
+        "options": {}
+      },
+      "id": "a3bb542e-a4b3-436e-8691-cda8a8c20a51"
+    },
+    {
+      "name": "Loop Over Competitors",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        720,
+        100
+      ],
+      "parameters": {
+        "batchSize": 1,
+        "options": {}
+      },
+      "id": "75a689dd-99de-4239-a645-95019637185f"
+    },
+    {
+      "name": "Scrape Posts (Apify)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        960,
+        0
+      ],
+      "alwaysOutputData": true,
+      "retryOnFail": true,
+      "maxTries": 2,
+      "credentials": {
+        "httpHeaderAuth": {
+          "name": "Apify token"
+        }
+      },
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.apify.com/v2/acts/{{ $('Settings').first().json.apifyActor }}/run-sync-get-dataset-items",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ targetUrls: [$json.linkedin_url], maxPosts: $('Settings').first().json.maxPosts }) }}",
+        "options": {
+          "timeout": 300000
+        }
+      },
+      "id": "52c022a4-d5b6-4169-b9a4-a2fcd49db7ec"
+    },
+    {
+      "name": "Prepare Posts",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        0
+      ],
+      "parameters": {
+        "jsCode": "// Normalizes Apify output for one competitor and builds the Claude request.\nconst s = $('Settings').first().json;\nconst comp = $('Loop Over Competitors').first().json;\nconst competitor = String(comp.name || comp.linkedin_url || '').trim();\n\n// Apify actors name fields differently; take the first non-empty match.\nconst pick = (obj, ...paths) => {\n  for (const path of paths) {\n    let cur = obj;\n    for (const key of path.split('.')) { cur = cur == null ? undefined : cur[key]; }\n    if (cur !== undefined && cur !== null && cur !== '') return cur;\n  }\n  return undefined;\n};\nconst num = v => { const n = parseInt(String(v ?? 0).replace(/,/g, ''), 10); return isNaN(n) ? 0 : n; };\nconst cutoff = Date.now() - Number(s.days) * 86400000;\n\nconst posts = $input.all().map(i => i.json)\n  .map(it => {\n    let postedAt = pick(it, 'postedAt.date', 'postedAt', 'posted_at.date', 'posted_at', 'date', 'publishedAt') ?? '';\n    if (typeof postedAt === 'object') postedAt = postedAt.date || postedAt.timestamp || '';\n    const likes = num(pick(it, 'engagement.likes', 'stats.total_reactions', 'numLikes', 'likes', 'reactionsCount'));\n    const comments = num(pick(it, 'engagement.comments', 'stats.comments', 'numComments', 'comments', 'commentsCount'));\n    const shares = num(pick(it, 'engagement.shares', 'stats.reposts', 'numShares', 'shares', 'repostsCount'));\n    return {\n      text: String(pick(it, 'content', 'text', 'postText', 'commentary') ?? ''),\n      post_url: String(pick(it, 'linkedinUrl', 'postUrl', 'url', 'post_url', 'shareUrl') ?? ''),\n      posted_at: String(postedAt),\n      likes, comments, shares,\n      // Comments and reshares signal more intent than a like.\n      engagement_score: likes + 2 * comments + 3 * shares,\n    };\n  })\n  .filter(p => p.text && p.post_url)\n  .filter(p => { const t = Date.parse(p.posted_at); return isNaN(t) || t >= cutoff; })\n  .slice(0, Number(s.maxPosts))\n  .sort((a, b) => b.engagement_score - a.engagement_score);\n\nif (!posts.length) return [{ json: { skip: true, competitor } }];\n\nconst system = `You are a LinkedIn content strategist doing competitive research.\nYou will get one competitor's recent posts with engagement numbers. For each post,\nidentify its format, topic, opening hook (quote the first line), hook type (e.g.\ncontrarian take, personal story, number/list, question, bold claim), call to action\n(or \"none\"), and in one or two sentences why it performed the way it did relative\nto the competitor's other posts.\n\nThen summarize the competitor's overall strategy, the themes that drive the most\nengagement, concrete tactics worth borrowing, and specific post ideas the reader\ncould write. Tailor the ideas to the reader's niche when one is given. Base\neverything on the posts provided; do not invent metrics.`;\n\nconst str = { type: 'string' };\nconst list = { type: 'array', items: str };\nconst schema = {\n  type: 'object', additionalProperties: false,\n  required: ['posts', 'summary', 'top_themes', 'what_to_steal', 'content_ideas'],\n  properties: {\n    posts: { type: 'array', items: {\n      type: 'object', additionalProperties: false,\n      required: ['post_index', 'format', 'topic', 'hook', 'hook_type', 'cta', 'why_it_worked'],\n      properties: {\n        post_index: { type: 'integer' },\n        format: { type: 'string', enum: ['text', 'image', 'carousel', 'video', 'poll', 'article', 'other'] },\n        topic: str, hook: str, hook_type: str, cta: str, why_it_worked: str,\n      } } },\n    summary: str, top_themes: list, what_to_steal: list, content_ideas: list,\n  },\n};\n\nconst postsBlock = posts.map((p, i) =>\n  `<post index=\"${i}\" likes=\"${p.likes}\" comments=\"${p.comments}\" shares=\"${p.shares}\" posted_at=\"${p.posted_at}\">\\n${p.text}\\n</post>`\n).join('\\n\\n');\n\nreturn [{ json: {\n  skip: false, competitor, posts,\n  requestBody: {\n    model: s.model,\n    max_tokens: 16000,\n    system,\n    messages: [{ role: 'user', content:\n      `Competitor: ${competitor}\\nMy niche: ${s.niche || 'not specified'}\\n\\n${postsBlock}\\n\\n` +\n      `Analyze every post (indexes 0 to ${posts.length - 1}).` }],\n    output_config: { effort: 'medium', format: { type: 'json_schema', schema } },\n    // If a safety classifier declines, the API retries on a recommended fallback model.\n    fallbacks: 'default',\n  },\n} }];\n"
+      },
+      "id": "c29b5878-0602-47e6-8517-4c8126fddd57"
+    },
+    {
+      "name": "Any Posts?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1440,
+        0
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "52e488b9-491c-4e95-8003-0cab3ec2a477",
+              "leftValue": "={{ $json.skip }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "499f4499-ad89-4d50-9231-a59825563d21"
+    },
+    {
+      "name": "Claude Analyze",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1680,
+        -100
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "httpHeaderAuth": {
+          "name": "Anthropic API key"
+        }
+      },
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            },
+            {
+              "name": "anthropic-beta",
+              "value": "server-side-fallback-2026-07-01"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.requestBody) }}",
+        "options": {
+          "timeout": 600000
+        }
+      },
+      "id": "db12dc10-f70a-4366-b102-46687f2ab2f4"
+    },
+    {
+      "name": "Build Post Rows",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1920,
+        -100
+      ],
+      "parameters": {
+        "jsCode": "// Turns Claude's JSON report into one row per post for the Posts tab.\nconst res = $input.first().json;\nconst prep = $('Prepare Posts').first().json;\nif (res.stop_reason === 'refusal') throw new Error(`Claude declined to analyze ${prep.competitor}`);\nif (res.stop_reason === 'max_tokens') throw new Error(`Analysis for ${prep.competitor} was cut off; lower maxPosts in Settings`);\n\nconst report = JSON.parse(res.content.filter(b => b.type === 'text').map(b => b.text).join(''));\nconst byIndex = Object.fromEntries(report.posts.map(a => [a.post_index, a]));\nconst runAt = $now.toFormat('yyyy-MM-dd HH:mm');\n\nreturn prep.posts.map((p, i) => {\n  const a = byIndex[i] || {};\n  return { json: {\n    scraped_at: runAt,\n    competitor: prep.competitor,\n    posted_at: p.posted_at,\n    post_url: p.post_url,\n    likes: p.likes,\n    comments: p.comments,\n    shares: p.shares,\n    engagement_score: p.engagement_score,\n    format: a.format || '',\n    topic: a.topic || '',\n    hook: a.hook || '',\n    hook_type: a.hook_type || '',\n    cta: a.cta || '',\n    why_it_worked: a.why_it_worked || '',\n    post_text: p.text.slice(0, 45000), // Sheets caps a cell at 50k characters\n  } };\n});\n"
+      },
+      "id": "cc333d38-0390-4b2d-bc83-f7054a2ba98f"
+    },
+    {
+      "name": "Save to Posts tab",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        2160,
+        -100
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "Google Sheets account"
+        }
+      },
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('Settings').first().json.sheetId }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Posts",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "post_url"
+          ],
+          "schema": []
+        },
+        "options": {}
+      },
+      "id": "1dbcf3c7-e91e-419f-b9fa-6579261e3121"
+    },
+    {
+      "name": "Build Insight Row",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2400,
+        -100
+      ],
+      "parameters": {
+        "jsCode": "// One summary row per competitor for the Insights tab.\nconst res = $('Claude Analyze').first().json;\nconst prep = $('Prepare Posts').first().json;\nconst report = JSON.parse(res.content.filter(b => b.type === 'text').map(b => b.text).join(''));\nconst bullets = items => items.map(x => `\u2022 ${x}`).join('\\n');\n\nreturn [{ json: {\n  run_at: $now.toFormat('yyyy-MM-dd HH:mm'),\n  competitor: prep.competitor,\n  posts_analyzed: prep.posts.length,\n  summary: report.summary,\n  top_themes: bullets(report.top_themes),\n  what_to_steal: bullets(report.what_to_steal),\n  content_ideas: bullets(report.content_ideas),\n} }];\n"
+      },
+      "id": "2597afca-9b0c-4903-aad7-0b8f7790983c"
+    },
+    {
+      "name": "Save to Insights tab",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        2640,
+        -100
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "Google Sheets account"
+        }
+      },
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('Settings').first().json.sheetId }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Insights",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "schema": []
+        },
+        "options": {}
+      },
+      "id": "503e4032-60f1-4310-be2f-a8752c91d77d"
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Settings",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Every Monday 9am": {
+      "main": [
+        [
+          {
+            "node": "Settings",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Settings": {
+      "main": [
+        [
+          {
+            "node": "Read Competitors",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Competitors": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Competitors",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Competitors": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Scrape Posts (Apify)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scrape Posts (Apify)": {
+      "main": [
+        [
+          {
+            "node": "Prepare Posts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Posts": {
+      "main": [
+        [
+          {
+            "node": "Any Posts?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Any Posts?": {
+      "main": [
+        [
+          {
+            "node": "Claude Analyze",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Over Competitors",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude Analyze": {
+      "main": [
+        [
+          {
+            "node": "Build Post Rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Post Rows": {
+      "main": [
+        [
+          {
+            "node": "Save to Posts tab",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save to Posts tab": {
+      "main": [
+        [
+          {
+            "node": "Build Insight Row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Insight Row": {
+      "main": [
+        [
+          {
+            "node": "Save to Insights tab",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save to Insights tab": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Competitors",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

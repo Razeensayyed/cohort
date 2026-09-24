@@ -78,3 +78,7 @@ On Windows, use Task Scheduler.
 
 Scraping LinkedIn is against LinkedIn's Terms of Service. Keep volumes modest and
 only use public post data.
+
+## Prefer n8n?
+
+The same pipeline is available as an importable n8n workflow in [`n8n/`](n8n/README.md).
