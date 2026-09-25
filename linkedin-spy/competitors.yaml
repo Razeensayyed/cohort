@@ -1,0 +1,11 @@
+# Placeholder competitors: replace with your real ones.
+# slug:       the part after linkedin.com/company/  (e.g. linkedin.com/company/acme-corp/ -> acme-corp)
+# company_id: numeric ID used by the jobs search. Leave empty and run
+#             `python find_company_ids.py` to fill it in automatically.
+competitors:
+  - name: Placeholder One
+    slug: placeholder-one
+    company_id: ""
+  - name: Placeholder Two
+    slug: placeholder-two
+    company_id: ""

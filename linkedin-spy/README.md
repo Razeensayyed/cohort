@@ -1,0 +1,114 @@
+# LinkedIn competitor tracker
+
+A daily Python job that tracks competitors' LinkedIn company pages and appends the results to a Google Sheet:
+
+| Tab | What goes in it |
+|---|---|
+| **Digest** | One row per competitor per day: new posts, hot posts, new jobs, open jobs, followers, 7-day follower change, top new post |
+| **AI Summary** | Optional daily written analysis (needs an Anthropic API key) |
+| **Posts** | Every new post with its engagement, and whether it's "hot" (2x or more the company's usual engagement) |
+| **Jobs** | Every newly opened job: title, location, link |
+| **Followers** | Daily follower count per competitor, ready for a line chart |
+
+**Caution:** LinkedIn's terms forbid automated scraping. This tool keeps the risk low: it reads only company pages, runs once a day at human speed, uses your normal account, and collects nothing about individual people. Don't run it more often, and don't add dozens of companies. Run it from your own computer, not a cloud server.
+
+---
+
+## Setup (about 20 minutes, once)
+
+### 1. Install
+
+```bash
+cd linkedin-spy
+python3 -m venv .venv
+source .venv/bin/activate          # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+playwright install chromium
+cp .env.example .env
+```
+
+### 2. Create the Google Sheet and give the script access
+
+1. Go to <https://console.cloud.google.com/>, create a project (any name).
+2. **APIs & Services → Library**: enable **Google Sheets API** and **Google Drive API**.
+3. **APIs & Services → Credentials → Create credentials → Service account**. Give it any name, then click **Done**.
+4. Click the service account, go to **Keys → Add key → Create new key → JSON**. A file downloads.
+5. Move that file into this folder as `service_account.json`. It's git-ignored. Never commit or share it.
+6. Create an empty Google Sheet. Click **Share** and add the service account's email address (it's the `client_email` value in the JSON, e.g. `something@your-project.iam.gserviceaccount.com`) as an **Editor**.
+7. Copy the sheet ID from its URL, `docs.google.com/spreadsheets/d/`**`THIS_PART`**`/edit`, into `.env` as `GOOGLE_SHEET_ID`.
+
+(Optional) Add your `ANTHROPIC_API_KEY` to `.env` to get the AI Summary tab.
+
+### 3. Add your competitors
+
+Edit `competitors.yaml`. Replace the placeholders with each competitor's name and the slug from their page URL (`linkedin.com/company/`**`slug`**`/`).
+
+### 4. Log in to LinkedIn once
+
+```bash
+python login.py
+```
+A browser window opens. Log in yourself (including 2FA), wait for your feed, then press Enter in the terminal. The session is saved in `data/browser_profile/`. Run this again whenever the tracker says the session expired.
+
+### 5. Fill in company IDs
+
+```bash
+python find_company_ids.py
+```
+This fills in the `company_id` values that the jobs tracker needs. Note that it rewrites `competitors.yaml`, so comments in that file are lost.
+
+### 6. Test it, then seed the history
+
+```bash
+python main.py --dry-run --show     # watch the browser; prints what would go to the Sheet
+python main.py --seed               # stores today's posts/jobs as "already known"
+```
+Without `--seed`, the first real run would report every existing post and job as new.
+
+### 7. Schedule it daily
+
+**Mac/Linux:** run `crontab -e` and add (use your real path):
+```
+17 8 * * * cd /full/path/to/linkedin-spy && .venv/bin/python main.py >> data/run.log 2>&1
+```
+**Windows:** in Task Scheduler, create a daily task. Program: `C:\path\to\linkedin-spy\.venv\Scripts\python.exe`. Arguments: `main.py`. Start in: `C:\path\to\linkedin-spy`.
+
+The computer must be on (and not asleep) at that time.
+
+---
+
+## Commands
+
+| Command | What it does |
+|---|---|
+| `python main.py` | Normal daily run |
+| `python main.py --dry-run` | Prints what would be written; saves nothing |
+| `python main.py --seed` | Fills history without writing to the Sheet |
+| `python main.py --show` | Shows the browser window |
+| `python main.py --debug` | Saves each posts page's HTML to `data/debug/` |
+| `python main.py --no-posts` | Jobs only (no login needed) |
+| `python -m pytest` | Runs the tests (no network needed) |
+
+## When something breaks
+
+| Symptom | Fix |
+|---|---|
+| `0 posts` for every company | LinkedIn changed its HTML. Run `python main.py --debug --dry-run`, then update the selectors at the top of `spy/parsers.py` using `data/debug/*.html` (or send that file to whoever maintains this). |
+| `STOPPED: LinkedIn redirected to .../checkpoint` or `/authwall` | Run `python login.py` again. If it keeps happening, run less often. |
+| Followers show as empty | The "N followers" text changed. See `parse_followers` in `spy/parsers.py`. |
+| `[jobs] ... rate limited (429)` | Wait a day. Lower `max_pages` in `spy/collect_jobs.py`. |
+| `SpreadsheetNotFound` / `PermissionError` | The sheet isn't shared with the service account email, or `GOOGLE_SHEET_ID` is wrong. |
+
+If writing to the Sheet fails, nothing is marked as seen, so the next run picks everything up again.
+
+## How it works
+
+```
+competitors.yaml
+   ├─ spy/collect_posts.py   Playwright + your saved session → followers, posts
+   └─ spy/collect_jobs.py    public jobs endpoint (no login) → open jobs
+          ↓ spy/parsers.py   HTML → data (all LinkedIn selectors live here)
+   spy/db.py                 SQLite history in data/spy.db → what's new since last run
+   spy/analyze.py            hot-post detection, digest rows, optional AI summary
+   spy/sheets.py             append rows to the Google Sheet
+```
