@@ -90,3 +90,10 @@ def test_digest_and_sheet_rows():
 def test_ai_summary_skipped_without_key(monkeypatch):
     monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
     assert analyze.ai_summary("anything") == ""
+
+
+def test_sheet_id_from_accepts_urls():
+    sid = "1Ga0G7wlqijcTGH1qagxrdvWOLHZ4hEkizzrb_oCPY9Q"
+    for raw in (sid, f" {sid} ", f'"{sid}"', f"{sid}/edit?gid=0#gid=0",
+                f"https://docs.google.com/spreadsheets/d/{sid}/edit?gid=0#gid=0"):
+        assert sheets.sheet_id_from(raw) == sid

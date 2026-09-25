@@ -1,5 +1,6 @@
 """Append each run's results to a Google Sheet. Tabs are created on first use."""
 import os
+import re
 
 TABS = {
     "Digest": ["Date", "Company", "New posts", "Hot posts", "New jobs", "Open jobs",
@@ -29,6 +30,15 @@ def build_rows(today, digest, posts, jobs, followers, summary):
     }
 
 
+def sheet_id_from(value):
+    """Accept a bare ID, an ID with '/edit...' stuck on, or the whole Sheet URL."""
+    value = (value or "").strip().strip("'\"")
+    m = re.search(r"/d/([A-Za-z0-9_-]+)", value)
+    if m:
+        return m.group(1)
+    return value.split("/")[0].split("?")[0].split("#")[0]
+
+
 def _worksheet(sh, title, header):
     import gspread
     try:
@@ -44,7 +54,7 @@ def _worksheet(sh, title, header):
 def write(rows_by_tab):
     import gspread
     key_file = os.getenv("GOOGLE_SERVICE_ACCOUNT_FILE", "service_account.json")
-    sheet_id = os.getenv("GOOGLE_SHEET_ID")
+    sheet_id = sheet_id_from(os.getenv("GOOGLE_SHEET_ID"))
     if not sheet_id:
         raise SystemExit("GOOGLE_SHEET_ID is not set in .env")
     sh = gspread.service_account(filename=key_file).open_by_key(sheet_id)
