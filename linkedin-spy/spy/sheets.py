@@ -79,12 +79,7 @@ def purge_people(sh, days):
 
 
 def write(rows_by_tab, people_retention_days=None):
-    import gspread
-    key_file = os.getenv("GOOGLE_SERVICE_ACCOUNT_FILE", "service_account.json")
-    sheet_id = sheet_id_from(os.getenv("GOOGLE_SHEET_ID"))
-    if not sheet_id:
-        raise SystemExit("GOOGLE_SHEET_ID is not set in .env")
-    sh = gspread.service_account(filename=key_file).open_by_key(sheet_id)
+    sh = _open()
     for tab, header in TABS.items():
         ws = _worksheet(sh, tab, header)
         if rows_by_tab.get(tab):
@@ -92,7 +87,50 @@ def write(rows_by_tab, people_retention_days=None):
             ws.append_rows(rows_by_tab[tab], value_input_option="RAW")
     if people_retention_days:
         purge_people(sh, people_retention_days)
-    print(f"[sheets] written to https://docs.google.com/spreadsheets/d/{sheet_id}")
+    print(f"[sheets] written to https://docs.google.com/spreadsheets/d/{sh.id}")
+
+
+def _open():
+    import gspread
+    key_file = os.getenv("GOOGLE_SERVICE_ACCOUNT_FILE", "service_account.json")
+    sheet_id = sheet_id_from(os.getenv("GOOGLE_SHEET_ID"))
+    if not sheet_id:
+        raise SystemExit("GOOGLE_SHEET_ID is not set in .env")
+    return gspread.service_account(filename=key_file).open_by_key(sheet_id)
+
+
+def replace_tab(sh, title, header, rows, note=""):
+    """Overwrite a whole tab (used for reports that show the current state)."""
+    import gspread
+    values = ([[note]] if note else []) + [header] + rows
+    try:
+        ws = sh.worksheet(title)
+        ws.clear()
+    except gspread.WorksheetNotFound:
+        ws = sh.add_worksheet(title=title, rows=max(100, len(values) + 10), cols=len(header))
+    if ws.row_count < len(values):
+        ws.add_rows(len(values) - ws.row_count)
+    ws.update(values, "A1", value_input_option="RAW")
+    ws.freeze(rows=2 if note else 1)
+
+
+def write_winners(winners_rows, topics_rows, note):
+    from spy.winners import TOPICS_HEADER, WINNERS_HEADER
+    sh = _open()
+    replace_tab(sh, "Winning Topics", TOPICS_HEADER, topics_rows, note)
+    replace_tab(sh, "Winners", WINNERS_HEADER, winners_rows, note)
+    print(f"[sheets] Winners: {len(winners_rows)} posts, Winning Topics: {len(topics_rows)} topics")
+
+
+def preview_winners(winners_rows, topics_rows, note):
+    from spy.winners import TOPICS_HEADER, WINNERS_HEADER
+    print(f"\n{note}")
+    for title, header, rows in (("Winning Topics", TOPICS_HEADER, topics_rows),
+                                ("Winners", WINNERS_HEADER, winners_rows)):
+        print(f"\n=== {title} ({len(rows)} rows) ===")
+        print(" | ".join(header))
+        for r in rows[:15]:
+            print(" | ".join(str(x)[:70].replace("\n", " ") for x in r))
 
 
 def preview(rows_by_tab):

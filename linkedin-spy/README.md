@@ -9,6 +9,8 @@ A daily Python job that tracks competitors' LinkedIn company pages and appends t
 | **Posts** | Every new post with its engagement, and whether it's "hot" (2x or more the company's usual engagement). The Type column says whether it came from a company page or a tracked person. |
 | **Jobs** | Every newly opened job: title, location, link |
 | **Followers** | Daily follower count per competitor, ready for a line chart |
+| **Winners** | Posts that got 2x or more their account's *usual* engagement, ranked, with a topic each (replaced on every run) |
+| **Winning Topics** | Topics ranked by how often they win, with the best post and why it works (replaced on every run) |
 
 **Caution:** LinkedIn's terms forbid automated scraping. This tool keeps the risk low: it runs once a day at human speed and uses your normal account. It reads company pages, plus (optionally) the own public posts of up to 5 people you list. See "Tracking people" below. Don't run it more often, and don't add dozens of companies. Run it from your own computer, not a cloud server.
 
@@ -37,7 +39,7 @@ cp .env.example .env
 6. Create an empty Google Sheet. Click **Share** and add the service account's email address (it's the `client_email` value in the JSON, e.g. `something@your-project.iam.gserviceaccount.com`) as an **Editor**.
 7. Copy the sheet ID from its URL, `docs.google.com/spreadsheets/d/`**`THIS_PART`**`/edit`, into `.env` as `GOOGLE_SHEET_ID`.
 
-(Optional) Add your `ANTHROPIC_API_KEY` to `.env` to get the AI Summary tab.
+(Optional) Add your `ANTHROPIC_API_KEY` to `.env` to get the AI Summary tab and AI topic labels in Winning Topics. It uses `claude-opus-5` by default; set `ANTHROPIC_MODEL` to override.
 
 ### 3. Add your competitors
 
@@ -95,6 +97,22 @@ The computer must be on (and not asleep) at that time.
 
 ---
 
+## Winning posts and topics
+
+LinkedIn only shows view counts to a post's author, so the tracker uses **engagement** (reactions + comments + reposts) instead. A post with unusually high reach also collects unusually many reactions.
+
+- A post **wins** when its engagement is at least **2x the median** of that account's other posts. Comparing each account with itself keeps a big account from drowning out a small one.
+- Posts less than 2 days old are skipped, because they're still collecting engagement. The exception is posts found on an account's first run, which are older backlog.
+- An account needs at least 5 posts before it gets a baseline.
+- **Topics:** with `ANTHROPIC_API_KEY` set, Claude labels each post with a topic and explains why the winning topics work. Without a key, the tool lists the words and hashtags that appear far more often in winning posts.
+
+The daily `python main.py` refreshes both tabs. To run just the analysis on the data you already have (it doesn't visit LinkedIn):
+```bash
+python find_winners.py             # write the Winners and Winning Topics tabs
+python find_winners.py --dry-run   # print instead
+python find_winners.py --x 3       # stricter: 3x the usual engagement
+```
+
 ## Commands
 
 | Command | What it does |
@@ -105,6 +123,8 @@ The computer must be on (and not asleep) at that time.
 | `python main.py --show` | Shows the browser window |
 | `python main.py --debug` | Saves each posts page's HTML to `data/debug/` |
 | `python main.py --no-posts` | Jobs only (no login needed) |
+| `python main.py --no-winners` | Skip the Winners / Winning Topics refresh |
+| `python find_winners.py` | Winners analysis only, from saved data |
 | `python -m pytest` | Runs the tests (no network needed) |
 
 ## When something breaks
@@ -130,5 +150,6 @@ competitors.yaml
           ↓ spy/parsers.py   HTML → data (all LinkedIn selectors live here)
    spy/db.py                 SQLite history in data/spy.db → what's new since last run
    spy/analyze.py            hot-post detection, digest rows, optional AI summary
+   spy/winners.py            outlier posts vs each account's median, topic labelling
    spy/sheets.py             append rows to the Google Sheet
 ```

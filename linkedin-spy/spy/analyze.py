@@ -68,9 +68,11 @@ def ai_summary(raw):
         return ""
     try:
         import anthropic
-        msg = anthropic.Anthropic().messages.create(
-            model=os.getenv("ANTHROPIC_MODEL") or "claude-sonnet-5",
-            max_tokens=1200,
+        msg = anthropic.Anthropic().beta.messages.create(
+            model=os.getenv("ANTHROPIC_MODEL") or "claude-opus-5",
+            max_tokens=16000,
+            betas=["server-side-fallback-2026-07-01"],
+            fallbacks="default",
             messages=[{"role": "user", "content": (
                 "You are a competitive-intelligence analyst. Below is today's new LinkedIn "
                 "activity from our competitors. Write a short digest in plain text (no markdown "
@@ -79,6 +81,9 @@ def ai_summary(raw):
                 "expanding), 3) one suggested action for us. Only use facts in the data.\n\n"
                 + raw)}],
         )
+        if msg.stop_reason == "refusal":
+            print("[ai] summary declined by the model; skipped")
+            return ""
         return "".join(b.text for b in msg.content if b.type == "text").strip()
     except Exception as e:
         print(f"[ai] summary skipped: {e}")

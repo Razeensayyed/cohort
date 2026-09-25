@@ -5,6 +5,7 @@
     python main.py --seed       first run: fill history, write nothing to Sheets
     python main.py --show       show the browser window (good for debugging)
     python main.py --debug      also save each posts page's HTML to data/debug/
+    python main.py --no-winners skip the Winners / Winning Topics analysis
 """
 import argparse
 import os
@@ -13,7 +14,7 @@ from datetime import date
 
 from dotenv import load_dotenv
 
-from spy import analyze, config, db, sheets
+from spy import analyze, config, db, sheets, winners
 from spy.collect_jobs import collect_jobs
 from spy.collect_posts import SessionExpired, collect_posts
 
@@ -26,6 +27,7 @@ def main():
     ap.add_argument("--debug", action="store_true")
     ap.add_argument("--no-posts", action="store_true", help="skip the logged-in part")
     ap.add_argument("--no-jobs", action="store_true")
+    ap.add_argument("--no-winners", action="store_true")
     args = ap.parse_args()
 
     load_dotenv()
@@ -83,8 +85,15 @@ def main():
     followers = {name: ch["followers"] for name, ch in changes.items()}
     rows = sheets.build_rows(today, digest, all_posts, all_jobs, followers, summary)
 
+    # Refresh the winners report when something changed (engagement numbers are
+    # refreshed on every run, so any post collected counts as a change).
+    refresh_winners = not args.no_winners and not args.no_posts and bool(results_seen(c, run_started))
+
     if args.dry_run:
         sheets.preview(rows)
+        if refresh_winners:
+            sheets.preview_winners(*winners.analyze(c, use_ai=False))
+            print("(dry run: topics shown by keywords; the real run uses AI if a key is set)")
         c.rollback()
         print("\n(dry run: nothing saved)")
         return
@@ -92,6 +101,13 @@ def main():
     sheets.write(rows, people_retention_days=retention_days)
     c.commit()  # only after Sheets succeeded, so a failed write is retried next run
     print(f"Done: {len(all_posts)} new posts, {len(all_jobs)} new jobs.")
+    if refresh_winners:
+        sheets.write_winners(*winners.analyze(c))
+
+
+def results_seen(c, since):
+    """Posts collected (new or refreshed) during this run."""
+    return c.execute("SELECT COUNT(*) FROM posts WHERE last_seen>=?", (since,)).fetchone()[0]
 
 
 if __name__ == "__main__":
