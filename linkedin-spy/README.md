@@ -43,7 +43,16 @@ cp .env.example .env
 
 ### 3. Add your competitors
 
-Edit `competitors.yaml`. Replace the placeholders with each competitor's name and the slug from their page URL (`linkedin.com/company/`**`slug`**`/`).
+**Automatically** (after step 4, since it needs the LinkedIn login):
+```bash
+python discover.py
+```
+It asks for your niche, finds candidate competitors, opens each one on LinkedIn to check it exists (dropping made-up or dead links), then shows a numbered list. You pick with `1,3,5-7`, `all` or `none`, and it adds your picks to `competitors.yaml`, company IDs included.
+- With `ANTHROPIC_API_KEY` in `.env`: Claude searches the web for companies and up to 5 public-facing people in your niche. Cost: a few cents per search.
+- Without a key: it uses LinkedIn's company search (companies only).
+- Run it again at any time to add more. Existing entries are kept, and the 5-person limit is enforced. The file is rewritten, so comments in it are lost.
+
+**Or by hand:** edit `competitors.yaml`. Replace the placeholders with each competitor's name and the slug from their page URL (`linkedin.com/company/`**`slug`**`/`).
 
 ### Tracking people (optional)
 
@@ -125,6 +134,7 @@ python find_winners.py --x 3       # stricter: 3x the usual engagement
 | `python main.py --no-posts` | Jobs only (no login needed) |
 | `python main.py --no-winners` | Skip the Winners / Winning Topics refresh |
 | `python find_winners.py` | Winners analysis only, from saved data |
+| `python discover.py` | Find competitors for your niche and add the ones you pick |
 | `python -m pytest` | Runs the tests (no network needed) |
 
 ## When something breaks
