@@ -6,6 +6,7 @@ import yaml
 from playwright.sync_api import sync_playwright
 
 from spy.collect_posts import PROFILE_DIR
+from spy.config import _slug
 from spy.parsers import parse_company_id
 
 PATH = "competitors.yaml"
@@ -22,7 +23,8 @@ with sync_playwright() as p:
     ctx = p.chromium.launch_persistent_context(PROFILE_DIR, headless=True)
     page = ctx.pages[0] if ctx.pages else ctx.new_page()
     for comp in missing:
-        page.goto(f"https://www.linkedin.com/company/{comp['slug']}/", wait_until="domcontentloaded")
+        slug = _slug(comp["slug"], "company")
+        page.goto(f"https://www.linkedin.com/company/{slug}/", wait_until="domcontentloaded")
         time.sleep(random.uniform(3, 6))
         comp["company_id"] = parse_company_id(page.content())
         print(f"{comp['name']}: {comp['company_id'] or 'NOT FOUND (check the slug)'}")

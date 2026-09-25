@@ -6,11 +6,11 @@ A daily Python job that tracks competitors' LinkedIn company pages and appends t
 |---|---|
 | **Digest** | One row per competitor per day: new posts, hot posts, new jobs, open jobs, followers, 7-day follower change, top new post |
 | **AI Summary** | Optional daily written analysis (needs an Anthropic API key) |
-| **Posts** | Every new post with its engagement, and whether it's "hot" (2x or more the company's usual engagement) |
+| **Posts** | Every new post with its engagement, and whether it's "hot" (2x or more the company's usual engagement). The Type column says whether it came from a company page or a tracked person. |
 | **Jobs** | Every newly opened job: title, location, link |
 | **Followers** | Daily follower count per competitor, ready for a line chart |
 
-**Caution:** LinkedIn's terms forbid automated scraping. This tool keeps the risk low: it reads only company pages, runs once a day at human speed, uses your normal account, and collects nothing about individual people. Don't run it more often, and don't add dozens of companies. Run it from your own computer, not a cloud server.
+**Caution:** LinkedIn's terms forbid automated scraping. This tool keeps the risk low: it runs once a day at human speed and uses your normal account. It reads company pages, plus (optionally) the own public posts of up to 5 people you list. See "Tracking people" below. Don't run it more often, and don't add dozens of companies. Run it from your own computer, not a cloud server.
 
 ---
 
@@ -42,6 +42,24 @@ cp .env.example .env
 ### 3. Add your competitors
 
 Edit `competitors.yaml`. Replace the placeholders with each competitor's name and the slug from their page URL (`linkedin.com/company/`**`slug`**`/`).
+
+### Tracking people (optional)
+
+You can also track the **own public posts** of up to **5** public-facing people, such as a competitor's founder. Add them to `competitors.yaml`:
+```yaml
+people:
+  - name: Jane Founder
+    company: Acme
+    slug: jane-founder          # from linkedin.com/in/jane-founder/ (or paste the whole URL)
+people_retention_days: 90
+```
+Limits built into the tool:
+- Only their recent-activity page is opened. Profile details (job history, contacts, connections) are never read.
+- Only posts they wrote themselves are kept. Reposts and posts they liked are skipped.
+- After `people_retention_days` (default 90), their post text and links are erased from `data/spy.db`, and their rows are deleted from the Digest and Posts tabs. The AI Summary tab isn't cleaned automatically.
+- More than 5 people is rejected.
+
+Please keep it to people who post publicly as the voice of their company. Personal profiles are **personal data**: privacy laws (e.g. GDPR if the person is in the EU) can apply even though the posts are public, and LinkedIn flags automated visits to profiles faster than visits to company pages. This isn't legal advice. If you're doing this for a company, check with whoever handles legal or compliance.
 
 ### 4. Log in to LinkedIn once
 
@@ -93,6 +111,7 @@ The computer must be on (and not asleep) at that time.
 
 | Symptom | Fix |
 |---|---|
+| `0 own posts` for a person | Their activity page layout differs. Run `python main.py --debug --dry-run` and check `data/debug/person_*.html` (update `POST_HEADER` / `POST_ACTOR_LINK` in `spy/parsers.py`). |
 | `0 posts` for every company | LinkedIn changed its HTML. Run `python main.py --debug --dry-run`, then update the selectors at the top of `spy/parsers.py` using `data/debug/*.html` (or send that file to whoever maintains this). |
 | `STOPPED: LinkedIn redirected to .../checkpoint` or `/authwall` | Run `python login.py` again. If it keeps happening, run less often. |
 | Followers show as empty | The "N followers" text changed. See `parse_followers` in `spy/parsers.py`. |
@@ -105,7 +124,8 @@ If writing to the Sheet fails, nothing is marked as seen, so the next run picks 
 
 ```
 competitors.yaml
-   ├─ spy/collect_posts.py   Playwright + your saved session → followers, posts
+   ├─ spy/config.py          validates it (people limit, full URLs accepted)
+   ├─ spy/collect_posts.py   Playwright + your saved session → followers, posts, people's own posts
    └─ spy/collect_jobs.py    public jobs endpoint (no login) → open jobs
           ↓ spy/parsers.py   HTML → data (all LinkedIn selectors live here)
    spy/db.py                 SQLite history in data/spy.db → what's new since last run

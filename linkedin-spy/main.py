@@ -11,10 +11,9 @@ import os
 import sys
 from datetime import date
 
-import yaml
 from dotenv import load_dotenv
 
-from spy import analyze, db, sheets
+from spy import analyze, config, db, sheets
 from spy.collect_jobs import collect_jobs
 from spy.collect_posts import SessionExpired, collect_posts
 
@@ -30,13 +29,16 @@ def main():
     args = ap.parse_args()
 
     load_dotenv()
-    with open("competitors.yaml") as f:
-        comps = yaml.safe_load(f)["competitors"]
+    comps, people, retention_days = config.load()
     c = db.connect()
+    erased = db.purge_person_posts(c, retention_days)
+    if erased:
+        print(f"[privacy] erased {erased} people's posts older than {retention_days} days")
     run_started = db.now()
     today = date.today().isoformat()
-    changes = {x["name"]: {"new_posts": [], "new_jobs": [], "followers": 0, "jobs_ok": False}
-               for x in comps}
+    changes = {x["name"]: {"kind": x["kind"], "new_posts": [], "new_jobs": [],
+                           "followers": 0, "jobs_ok": False}
+               for x in comps + people}
     all_posts, all_jobs = [], []
 
     if not args.no_posts:
@@ -45,7 +47,7 @@ def main():
             debug_dir = "data/debug"
             os.makedirs(debug_dir, exist_ok=True)
         try:
-            results = collect_posts(comps, headless=not args.show, debug_dir=debug_dir)
+            results = collect_posts(comps + people, headless=not args.show, debug_dir=debug_dir)
         except SessionExpired as e:
             print(f"[posts] STOPPED: {e}")
             results = {}
@@ -87,7 +89,7 @@ def main():
         print("\n(dry run: nothing saved)")
         return
 
-    sheets.write(rows)
+    sheets.write(rows, people_retention_days=retention_days)
     c.commit()  # only after Sheets succeeded, so a failed write is retried next run
     print(f"Done: {len(all_posts)} new posts, {len(all_jobs)} new jobs.")
 

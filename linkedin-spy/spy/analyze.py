@@ -31,6 +31,7 @@ def digest_rows(c, changes, run_started, today=None):
         rows.append({
             "date": today,
             "company": company,
+            "type": "Person" if ch.get("kind") == "person" else "Company",
             "new_posts": len(posts),
             "hot_posts": sum(p.get("hot", False) for p in posts),
             "new_jobs": len(ch["new_jobs"]),
@@ -47,7 +48,8 @@ def raw_text(changes):
     """Plain-text dump of the day's changes, used as input for the AI summary."""
     lines = []
     for company, ch in changes.items():
-        lines.append(f"## {company}")
+        who = " (a person: their own public posts)" if ch.get("kind") == "person" else ""
+        lines.append(f"## {company}{who}")
         if ch.get("followers"):
             lines.append(f"Followers: {ch['followers']:,}")
         for p in ch["new_posts"]:

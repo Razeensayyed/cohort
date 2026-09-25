@@ -15,6 +15,8 @@ POST_TEXT = [
     ".feed-shared-update-v2__description",
     ".feed-shared-text",
 ]
+POST_ACTOR_LINK = "a.update-components-actor__meta-link, a.update-components-actor__image"
+POST_HEADER = ".update-components-header"  # "X reposted this" / "X likes this"
 POST_REACTIONS = [
     ".social-details-social-counts__reactions-count",
     "[data-test-id='social-actions__reaction-count']",
@@ -58,7 +60,19 @@ def parse_followers(page_text):
     return to_int(m.group(1)) if m else 0
 
 
-def parse_posts(html, company):
+def _written_by(el, author_slug):
+    """True if a post on someone's activity page is their own (not a repost/like)."""
+    header = el.select_one(POST_HEADER)
+    if header and header.get_text(" ", strip=True):
+        return False
+    links = [a.get("href", "") for a in el.select(POST_ACTOR_LINK)]
+    if not links:  # markup changed: without a header it's most likely their own post
+        return True
+    return any(f"/in/{author_slug}" in h for h in links)
+
+
+def parse_posts(html, company, author_slug=None, source="company"):
+    """Posts on a company page, or (with author_slug) only that person's own posts."""
     soup = BeautifulSoup(html, "html.parser")
     posts, seen = [], set()
     for el in soup.select(POST_CONTAINER):
@@ -66,6 +80,8 @@ def parse_posts(html, company):
         if not urn or urn in seen:
             continue
         seen.add(urn)
+        if author_slug and not _written_by(el, author_slug):
+            continue
         text_el = _first(el, POST_TEXT)
         react_el = _first(el, POST_REACTIONS)
         comments_txt = el.find(string=re.compile(r"\d[\d,.]*\s*[KkMm]?\s+comments?", re.I))
@@ -79,6 +95,7 @@ def parse_posts(html, company):
             "comments": to_int(comments_txt),
             "reposts": to_int(reposts_txt),
             "url": f"https://www.linkedin.com/feed/update/urn:li:activity:{activity_id}/",
+            "source": source,
         })
     return posts
 
