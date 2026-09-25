@@ -121,6 +121,8 @@ def test_looks_like_command():
     cli = importlib.util.module_from_spec(spec); spec.loader.exec_module(cli)
     assert cli.looks_like_command("python main.py --dry-run --show")
     assert cli.looks_like_command("git pull")
+    assert cli.looks_like_command("python find_winners.py")
+    assert cli.looks_like_command("cd ~/Documents/linkedin-tracker/linkedin-spy")
     assert not cli.looks_like_command("AI tools for recruiters")
     assert not cli.looks_like_command("Pythonic consulting for startups")
     assert not cli.looks_like_command("Python training for data teams")

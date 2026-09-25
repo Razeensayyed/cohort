@@ -9,6 +9,7 @@ suggests public-facing people; without it, it uses LinkedIn's company search onl
 """
 import argparse
 import os
+import re
 
 import yaml
 from dotenv import load_dotenv
@@ -24,8 +25,9 @@ PATH = "competitors.yaml"
 
 def looks_like_command(text):
     t = text.strip().lower()
-    return (t.startswith(("python ", "python3 ", "cd ", "git ", "source ", "ls ", "open "))
-            or t in ("ls", "git pull") or " --" in t)
+    return bool(re.match(r"python3?\s+\S+\.py\b", t)
+                or re.match(r"(cd|git|source|ls|open|pip)(\s|$)", t)
+                or " --" in t)
 
 
 def ask(question, default=""):
