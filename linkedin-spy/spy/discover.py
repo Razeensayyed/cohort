@@ -104,22 +104,34 @@ def candidates_with_ai(niche, exclude="", max_companies=12, max_people=5, client
 
 # ------------------------------------------------------ candidates: LinkedIn search
 
-def parse_company_search(html):
-    """Company results from linkedin.com/search/results/companies/ -> [{name, slug}]."""
-    soup = BeautifulSoup(html, "html.parser")
-    found, seen = [], set()
-    for a in soup.select('a[href*="/company/"]'):
-        m = re.search(r"/company/([^/?#]+)", a.get("href", ""))
-        if not m:
+def parse_company_links(links):
+    """[(href, text), ...] -> [{name, slug}], first readable name per company."""
+    found, names = [], {}
+    for href, text in links:
+        m = re.search(r"/company/([^/?#]+)", href or "")
+        if not m or m.group(1) in NOT_COMPANY_SLUGS:
             continue
         slug = m.group(1)
-        name = a.get_text(" ", strip=True)
-        if slug in NOT_COMPANY_SLUGS or not name:
-            continue
-        if slug in seen:
-            continue
-        seen.add(slug)
-        found.append({"name": name, "slug": slug})
+        lines = [ln.strip() for ln in (text or "").splitlines() if ln.strip()]
+        name = " ".join(lines[0].split()) if lines else ""
+        if slug not in names:
+            names[slug] = name
+            found.append(slug)
+        elif not names[slug] and name:
+            names[slug] = name  # the logo link comes first and has no text
+    return [{"name": names[s] or s.replace("-", " ").title(), "slug": s} for s in found]
+
+
+def parse_company_search(html):
+    """Company results from a saved search page -> [{name, slug}].
+
+    Reads link tags, and falls back to company URLs embedded in the page's data."""
+    soup = BeautifulSoup(html, "html.parser")
+    found = parse_company_links((a.get("href", ""), a.get_text(" ", strip=True))
+                                for a in soup.select('a[href*="/company/"]'))
+    if not found:
+        embedded = re.findall(r"linkedin\.com/company/([A-Za-z0-9_%.-]+)", html)
+        found = parse_company_links((f"/company/{x}/", "") for x in embedded)
     return found
 
 
@@ -128,12 +140,21 @@ def candidates_from_linkedin(page, niche, pages=2):
     for n in range(1, pages + 1):
         page.goto("https://www.linkedin.com/search/results/companies/"
                   f"?keywords={quote_plus(niche)}&page={n}", wait_until="domcontentloaded")
-        time.sleep(random.uniform(4, 7))
+        try:  # results render a few seconds after the page itself
+            page.wait_for_selector('a[href*="/company/"]', timeout=20000)
+        except Exception:
+            pass
+        time.sleep(random.uniform(2, 4))
         for _ in range(2):
             page.mouse.wheel(0, 1800)
             time.sleep(random.uniform(1.5, 3))
-        companies += [c for c in parse_company_search(page.content())
-                      if c["slug"] not in {x["slug"] for x in companies}]
+        # Read links from the live page (this also sees content the saved HTML misses).
+        links = page.locator('a[href*="/company/"]').evaluate_all(
+            "els => els.map(e => [e.href, e.innerText])")
+        batch = parse_company_links(links) or parse_company_search(page.content())
+        companies += [c for c in batch if c["slug"] not in {x["slug"] for x in companies}]
+        if not batch:
+            break
     return [{"name": c["name"], "linkedin_url": f"https://www.linkedin.com/company/{c['slug']}/",
              "why": "LinkedIn company search"} for c in companies]
 

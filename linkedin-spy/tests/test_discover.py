@@ -126,3 +126,18 @@ def test_looks_like_command():
     assert not cli.looks_like_command("AI tools for recruiters")
     assert not cli.looks_like_command("Pythonic consulting for startups")
     assert not cli.looks_like_command("Python training for data teams")
+
+
+def test_parse_company_links_prefers_named_link_and_skips_junk():
+    links = [("https://www.linkedin.com/company/acme-ai/", ""),          # logo first
+             ("https://www.linkedin.com/company/acme-ai/", "Acme AI\n12K followers"),
+             ("https://www.linkedin.com/company/unavailable/", "x"),
+             ("https://www.linkedin.com/company/no-name-co/", "")]
+    assert discover.parse_company_links(links) == [
+        {"name": "Acme AI", "slug": "acme-ai"},
+        {"name": "No Name Co", "slug": "no-name-co"}]
+
+
+def test_parse_company_search_falls_back_to_embedded_urls():
+    html = '<code>{"url":"https://www.linkedin.com/company/deep-labs/","x":1}</code>'
+    assert discover.parse_company_search(html) == [{"name": "Deep Labs", "slug": "deep-labs"}]
