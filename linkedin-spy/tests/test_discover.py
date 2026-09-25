@@ -110,3 +110,17 @@ def test_verify_drops_missing_and_fills_details(monkeypatch):
     ok_c, ok_p = discover.verify(page, companies, people)
     assert [(c["slug"], c["company_id"], c["followers"]) for c in ok_c] == [("acme", "4242", 12300)]
     assert ok_p[0]["slug"] == "jane-founder" and ok_p[0]["recent_posts"] == 1
+
+
+def test_looks_like_command():
+    import importlib.util, sys, types as t
+    sys.modules.setdefault("playwright", t.ModuleType("playwright"))
+    sync_api = t.ModuleType("playwright.sync_api"); sync_api.sync_playwright = None
+    sys.modules.setdefault("playwright.sync_api", sync_api)
+    spec = importlib.util.spec_from_file_location("discover_cli", Path(__file__).parents[1] / "discover.py")
+    cli = importlib.util.module_from_spec(spec); spec.loader.exec_module(cli)
+    assert cli.looks_like_command("python main.py --dry-run --show")
+    assert cli.looks_like_command("git pull")
+    assert not cli.looks_like_command("AI tools for recruiters")
+    assert not cli.looks_like_command("Pythonic consulting for startups")
+    assert not cli.looks_like_command("Python training for data teams")

@@ -8,6 +8,7 @@ Needs the LinkedIn login from `python login.py`. With ANTHROPIC_API_KEY in .env 
 suggests public-facing people; without it, it uses LinkedIn's company search only.
 """
 import argparse
+import os
 
 import yaml
 from dotenv import load_dotenv
@@ -21,9 +22,19 @@ from spy.discover import (candidates_from_linkedin, candidates_with_ai, merge_in
 PATH = "competitors.yaml"
 
 
+def looks_like_command(text):
+    t = text.strip().lower()
+    return (t.startswith(("python ", "python3 ", "cd ", "git ", "source ", "ls ", "open "))
+            or t in ("ls", "git pull") or " --" in t)
+
+
 def ask(question, default=""):
-    answer = input(f"{question}{f' [{default}]' if default else ''}: ").strip()
-    return answer or default
+    while True:
+        answer = input(f"{question}{f' [{default}]' if default else ''}: ").strip()
+        if not looks_like_command(answer):
+            return answer or default
+        print("  That looks like a Terminal command, not an answer. Type your answer "
+              "(run commands one at a time, after this one finishes).")
 
 
 def main():
@@ -59,6 +70,12 @@ def main():
                 print("(No Anthropic API key or the AI search failed: using LinkedIn company "
                       "search. Add ANTHROPIC_API_KEY to .env for better matches and people.)")
                 found = {"companies": candidates_from_linkedin(page, niche), "people": []}
+                if not found["companies"]:
+                    os.makedirs("data/debug", exist_ok=True)
+                    with open("data/debug/company_search.html", "w", encoding="utf-8") as f:
+                        f.write(page.content())
+                    print("LinkedIn's company search returned nothing readable; the page was "
+                          "saved to data/debug/company_search.html for troubleshooting.")
             print(f"\nChecking {len(found['companies'])} companies and "
                   f"{len(found['people'])} people on LinkedIn...")
             companies, people = verify(page, found["companies"], found["people"])
