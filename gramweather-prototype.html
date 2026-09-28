@@ -1,0 +1,472 @@
+<title>GramWeather Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: sticky product top-bar + tab switcher over a centered "stage"; three interactive screens (Farmer app, Downscaling, Officer dashboard). */
+:root{
+  --bg:#eef2ee; --surface:#ffffff; --surface-2:#f6f8f5; --fg:#16261f; --muted:#5d6f66;
+  --line:#e0e6e0; --green:#1f8a54; --green-d:#14663d; --amber:#e08a1e; --amber-soft:#fff4e2;
+  --sky:#4a90d9; --rain:#3f74c0; --danger:#c73b39; --good:#1f8a54; --shadow:rgba(20,50,35,.14);
+  --ink-tab:#16261f;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0e1512; --surface:#16201b; --surface-2:#111a15; --fg:#e8efe9; --muted:#9db0a6;
+  --line:#25332c; --green:#3fb977; --green-d:#2b915a; --amber:#f0a83e; --amber-soft:#2a2014;
+  --sky:#5fa0e6; --rain:#6d9be0; --danger:#e56a68; --good:#3fb977; --shadow:rgba(0,0,0,.5);
+  --ink-tab:#e8efe9; color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#0e1512; --surface:#16201b; --surface-2:#111a15; --fg:#e8efe9; --muted:#9db0a6;
+  --line:#25332c; --green:#3fb977; --green-d:#2b915a; --amber:#f0a83e; --amber-soft:#2a2014;
+  --sky:#5fa0e6; --rain:#6d9be0; --danger:#e56a68; --good:#3fb977; --shadow:rgba(0,0,0,.5);
+  --ink-tab:#e8efe9; color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--fg);
+  font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+h1,h2,h3,.disp{font-family:Sora,Inter,system-ui,sans-serif}
+.wrap{max-width:1160px;margin:0 auto;padding-inline:16px}
+/* top bar */
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--bg) 86%,transparent);
+  backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.topbar .row{display:flex;align-items:center;gap:14px;padding-block:12px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;font-family:Sora;font-weight:800;font-size:19px;letter-spacing:-.01em}
+.logo{width:34px;height:34px;border-radius:9px;background:linear-gradient(150deg,var(--green),var(--green-d));
+  display:grid;place-items:center;color:#fff;position:relative;overflow:hidden}
+.logo svg{width:20px;height:20px}
+.badge{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--amber);
+  border:1px solid var(--amber);border-radius:999px;padding:3px 9px}
+.spacer{flex:1}
+.themebtn{border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:9px;
+  width:38px;height:38px;cursor:pointer;font-size:16px;display:grid;place-items:center}
+.tabs{display:flex;gap:6px;padding:6px;background:var(--surface-2);border:1px solid var(--line);
+  border-radius:12px;margin:16px auto 0;width:max-content;max-width:100%;flex-wrap:wrap}
+.tab{border:0;background:transparent;color:var(--muted);font-family:Sora;font-weight:600;font-size:14px;
+  padding:9px 16px;border-radius:8px;cursor:pointer;white-space:nowrap;transition:.18s}
+.tab[aria-selected="true"]{background:var(--surface);color:var(--fg);box-shadow:0 2px 8px var(--shadow)}
+.stage{padding-block:26px 40px}
+.screen{animation:fade .4s ease}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.lead{color:var(--muted);font-size:15px;margin:.2em 0 0;max-width:60ch}
+h2.title{font-size:clamp(22px,3.4vw,30px);font-weight:800;letter-spacing:-.02em;margin:0;text-wrap:balance}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--green)}
+/* ---------- Farmer app ---------- */
+.appgrid{display:grid;grid-template-columns:340px 1fr;gap:32px;margin-top:22px;align-items:start}
+@media(max-width:760px){.appgrid{grid-template-columns:1fr;justify-items:center}}
+.phone{width:340px;max-width:100%;background:#0c1512;border-radius:40px;padding:12px;
+  box-shadow:0 30px 60px var(--shadow),0 2px 0 rgba(255,255,255,.04) inset}
+.pscreen{background:var(--surface);border-radius:30px;overflow:hidden;position:relative}
+.notch{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:120px;height:22px;
+  background:#0c1512;border-radius:0 0 14px 14px;z-index:3}
+.wxhead{position:relative;height:190px;overflow:hidden;color:#fff;
+  background:linear-gradient(160deg,#2f9e63,#15683f)}
+.wxhead.sunny{background:linear-gradient(160deg,#3aa7b0,#1f7fb0)}
+.wxhead .loc{position:relative;z-index:2;padding:34px 20px 0}
+.wxhead .loc .p{font-size:12px;opacity:.9;display:flex;align-items:center;gap:5px}
+.wxhead .temp{position:relative;z-index:2;padding:2px 20px;display:flex;align-items:flex-end;gap:12px}
+.wxhead .temp b{font-family:Sora;font-size:54px;font-weight:800;line-height:.9}
+.wxhead .temp span{font-size:13px;opacity:.92;padding-bottom:8px}
+.sun{position:absolute;top:24px;right:26px;width:60px;height:60px;border-radius:50%;
+  background:radial-gradient(circle,#ffe28a,#f6c445);box-shadow:0 0 30px rgba(246,196,69,.6)}
+.sun::before{content:"";position:absolute;inset:-14px;border-radius:50%;
+  background:conic-gradient(from 0deg,transparent 0 12deg,rgba(255,220,120,.7) 12deg 18deg,transparent 18deg 30deg);
+  animation:spin 14s linear infinite}
+.cloud{position:absolute;border-radius:999px;background:rgba(255,255,255,.92);filter:blur(.3px)}
+.cloud.c1{width:120px;height:38px;top:44px;right:-30px;animation:drift 9s ease-in-out infinite}
+.cloud.c2{width:80px;height:28px;top:96px;right:60px;opacity:.8;animation:drift 12s ease-in-out infinite reverse}
+.rain{position:absolute;inset:0;z-index:1;pointer-events:none;opacity:0;transition:opacity .5s}
+.wxhead:not(.sunny) .rain{opacity:1}
+.drop{position:absolute;width:2px;height:14px;background:rgba(220,235,255,.85);border-radius:2px;animation:fall 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes drift{0%,100%{transform:translateX(0)}50%{transform:translateX(-22px)}}
+@keyframes fall{from{transform:translateY(-20px)}to{transform:translateY(210px)}}
+.pbody{padding:16px}
+.vill>row{}
+.vill{display:flex;gap:8px;margin:-40px 16px 0;position:relative;z-index:4}
+.vill button{flex:1;border:1px solid var(--line);background:var(--surface);color:var(--fg);
+  border-radius:12px;padding:9px 8px;font-weight:600;font-size:13px;cursor:pointer;box-shadow:0 6px 16px var(--shadow);transition:.16s}
+.vill button[aria-pressed="true"]{border-color:var(--green);color:var(--green);background:var(--surface-2)}
+.vill button small{display:block;font-weight:500;color:var(--muted);font-size:11px}
+.five{display:flex;gap:6px;padding:14px 16px 4px}
+.day{flex:1;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:9px 4px;text-align:center}
+.day .d{font-size:11px;color:var(--muted)}
+.day .ic{width:20px;height:20px;margin:5px auto;border-radius:50%}
+.day .t{font-weight:700;font-size:14px}
+.day .r{font-size:10px;color:var(--rain)}
+.advisory{margin:12px 16px 4px;border:1px solid var(--amber);background:var(--amber-soft);border-radius:14px;padding:12px 14px}
+.advisory .h{font-weight:700;color:var(--amber);font-size:13px;display:flex;align-items:center;gap:6px}
+.advisory p{margin:6px 0 0;font-size:13.5px;line-height:1.5}
+.advisory .lang{font-size:10.5px;color:var(--muted);margin-top:6px}
+.sendbtn{margin:12px 16px 18px;width:calc(100% - 32px);border:0;border-radius:13px;
+  background:linear-gradient(160deg,var(--green),var(--green-d));color:#fff;font-family:Sora;font-weight:700;
+  font-size:15px;padding:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:.16s}
+.sendbtn:active{transform:translateY(1px)}
+.sendbtn.sent{background:#0c1512}
+/* delivery column */
+.deliv{display:flex;flex-direction:column;gap:14px;min-width:0}
+.sms{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 8px 24px var(--shadow);
+  max-width:520px;opacity:.5;transform:translateY(6px);transition:.4s}
+.sms.live{opacity:1;transform:none}
+.sms .bar{background:var(--green-d);color:#fff;padding:10px 16px;font-weight:600;font-size:14px;display:flex;justify-content:space-between}
+.sms .body{padding:14px 16px;font-size:14.5px;line-height:1.55}
+.chan{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:520px}
+@media(max-width:520px){.chan{grid-template-columns:1fr}}
+.chan .c{display:flex;gap:10px;align-items:center;background:var(--surface);border:1px solid var(--line);
+  border-radius:12px;padding:11px 12px;box-shadow:0 4px 14px var(--shadow)}
+.chan .ic{width:38px;height:38px;border-radius:10px;background:var(--surface-2);display:grid;place-items:center;color:var(--green);flex:none}
+.chan .c b{font-size:14px}
+.chan .c small{color:var(--muted);font-size:12px}
+.toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,20px);background:#0c1512;color:#fff;
+  padding:12px 20px;border-radius:12px;font-weight:600;font-size:14px;box-shadow:0 12px 30px rgba(0,0,0,.4);
+  opacity:0;pointer-events:none;transition:.3s;z-index:50;display:flex;gap:9px;align-items:center}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+/* ---------- shared card ---------- */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:0 10px 30px var(--shadow)}
+.panelgrid{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:22px}
+@media(max-width:820px){.panelgrid{grid-template-columns:1fr}}
+.mapwrap{padding:18px}
+.mapwrap h3{margin:0 0 4px;font-size:16px}
+.mapwrap .sub{color:var(--muted);font-size:13px;margin-bottom:12px}
+canvas{width:100%;height:auto;display:block;border-radius:12px;background:var(--surface-2)}
+.runrow{display:flex;gap:12px;align-items:center;margin-top:14px;flex-wrap:wrap}
+.runbtn{border:0;border-radius:11px;background:var(--amber);color:#22160a;font-family:Sora;font-weight:700;
+  font-size:14px;padding:11px 18px;cursor:pointer;transition:.16s}
+.runbtn:active{transform:translateY(1px)}
+.runbtn[disabled]{opacity:.55;cursor:default}
+.metric{display:flex;gap:18px;flex-wrap:wrap}
+.metric .m{flex:1;min-width:120px}
+.metric .m .k{font-size:12px;color:var(--muted)}
+.metric .m .v{font-family:Sora;font-weight:800;font-size:26px;font-variant-numeric:tabular-nums}
+.legend{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);margin-top:10px}
+.legend .bar{height:12px;flex:1;border-radius:6px;
+  background:linear-gradient(90deg,#eaf6ff,#96d2eb,#78c896,#ebd75a,#f0964a,#c85032)}
+/* ---------- dashboard ---------- */
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:22px}
+@media(max-width:820px){.kpis{grid-template-columns:1fr 1fr}}
+.kpi{padding:16px 18px;position:relative;overflow:hidden}
+.kpi::before{content:"";position:absolute;left:0;top:0;bottom:0;width:6px;background:var(--k,var(--green))}
+.kpi .v{font-family:Sora;font-weight:800;font-size:30px;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.kpi .k{color:var(--muted);font-size:13px;margin-top:2px}
+.dash2{display:grid;grid-template-columns:1.05fr 1fr;gap:22px;margin-top:22px}
+@media(max-width:820px){.dash2{grid-template-columns:1fr}}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;color:var(--muted);font-weight:600;font-size:12px;padding:0 8px 10px}
+td{padding:11px 8px;border-top:1px solid var(--line);font-variant-numeric:tabular-nums}
+tr.flag td{background:color-mix(in srgb,var(--danger) 12%,transparent)}
+.pill{font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px}
+.pill.ok{background:color-mix(in srgb,var(--good) 18%,transparent);color:var(--good)}
+.pill.bad{background:color-mix(in srgb,var(--danger) 18%,transparent);color:var(--danger);animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 color-mix(in srgb,var(--danger) 40%,transparent)}50%{box-shadow:0 0 0 5px transparent}}
+.up{color:var(--good);font-weight:700}.down{color:var(--danger);font-weight:700}
+.foot{color:var(--muted);font-size:12.5px;text-align:center;margin-top:30px}
+@media(prefers-reduced-motion:reduce){*{animation-duration:.001s!important;animation-iteration-count:1!important;transition-duration:.001s!important}}
+</style>
+
+<div class="topbar"><div class="wrap"><div class="row">
+  <div class="brand">
+    <span class="logo"><svg viewBox="0 0 24 24" fill="none"><path d="M6 15a4 4 0 010-8 5 5 0 019-1 3.5 3.5 0 011 7" stroke="#fff" stroke-width="1.7" stroke-linecap="round"/><path d="M8 18l-1 2M12 18l-1 2M16 18l-1 2" stroke="#bff0d2" stroke-width="1.7" stroke-linecap="round"/></svg></span>
+    GramWeather
+  </div>
+  <span class="badge">Prototype</span>
+  <span class="spacer"></span>
+  <button class="themebtn" id="theme" title="Toggle theme" aria-label="Toggle theme">◐</button>
+</div>
+<div class="tabs" role="tablist" aria-label="Screens">
+  <button class="tab" role="tab" aria-selected="true"  data-s="app">Farmer App</button>
+  <button class="tab" role="tab" aria-selected="false" data-s="map">AI Downscaling</button>
+  <button class="tab" role="tab" aria-selected="false" data-s="dash">Officer Dashboard</button>
+</div>
+</div></div>
+
+<div class="wrap stage">
+
+  <!-- ============ FARMER APP ============ -->
+  <section class="screen" id="s-app">
+    <span class="eyebrow">On the farmer's phone</span>
+    <h2 class="title">Village-specific forecast &amp; advice</h2>
+    <p class="lead">Two villages in the same block get different weather — so they get different advice. Tap a village to see it change, then send the advisory.</p>
+    <div class="appgrid">
+      <div class="phone"><div class="pscreen">
+        <div class="notch"></div>
+        <div class="wxhead" id="wxhead">
+          <div class="sun" id="sun"></div>
+          <div class="cloud c1"></div><div class="cloud c2"></div>
+          <div class="rain" id="rain"></div>
+          <div class="loc"><div class="p">📍 <span id="vname">Vani, Igatpuri</span> · Nashik</div></div>
+          <div class="temp"><b id="temp">24°</b><span id="cond">Light rain · 78% · 18mm</span></div>
+        </div>
+        <div class="vill" role="group" aria-label="Choose village">
+          <button data-v="0" aria-pressed="true">Igatpuri<small>Western Ghats · hill</small></button>
+          <button data-v="1" aria-pressed="false">Yeola<small>Plateau · rain-shadow</small></button>
+        </div>
+        <div class="five" id="five"></div>
+        <div class="advisory">
+          <div class="h">⚠ Advisory · Krishi Salah</div>
+          <p id="advtext">Light rain in your village Thu–Fri. Delay spraying 2 days; harvest onions Sunday (dry day).</p>
+          <div class="lang">Delivered in Marathi / Hindi / English</div>
+        </div>
+        <button class="sendbtn" id="send">↗ Send advisory to 1,240 farmers</button>
+      </div></div>
+
+      <div class="deliv">
+        <div>
+          <span class="eyebrow">Reaches every farmer</span>
+          <h3 style="margin:.3em 0 0;font-size:18px">Even without a smartphone</h3>
+        </div>
+        <div class="sms" id="sms">
+          <div class="bar"><span>SMS · GramWeather</span><span id="smstime">now</span></div>
+          <div class="body" id="smsbody">Igatpuri: 28–29 Sep halki baarish (18mm). Chhidkav 2 din talein. Pyaz katai Sunday. — GramWeather / IMD GKMS</div>
+        </div>
+        <div class="chan">
+          <div class="c"><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="8" y="3" width="8" height="18" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M11 18h2" stroke="currentColor" stroke-width="1.7"/></svg></span><div><b>SMS / IVR call</b><br><small>Basic phones — no internet</small></div></div>
+          <div class="c"><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 5h16v11H9l-4 4V5z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg></span><div><b>WhatsApp</b><br><small>Advisory + map</small></div></div>
+          <div class="c"><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 3l9 5H3zM5 10v7M19 10v7M3 20h18" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg></span><div><b>Meghdoot / KVK</b><br><small>Plugs into IMD GKMS</small></div></div>
+          <div class="c"><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.7"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18" stroke="currentColor" stroke-width="1.4"/></svg></span><div><b>Local language</b><br><small>Bhashini — 22 languages</small></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ DOWNSCALING ============ -->
+  <section class="screen" id="s-map" hidden>
+    <span class="eyebrow">The AI engine</span>
+    <h2 class="title">Block → Panchayat downscaling</h2>
+    <p class="lead">Run the model to turn one coarse block-level forecast into a terrain-aware forecast for every village, corrected against IMD station data.</p>
+    <div class="panelgrid">
+      <div class="card mapwrap">
+        <h3>Rainfall forecast — Nashik District</h3>
+        <div class="sub" id="mapstate">Before · block-level (one value per block)</div>
+        <canvas id="cmap" width="560" height="440" aria-label="District rainfall map"></canvas>
+        <div class="legend"><span>Low</span><span class="bar"></span><span>High rainfall (mm)</span></div>
+        <div class="runrow">
+          <button class="runbtn" id="run">▶ Run AI downscaling</button>
+          <span id="runnote" style="color:var(--muted);font-size:13px"></span>
+        </div>
+      </div>
+      <div class="card mapwrap">
+        <h3>Validation vs IMD stations</h3>
+        <div class="sub">Accuracy on held-out weather stations (pilot: Nashik)</div>
+        <canvas id="cbar" width="560" height="260" aria-label="Error comparison"></canvas>
+        <div class="metric" style="margin-top:16px">
+          <div class="m"><div class="k">Block baseline RMSE</div><div class="v" id="mB">6.8 mm</div></div>
+          <div class="m"><div class="k">GramWeather RMSE</div><div class="v" id="mG" style="color:var(--green)">3.1 mm</div></div>
+          <div class="m"><div class="k">Error reduced</div><div class="v" id="mR" style="color:var(--amber)">—</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ DASHBOARD ============ -->
+  <section class="screen" id="s-dash" hidden>
+    <span class="eyebrow">Officer console</span>
+    <h2 class="title">Nashik District — Panchayat monitor</h2>
+    <p class="lead">Live coverage, accuracy, and a consistency check that flags centres whose forecasts drift from their neighbours — the transparency layer.</p>
+    <div class="kpis">
+      <div class="card kpi" style="--k:var(--green-d)"><div class="v" data-to="1342">0</div><div class="k">Panchayats covered</div></div>
+      <div class="card kpi" style="--k:var(--green)"><div class="v" data-to="1240">0</div><div class="k">Advisories sent today</div></div>
+      <div class="card kpi" style="--k:var(--sky)"><div class="v" data-to="3.1" data-dec="1" data-suf=" mm">0</div><div class="k">Avg accuracy (RMSE)</div></div>
+      <div class="card kpi" style="--k:var(--danger)"><div class="v" data-to="2">0</div><div class="k">Consistency alerts</div></div>
+    </div>
+    <div class="dash2">
+      <div class="card mapwrap">
+        <h3>Village-level rainfall (mm)</h3>
+        <div class="sub">1,342 Gram Panchayats · updated 06:00 IST</div>
+        <canvas id="cdash" width="560" height="420" aria-label="District heatmap"></canvas>
+      </div>
+      <div class="card mapwrap">
+        <h3>Centre consistency check</h3>
+        <div class="sub">Flags centres drifting from neighbours — catches bias &amp; errors</div>
+        <table><thead><tr><th>Centre</th><th>Grade&nbsp;A%</th><th>Drift</th><th>Status</th></tr></thead>
+        <tbody id="ctable"></tbody></table>
+      </div>
+    </div>
+  </section>
+
+  <p class="foot">Interactive front-end prototype · mock data on a pilot district · built for SIH26074 (MoES / IMD)</p>
+</div>
+<div class="toast" id="toast">✓ Advisory sent to 1,240 farmers</div>
+
+<script>
+(function(){
+  "use strict";
+  var reduce = matchMedia("(prefers-reduced-motion:reduce)").matches;
+  // theme toggle
+  var root=document.documentElement;
+  document.getElementById("theme").onclick=function(){
+    var d=getComputedStyle(root).getPropertyValue("color-scheme").indexOf("dark")>=0;
+    var cur=root.getAttribute("data-theme");
+    if(!cur){ root.setAttribute("data-theme", d?"light":"dark"); }
+    else{ root.setAttribute("data-theme", cur==="dark"?"light":"dark"); }
+    drawAll();
+  };
+  // rain drops
+  var rain=document.getElementById("rain");
+  for(var i=0;i<26;i++){var d=document.createElement("span");d.className="drop";
+    d.style.left=(Math.random()*100)+"%";d.style.animationDelay=(Math.random())+"s";
+    d.style.animationDuration=(0.7+Math.random()*0.6)+"s";rain.appendChild(d);}
+
+  // ---- village data ----
+  var V=[
+    {name:"Vani, Igatpuri", temp:"24°", cond:"Light rain · 78% · 18mm", sunny:false,
+     adv:"Light rain in your village Thu–Fri. Delay spraying 2 days; harvest onions Sunday (dry day).",
+     sms:"Igatpuri: 28–29 Sep halki baarish (18mm). Chhidkav 2 din talein. Pyaz katai Sunday. — GramWeather / IMD GKMS",
+     five:[["Thu",18],["Fri",12],["Sat",4],["Sun",0],["Mon",2]]},
+    {name:"Yeola", temp:"31°", cond:"Sunny · 42% · 2mm", sunny:true,
+     adv:"Dry & hot Thu–Sat. Good window for spraying and harvest. Irrigate Friday evening to protect the crop.",
+     sms:"Yeola: 28–30 Sep sukha mausam. Chhidkav ke liye achha. Shukravar shaam sinchai karein. — GramWeather / IMD GKMS",
+     five:[["Thu",2],["Fri",0],["Sat",0],["Sun",3],["Mon",1]]}
+  ];
+  var cur=0;
+  function rainColor(v){ // 0..1
+    var s=[[0,234,246,255],[0.3,150,210,235],[0.55,120,200,150],[0.75,235,215,90],[0.9,240,150,70],[1,200,80,50]];
+    for(var i=0;i<s.length-1;i++){var a=s[i],b=s[i+1];if(v>=a[0]&&v<=b[0]){var t=(v-a[0])/(b[0]-a[0]);
+      return"rgb("+Math.round(a[1]+(b[1]-a[1])*t)+","+Math.round(a[2]+(b[2]-a[2])*t)+","+Math.round(a[3]+(b[3]-a[3])*t)+")";}}
+    return"rgb(200,80,50)";
+  }
+  function dayIcon(mm){return mm>10?"#6d9be0":mm>3?"#9cc3ef":"#f6c445";}
+  function renderApp(){
+    var v=V[cur];
+    document.getElementById("vname").textContent=v.name;
+    document.getElementById("temp").textContent=v.temp;
+    document.getElementById("cond").textContent=v.cond;
+    document.getElementById("advtext").textContent=v.adv;
+    document.getElementById("wxhead").className="wxhead"+(v.sunny?" sunny":"");
+    document.getElementById("sun").style.display=v.sunny?"block":"none";
+    var f=document.getElementById("five");f.innerHTML="";
+    v.five.forEach(function(d){var el=document.createElement("div");el.className="day";
+      el.innerHTML='<div class="d">'+d[0]+'</div><div class="ic" style="background:'+dayIcon(d[1])+'"></div>'+
+        '<div class="t">'+(v.sunny?(30+Math.round(Math.random()*2)):(23+Math.round(Math.random()*3)))+'°</div>'+
+        '<div class="r">'+d[1]+'mm</div>';f.appendChild(el);});
+    // reset sms
+    var sms=document.getElementById("sms");sms.classList.remove("live");
+    document.getElementById("smsbody").textContent=v.sms;
+    var b=document.getElementById("send");b.classList.remove("sent");b.textContent="↗ Send advisory to 1,240 farmers";
+  }
+  document.querySelectorAll(".vill button").forEach(function(btn){
+    btn.onclick=function(){cur=+btn.dataset.v;
+      document.querySelectorAll(".vill button").forEach(function(b){b.setAttribute("aria-pressed",b===btn);});
+      renderApp();};
+  });
+  // send flow
+  var toast=document.getElementById("toast");
+  document.getElementById("send").onclick=function(){
+    var b=this;b.classList.add("sent");b.textContent="✓ Sent";
+    document.getElementById("smstime").textContent="now";
+    document.getElementById("sms").classList.add("live");
+    toast.classList.add("show");setTimeout(function(){toast.classList.remove("show");},2200);
+  };
+  renderApp();
+
+  // ---- tabs ----
+  var tabs=document.querySelectorAll(".tab"), started={};
+  tabs.forEach(function(t){t.onclick=function(){
+    tabs.forEach(function(x){x.setAttribute("aria-selected",x===t);});
+    ["app","map","dash"].forEach(function(s){document.getElementById("s-"+s).hidden=(s!==t.dataset.s);});
+    if(t.dataset.s==="map"){ drawMap(coarse?0:downT); if(!started.map){started.map=true;} }
+    if(t.dataset.s==="dash"){ drawDash(); if(!started.dash){started.dash=true; countUp(); tableIn();} }
+  };});
+
+  // ---- rainfall field ----
+  function field(u,w){ // u,v in 0..1 -> rainfall 0..1 (west high + hill noise)
+    var base=1-u*0.85;
+    var hill=0.2*Math.sin(u*9)*Math.cos(w*8)+0.12*Math.sin(w*6+u*5);
+    return Math.max(0,Math.min(1,base+hill*0.7));
+  }
+  // irregular district polygon (normalized 0..1), same seed both maps
+  function poly(){var p=[],n=16,rng=seed(11);for(var i=0;i<n;i++){var a=2*Math.PI*i/n,r=0.42*(0.8+0.2*rng());p.push([0.5+r*Math.cos(a),0.52+r*Math.sin(a)]);}return p;}
+  function seed(s){return function(){s=(s*1103515245+12345)&0x7fffffff;return (s>>8)/0x800000%1;};}
+  function clipPoly(ctx,P,W,H){ctx.beginPath();P.forEach(function(p,i){var x=p[0]*W,y=p[1]*H;i?ctx.lineTo(x,y):ctx.moveTo(x,y);});ctx.closePath();}
+  var P=poly();
+
+  // ---- downscaling canvas ----
+  var cmap=document.getElementById("cmap"),xm=cmap.getContext("2d");
+  var coarse=true, downT=0;
+  function drawMap(t){ // t: 0 coarse .. 1 fine
+    var W=cmap.width,H=cmap.height;xm.clearRect(0,0,W,H);
+    xm.save();clipPoly(xm,P,W,H);xm.clip();
+    var res=Math.round(6+t*54); var st=1/res;
+    for(var a=0;a<res;a++)for(var b=0;b<res;b++){
+      var u=b*st,w=a*st, v;
+      if(t<0.02){ v=Math.round(field(Math.floor(b/ (res/6))/6+0.08, Math.floor(a/(res/6))/6+0.08)*4)/4; }
+      else{ v=field(u+st/2,w+st/2); v=v*(0.5+0.5*t)+ (1-t)*Math.round(field(u,w)*4)/4*0.5; }
+      xm.fillStyle=rainColor(Math.max(0,Math.min(1,v)));
+      xm.fillRect(b*W*st-0.5,a*H*st-0.5,W*st+1,H*st+1);
+    }
+    xm.restore();
+    xm.lineWidth=2.2;xm.strokeStyle=getVar("--green-d");clipPoly(xm,P,W,H);xm.stroke();
+    if(t>0.9){ // station dots
+      xm.fillStyle="#12314c";[[0.4,0.42],[0.62,0.6],[0.5,0.72]].forEach(function(s){
+        xm.beginPath();xm.arc(s[0]*W,s[1]*H,4,0,7);xm.fill();
+        xm.strokeStyle="#fff";xm.lineWidth=2;xm.stroke();});
+    }
+  }
+  function getVar(n){return getComputedStyle(document.documentElement).getPropertyValue(n)||"#14663d";}
+  function drawBar(prog){
+    var c=document.getElementById("cbar"),g=c.getContext("2d"),W=c.width,H=c.height;
+    g.clearRect(0,0,W,H);
+    var vals=[["Block baseline",6.8,getVar("--muted")],["GramWeather",3.1,getVar("--green")]];
+    var max=8, bw=150, gap=120, x0=110, base=H-50;
+    g.font="600 15px Inter,sans-serif";g.textBaseline="alphabetic";
+    vals.forEach(function(d,i){
+      var full=(d[1]/max)*(H-90), h=full*(i===0?1:prog);
+      var x=x0+i*(bw+gap);
+      g.fillStyle=d[2].trim();g.fillRect(x,base-h,bw,h);
+      g.fillStyle=getVar("--fg").trim();g.textAlign="center";
+      g.fillText((i===0?d[1]:(d[1]+(6.8-3.1)*(1-prog)).toFixed(1))+" mm",x+bw/2,base-h-10);
+      g.fillStyle=getVar("--muted").trim();g.fillText(d[0],x+bw/2,base+24);
+    });
+    g.strokeStyle=getVar("--line").trim();g.beginPath();g.moveTo(60,base);g.lineTo(W-30,base);g.stroke();
+  }
+  document.getElementById("run").onclick=function(){
+    var btn=this;btn.disabled=true;coarse=false;
+    document.getElementById("mapstate").textContent="Running model — inferring village-level values…";
+    document.getElementById("runnote").textContent="";
+    var t0=performance.now(),dur=reduce?10:1500;
+    (function step(now){
+      var t=Math.min(1,(now-t0)/dur); downT=t;
+      drawMap(t); drawBar(t);
+      if(t<1) requestAnimationFrame(step);
+      else{ document.getElementById("mapstate").textContent="After · Panchayat-level (terrain-aware + bias-corrected)";
+        document.getElementById("runnote").textContent="✓ 1,342 villages · validated on IMD stations";
+        document.getElementById("mR").textContent="54%";
+        btn.disabled=false;btn.textContent="↻ Run again"; }
+    })(t0);
+  };
+  drawMap(0); drawBar(1); document.getElementById("mR").textContent="54%";
+
+  // ---- dashboard ----
+  function drawDash(){
+    var c=document.getElementById("cdash"),g=c.getContext("2d"),W=c.width,H=c.height;
+    g.clearRect(0,0,W,H);g.save();clipPoly(g,P,W,H);g.clip();
+    var res=44,st=1/res;
+    for(var a=0;a<res;a++)for(var b=0;b<res;b++){g.fillStyle=rainColor(field(b*st+st/2,a*st+st/2));
+      g.fillRect(b*W*st-0.5,a*H*st-0.5,W*st+1,H*st+1);}
+    g.restore();g.lineWidth=2.2;g.strokeStyle=getVar("--green-d").trim();clipPoly(g,P,W,H);g.stroke();
+    // alert rings
+    [[0.4,0.42],[0.66,0.62]].forEach(function(s){g.beginPath();g.arc(s[0]*W,s[1]*H,13,0,7);
+      g.strokeStyle=getVar("--danger").trim();g.lineWidth=3;g.stroke();
+      g.beginPath();g.arc(s[0]*W,s[1]*H,4,0,7);g.fillStyle=getVar("--danger").trim();g.fill();});
+  }
+  var rows=[["Igatpuri (C-03)","91%","+2%",1],["Trimbak (C-05)","88%","+1%",1],
+    ["Sinnar (C-07)","72%","−14%",0],["Yeola (C-11)","90%","+3%",1],
+    ["Malegaon (C-19)","64%","−19%",0],["Dindori (C-22)","93%","+4%",1]];
+  function tableIn(){var tb=document.getElementById("ctable");tb.innerHTML="";
+    rows.forEach(function(r,i){var tr=document.createElement("tr");if(!r[3])tr.className="flag";
+      tr.style.opacity=0;tr.style.transform="translateX(8px)";tr.style.transition="all .35s";
+      tr.innerHTML='<td><b>'+r[0]+'</b></td><td>'+r[1]+'</td><td class="'+(r[3]?"up":"down")+'">'+r[2]+
+        '</td><td>'+(r[3]?'<span class="pill ok">✓ OK</span>':'<span class="pill bad">⚑ FLAG</span>')+'</td>';
+      tb.appendChild(tr);setTimeout(function(){tr.style.opacity=1;tr.style.transform="none";},80*i);});
+  }
+  function countUp(){document.querySelectorAll(".kpi .v").forEach(function(el){
+    var to=+el.dataset.to,dec=+(el.dataset.dec||0),suf=el.dataset.suf||"",t0=performance.now(),dur=reduce?10:1100;
+    (function s(now){var p=Math.min(1,(now-t0)/dur),e=1-Math.pow(1-p,3),val=to*e;
+      el.textContent=(dec?val.toFixed(dec):Math.round(val).toLocaleString("en-IN"))+suf;
+      if(p<1)requestAnimationFrame(s);})(t0);});}
+
+  function drawAll(){drawMap(coarse?0:downT);drawBar(document.getElementById("mR").textContent==="54%"?1:1);
+    if(!document.getElementById("s-dash").hidden)drawDash();}
+  addEventListener("resize",function(){/* canvases are fixed backing size, CSS scales them */});
+})();
+</script>
