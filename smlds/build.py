@@ -35,12 +35,14 @@ def table(rows,widths):
     t.setStyle(TableStyle([("BACKGROUND",(0,0),(-1,0),colors.HexColor("#1a3a6b")),("GRID",(0,0),(-1,-1),.5,colors.grey),
       ("VALIGN",(0,0),(-1,-1),"TOP"),("ROWBACKGROUNDS",(0,1),(-1,-1),[colors.white,colors.HexColor("#eef2f9")]),
       ("TOPPADDING",(0,0),(-1,-1),3),("BOTTOMPADDING",(0,0),(-1,-1),3)]))
+    t._raw=rows
     st.append(Spacer(1,3)); st.append(t); st.append(Spacer(1,3))
 def num(rows):
     data=[[Paragraph(f"<b>{a}</b>",C),Paragraph(b,C)] for a,b in rows]
     t=Table(data,colWidths=[27*mm,143*mm])
     t.setStyle(TableStyle([("BOX",(0,0),(-1,-1),1,colors.HexColor("#1a3a6b")),("LINEBELOW",(0,0),(-1,-2),.3,colors.lightgrey),
       ("BACKGROUND",(0,0),(0,-1),colors.HexColor("#eef2f9")),("VALIGN",(0,0),(-1,-1),"TOP")]))
+    t._raw=[[f'<b>{a}</b>',b] for a,b in rows]
     st.append(Spacer(1,3)); st.append(KeepTogether(t)); st.append(Spacer(1,3))
 
 st+= [Paragraph("SMLDS – Internal Exam Study Notes",T),Paragraph("Question Bank 02 · Section A (2 marks, 4 points each) · Section B (5 marks, 10 points each)",S),Paragraph("SECTION A – 2 Marks Each",H)]
@@ -204,6 +206,78 @@ for t in ["scikit-learn docs – silhouette_score / silhouette_samples: s = (b �
     st.append(Paragraph("• "+t,P))
 st.append(Paragraph("Note: verified via search-result summaries of these pages; the pages themselves could not be opened in this environment. Confirm wording against your class notes.",EX))
 
+st_copy=list(st)
 def foot(c,doc):
     c.setFont("F",8);c.setFillColor(colors.grey);c.drawCentredString(A4[0]/2,10*mm,f"SMLDS Study Notes – page {doc.page}")
 SimpleDocTemplate("/home/user/cohort/smlds/SMLDS_Study_Notes.pdf",pagesize=A4,leftMargin=20*mm,rightMargin=20*mm,topMargin=15*mm,bottomMargin=18*mm,title="SMLDS Study Notes").build(st,onFirstPage=foot,onLaterPages=foot)
+
+# ---- editable Word version built from the same content ----
+import re, html
+from docx import Document
+from docx.shared import Pt, RGBColor, Cm
+from docx.enum.table import WD_TABLE_ALIGNMENT
+from docx.oxml.ns import qn
+from docx.oxml import OxmlElement
+from reportlab.platypus import KeepTogether as _KT
+
+doc=Document()
+for sec in doc.sections: sec.left_margin=sec.right_margin=Cm(2); sec.top_margin=sec.bottom_margin=Cm(1.8)
+doc.styles["Normal"].font.name="Calibri"; doc.styles["Normal"].font.size=Pt(11)
+NAVY=RGBColor(0x1a,0x3a,0x6b)
+def shade(cell,hexcol):
+    tcPr=cell._tc.get_or_add_tcPr(); sh=OxmlElement("w:shd")
+    sh.set(qn("w:val"),"clear"); sh.set(qn("w:color"),"auto"); sh.set(qn("w:fill"),hexcol); tcPr.append(sh)
+def runs(par,markup,bold=False,italic=False,color=None,size=None):
+    for tok in re.split(r"(</?[bi]>)",markup):
+        if tok=="<b>": bold=True
+        elif tok=="</b>": bold=False
+        elif tok=="<i>": italic=True
+        elif tok=="</i>": italic=False
+        elif tok:
+            r=par.add_run(html.unescape(tok)); r.bold=bold; r.italic=italic
+            if color: r.font.color.rgb=color
+            if size: r.font.size=Pt(size)
+def add_par(p):
+    name=p.style.name; t=p.text
+    if name=="t":
+        par=doc.add_paragraph(); par.alignment=1; runs(par,t,bold=True,size=20)
+    elif name=="s":
+        par=doc.add_paragraph(); par.alignment=1; runs(par,t,color=RGBColor(0x66,0x66,0x66),size=10)
+    elif name=="h":
+        par=doc.add_paragraph(); runs(par,t,bold=True,color=NAVY,size=14)
+        pPr=par._p.get_or_add_pPr(); b=OxmlElement("w:pBdr"); bt=OxmlElement("w:bottom")
+        for k,v in (("val","single"),("sz","12"),("space","1"),("color","1A3A6B")): bt.set(qn("w:"+k),v)
+        b.append(bt); pPr.append(b); par.paragraph_format.space_before=Pt(12)
+    elif name=="q":
+        par=doc.add_paragraph(); runs(par,t,bold=True,color=NAVY,size=11.5); par.paragraph_format.space_before=Pt(10); par.paragraph_format.keep_with_next=True
+    elif name=="sub":
+        par=doc.add_paragraph(); runs(par,t,bold=True); par.paragraph_format.keep_with_next=True
+    elif name=="e":
+        par=doc.add_paragraph(); runs(par,t,italic=True,color=RGBColor(0x15,0x57,0x24)); par.paragraph_format.left_indent=Cm(0.6)
+    elif name=="p":
+        par=doc.add_paragraph(); runs(par,t); par.paragraph_format.left_indent=Cm(0.6); par.paragraph_format.first_line_indent=Cm(-0.6); par.paragraph_format.space_after=Pt(2)
+    else:
+        par=doc.add_paragraph(); runs(par,t)
+def add_table(tb):
+    rows=tb._raw; nc=len(rows[0]); is_num=nc==2
+    t=doc.add_table(rows=len(rows),cols=nc); t.style="Table Grid"; t.alignment=WD_TABLE_ALIGNMENT.CENTER
+    for i,row in enumerate(rows):
+        for j,cp in enumerate(row):
+            c=t.cell(i,j); c.text=""; par=c.paragraphs[0]
+            if is_num:
+                runs(par,cp); 
+                if j==0: shade(c,"EEF2F9")
+            elif i==0:
+                runs(par,cp,bold=True,color=RGBColor(255,255,255)); shade(c,"1A3A6B")
+            else:
+                runs(par,cp)
+                if i%2==0: shade(c,"EEF2F9")
+            for r in par.runs: r.font.size=Pt(10)
+    doc.add_paragraph()
+def walk(items):
+    for x in items:
+        if isinstance(x,Paragraph): add_par(x)
+        elif isinstance(x,Table): add_table(x)
+        elif isinstance(x,_KT): walk(x._content)
+walk(st_copy)
+doc.save("/home/user/cohort/smlds/SMLDS_Study_Notes.docx")
