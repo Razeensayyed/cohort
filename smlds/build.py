@@ -47,10 +47,10 @@ st+= [Paragraph("SMLDS – Internal Exam Study Notes",T),Paragraph("Question Ban
 
 q("Q1. What is the difference between precision and recall? Mention one situation where recall is preferred over precision.")
 table([["Point","Precision","Recall"],
-["1. Formula","TP / (TP + FP)","TP / (TP + FN)"],
-["2. Question answered","Of all predicted positives, how many are truly positive?","Of all actual positives, how many were found?"],
-["3. Error penalised","False positives (false alarms)","False negatives (missed cases)"],
-["4. Focus","Quality of predictions","Coverage of actual positives"]],[35,67,68])
+["1. Definition","Precision is the fraction of the instances predicted as positive that are actually positive, i.e. TP / (TP + FP).","Recall is the fraction of all actual positive instances that the model correctly identifies, i.e. TP / (TP + FN)."],
+["2. What it tells us","It tells us how reliable the model's positive predictions are.","It tells us how many of the real positive cases the model is able to find."],
+["3. Error it penalises","It is reduced by false positives, so it penalises false alarms.","It is reduced by false negatives, so it penalises missed cases."],
+["4. When it matters","It is important when a false alarm is costly, e.g. spam filtering.","It is important when missing a positive is costly, e.g. disease detection."]],[30,70,70])
 sub("Recall is preferred when:")
 st.append(Paragraph("Cancer screening – missing a sick patient (FN) is far worse than a false alarm.",P))
 ex("out of 100 cancer patients the model detects 95, so recall = 0.95.")
@@ -87,10 +87,11 @@ num([("Given","μ = 50, σ = 5, x = 65"),("Formula","Z = (x − μ) / σ"),("Sub
 ("Result","<b>Z = 3</b>"),("Conclusion","Criterion is |Z| > 3. Here |Z| = 3, which is not greater than 3, so the observation is <b>not an outlier</b> (exactly on the borderline).")])
 
 q("Q7. What is the main difference between PCA and LDA in terms of whether they use class labels?")
-table([["Point","PCA","LDA"],["1. Class labels","Not used (<b>unsupervised</b>)","Used (<b>supervised</b>)"],
-["2. Goal","Maximise variance of the data","Maximise class separation"],
-["3. Method","Eigenvectors of the covariance matrix","Maximise between-class scatter / within-class scatter"],
-["4. Components","Up to number of features","At most (classes − 1)"]],[35,67,68])
+table([["Point","PCA","LDA"],
+["1. Use of class labels","PCA does not use class labels; it is an unsupervised technique.","LDA uses the class labels; it is a supervised technique."],
+["2. Objective","PCA finds the directions along which the variance of the data is maximum.","LDA finds the directions that maximise the separation between the classes."],
+["3. Method","PCA takes the eigenvectors of the covariance matrix of the data.","LDA maximises the ratio of between-class scatter to within-class scatter."],
+["4. Number of components","PCA can give as many components as there are features.","LDA can give at most (number of classes − 1) components."]],[30,70,70])
 ex("for 3 flower species LDA gives at most 2 components that separate the species; PCA gives directions of maximum spread regardless of species.")
 
 q("Q8. What is the silhouette score? What does a high score indicate?")
@@ -101,10 +102,11 @@ pts(["For each point s = (b − a) / max(a, b); a = mean distance to own cluster
 ex("a = 2, b = 8 → s = (8 − 2)/8 = 0.75, a well-separated point.")
 
 q("Q9. Differentiate between AIC and BIC. Mention one key difference in how they penalise complexity.")
-table([["Point","AIC","BIC"],["1. Full form","Akaike Information Criterion","Bayesian Information Criterion"],
-["2. Formula","2k − 2ln(L)","k·ln(n) − 2ln(L)"],
-["3. <b>Penalty on complexity</b>","Fixed: 2 per parameter","Grows with sample size: ln(n) per parameter"],
-["4. Preference","Better for prediction; may pick a more complex model","Prefers simpler models; better for finding the “true” model"]],[40,65,65])
+table([["Point","AIC","BIC"],
+["1. Full form","AIC stands for Akaike Information Criterion.","BIC stands for Bayesian Information Criterion."],
+["2. Formula","AIC = 2k − 2ln(L).","BIC = k·ln(n) − 2ln(L)."],
+["3. <b>Penalty on complexity</b>","AIC charges a fixed penalty of 2 for every parameter added, whatever the sample size.","BIC charges a penalty of ln(n) per parameter, which increases as the sample size n grows."],
+["4. Model preference","AIC tends to select a slightly more complex model and is better for prediction.","BIC penalises complexity more heavily (for n &gt; 7), so it selects simpler models and is better for finding the true model."]],[35,67,68])
 st.append(Paragraph("Lower value is better for both (k = parameters, n = sample size, L = likelihood).",N))
 ex("n = 100 → ln(100) ≈ 4.6, so BIC charges ≈ 4.6 per parameter vs AIC's 2; BIC rejects extra variables more readily.")
 
@@ -139,8 +141,10 @@ pts(["Pruning removes branches with little predictive power, simplifying the tre
 "Smaller tree = lower variance, better generalisation, easier to interpret."],4)
 ex("limiting max_depth from 20 to 5 may drop train accuracy to 88% but raise test accuracy to 85%.")
 sub("c) Random Forest vs single tree")
-table([["Point","Single Decision Tree","Random Forest"],["8. Structure","One tree","Ensemble of many trees (bagging + random features)"],
-["9. Variance / overfitting","High","<b>Low</b> – averaging cancels errors"],["10. Robustness","Sensitive to noise","Robust to noise and outliers; gives feature importance"]],[40,50,80])
+table([["Point","Single Decision Tree","Random Forest"],
+["8. Structure","A single decision tree is built on the whole training set.","A random forest combines many trees, each trained on a bootstrap sample with a random subset of features (bagging)."],
+["9. Variance / overfitting","A single deep tree has high variance and overfits the training data easily.","A random forest has low variance, because averaging the trees' predictions cancels out their individual errors."],
+["10. Robustness","A single tree is sensitive to noise and small changes in the data.","A random forest is robust to noise and outliers and also gives feature importance."]],[30,70,70])
 
 q("B3. Working principle of SVM. a) Hyperplane b) Margin and why maximise it c) Purpose of kernel trick with an example kernel.")
 sub("Working principle")
@@ -168,9 +172,10 @@ sub("a) K-means for customer groups")
 pts(["Choose k using the elbow method or silhouette score.","Initialise k centroids (k-means++).","Assign each customer to the nearest centroid (Euclidean distance).","Recompute centroids as the mean of members; repeat until assignments stop changing. Scale features first."])
 ex("k = 3 on (annual spend, visit frequency) → high-value, regular and occasional customers.")
 sub("b) Limitation and DBSCAN")
-table([["Point","K-means","DBSCAN"],["5. No. of clusters","Must be given in advance (k)","Found automatically"],
-["6. Cluster shape","Assumes spherical, similar-size clusters","Finds arbitrary-shaped clusters"],
-["7. Outliers","<b>Sensitive</b> – forced into a cluster, pull centroids","Labelled as <b>noise</b> (uses eps and minPts)"]],[35,67,68])
+table([["Point","K-means","DBSCAN"],
+["5. Number of clusters","K-means requires the number of clusters k to be specified in advance.","DBSCAN finds the number of clusters automatically from the density of the data."],
+["6. Cluster shape","K-means assumes clusters are roughly spherical and of similar size.","DBSCAN can find clusters of arbitrary shape."],
+["7. Outliers","K-means is sensitive to outliers, as every point is forced into a cluster and pulls the centroids.","DBSCAN labels low-density points as noise (using eps and minPts), so outliers do not distort the clusters."]],[30,70,70])
 sub("c) Silhouette score")
 pts(["s = (b − a) / max(a, b); a = mean intra-cluster distance, b = mean nearest-cluster distance.","Average over all points, −1 to +1: near +1 good, near 0 overlap, negative misassignment.","Compute for different k and pick the k with the highest score."],8)
 ex("average silhouette 0.42 (k=2), 0.61 (k=3), 0.48 (k=4) → choose k = 3.")
@@ -179,8 +184,9 @@ q("B6. High-dimensional data with outliers. a) t-SNE / UMAP b) IQR method c) One
 sub("a) t-SNE / UMAP")
 pts(["Both are non-linear dimensionality-reduction methods projecting high-dimensional data to 2-D/3-D for visualisation."])
 ex("784-pixel handwritten digits plotted in 2-D show ten clusters, one per digit.")
-table([["Point","t-SNE","UMAP"],["2. Idea","Preserves local neighbourhoods (probabilities, t-distribution)","Manifold learning on a neighbour graph"],
-["3. Speed / structure","Slower; weaker global structure","Faster; keeps more global structure"]],[35,72,63])
+table([["Point","t-SNE","UMAP"],
+["2. Idea","t-SNE preserves the local neighbourhoods of the data, using probability distributions and a t-distribution in the low-dimensional space.","UMAP is based on manifold learning and builds a neighbour graph, which it then lays out in low dimensions."],
+["3. Speed and structure","t-SNE is slower on large data and preserves global structure less well.","UMAP is faster and preserves more of the global structure along with the local structure."]],[30,70,70])
 sub("b) IQR method")
 pts(["Compute Q1 (25th percentile) and Q3 (75th percentile).","IQR = Q3 − Q1.","Lower fence = Q1 − 1.5×IQR; Upper fence = Q3 + 1.5×IQR.","Values outside the fences are outliers (same rule as boxplot whiskers); no normality assumption; applied per feature."],4)
 ex("Q1 = 20, Q3 = 40 → IQR = 20, fences = −10 and 70; a value of 95 is an outlier.")
