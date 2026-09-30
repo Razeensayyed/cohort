@@ -185,7 +185,18 @@ sub("b) IQR method")
 pts(["Compute Q1 (25th percentile) and Q3 (75th percentile).","IQR = Q3 − Q1.","Lower fence = Q1 − 1.5×IQR; Upper fence = Q3 + 1.5×IQR.","Values outside the fences are outliers (same rule as boxplot whiskers); no normality assumption; applied per feature."],4)
 ex("Q1 = 20, Q3 = 40 → IQR = 20, fences = −10 and 70; a value of 95 is an outlier.")
 sub("c) Isolation Forest")
-pts(["Outliers are few and different, so they are easy to <i>isolate</i>.","Builds random trees using random features and random split values; outliers are isolated in <b>fewer splits</b> (short path length).","Anomaly score is based on average path length across trees – shorter path = higher anomaly score."],8)
+pts(["Outliers are few and different, so they are easy to <i>isolate</i>.","Builds random trees using random features and random split values; outliers are isolated in <b>fewer splits</b> (short path length).","Anomaly score is based on the path length averaged over all trees – a shorter average path means the point is more likely an anomaly."],8)
+
+st.append(Paragraph("Sources cross-checked",H))
+for t in ["scikit-learn docs – silhouette_score / silhouette_samples: s = (b − a)/max(a, b), range −1 to 1 (scikit-learn.org)",
+"scikit-learn docs – IsolationForest: random feature + random split; outliers need fewer splits (shorter path length) (scikit-learn.org)",
+"scikit-learn docs – PCA: explained_variance_ratio_ = eigenvalue / sum of eigenvalues; n_components=0.95 keeps 95% variance (scikit-learn.org)",
+"scikit-learn docs – DBSCAN: core samples, eps, min_samples, noise label −1; arbitrary shapes, no k needed (scikit-learn.org)",
+"SMOTE (Chawla et al., 2002, arxiv.org/abs/1106.1813): x_new = x + δ(x_neighbour − x), δ random in [0,1]; also GeeksforGeeks “SMOTE for Imbalanced Classification”",
+"AIC vs BIC: penalty 2k vs k·ln(n); BIC stricter for n &gt; 7 (CASRAI comparison, standard textbooks)",
+"LDA vs PCA: LDA supervised, at most (classes − 1) components; PCA unsupervised (scikit-learn LDA/PCA docs and tutorials)"]:
+    st.append(Paragraph("• "+t,P))
+st.append(Paragraph("Note: verified via search-result summaries of these pages; the pages themselves could not be opened in this environment. Confirm wording against your class notes.",EX))
 
 def foot(c,doc):
     c.setFont("F",8);c.setFillColor(colors.grey);c.drawCentredString(A4[0]/2,10*mm,f"SMLDS Study Notes – page {doc.page}")
