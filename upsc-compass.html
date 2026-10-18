@@ -1,18 +1,14 @@
 <title>UPSC Compass</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
 
 <style>
-/*
- * Layout: full-bleed bands with centred max-width containers
- * Dark-first: midnight navy + amber accent + slate neutrals
- */
+/* Layout: full-bleed bands, centred max-width containers, dark-first navy + amber */
 
 :root {
   --bg:       #F7F8FA;
-  --bg2:      #EFF1F5;
+  --bg2:      #EEF0F6;
   --surface:  #FFFFFF;
-  --card:     #FFFFFF;
   --border:   #DDE1EA;
   --fg:       #0F1629;
   --fg2:      #4A5568;
@@ -22,747 +18,531 @@
   --green:    #059669;
   --red:      #DC2626;
   --blue:     #2563EB;
+  --purple:   #7C3AED;
   color-scheme: light;
 }
-
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg:      #090D1A;
-    --bg2:     #0F1525;
-    --surface: #141D30;
-    --card:    #192236;
-    --border:  #252F47;
-    --fg:      #EEF2FF;
-    --fg2:     #8A9BBB;
-    --fg3:     #4A5A7A;
-    --accent:  #F59E0B;
-    --accent2: #FCD34D;
-    --green:   #10B981;
-    --red:     #F87171;
-    --blue:    #60A5FA;
+    --bg:      #090D1A; --bg2:     #0F1525;
+    --surface: #141D30; --border:  #252F47;
+    --fg:      #EEF2FF; --fg2:     #8A9BBB; --fg3: #4A5A7A;
+    --accent:  #F59E0B; --accent2: #FCD34D;
+    --green:   #10B981; --red:     #F87171; --blue: #60A5FA; --purple: #A78BFA;
     color-scheme: dark;
   }
 }
-
 :root[data-theme="dark"] {
-  --bg:      #090D1A;
-  --bg2:     #0F1525;
-  --surface: #141D30;
-  --card:    #192236;
-  --border:  #252F47;
-  --fg:      #EEF2FF;
-  --fg2:     #8A9BBB;
-  --fg3:     #4A5A7A;
-  --accent:  #F59E0B;
-  --accent2: #FCD34D;
-  --green:   #10B981;
-  --red:     #F87171;
-  --blue:    #60A5FA;
+  --bg:      #090D1A; --bg2:     #0F1525;
+  --surface: #141D30; --border:  #252F47;
+  --fg:      #EEF2FF; --fg2:     #8A9BBB; --fg3: #4A5A7A;
+  --accent:  #F59E0B; --accent2: #FCD34D;
+  --green:   #10B981; --red:     #F87171; --blue: #60A5FA; --purple: #A78BFA;
   color-scheme: dark;
 }
 
-*, *::before, *::after { box-sizing: border-box; }
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--fg);line-height:1.6;-webkit-font-smoothing:antialiased}
+.c{max-width:1248px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 
-body {
-  margin: 0;
-  font-family: 'Inter', system-ui, sans-serif;
-  background: var(--bg);
-  color: var(--fg);
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
-}
-
-/* ── CONTAINER ─────────────────────────────────────────────── */
-.c {
-  max-width: 1248px;
-  margin: 0 auto;
-  padding-left: max(16px, env(safe-area-inset-left, 0px));
-  padding-right: max(16px, env(safe-area-inset-right, 0px));
-}
-
-/* ── NAV ────────────────────────────────────────────────────── */
-nav {
-  position: sticky;
-  top: env(safe-area-inset-top, 0px);
-  z-index: 200;
-  background: var(--bg);
-  border-bottom: 1px solid var(--border);
-}
-
-.nav-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding-block: 13px;
-}
-
-.logo {
-  font-family: 'Playfair Display', Georgia, serif;
-  font-size: 1.1875rem;
-  font-weight: 700;
-  color: var(--fg);
-  text-decoration: none;
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  flex-shrink: 0;
-}
-
-.logo-mark {
-  width: 30px;
-  height: 30px;
+/* ── NOTIFICATION TICKER ─────────────────────────────────── */
+/* CHANGE 1: scrolling UPSC exam alert bar at the very top — no existing site has this */
+.ticker-bar {
   background: var(--accent);
-  border-radius: 7px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.8125rem;
-  font-weight: 600;
   color: #fff;
-  letter-spacing: -0.03em;
-}
-
-.nav-links {
-  display: flex;
-  gap: 2px;
-  margin-left: 20px;
-}
-
-.nl {
-  padding: 6px 11px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--fg2);
-  text-decoration: none;
-  border-radius: 7px;
-  transition: color .15s, background .15s;
-}
-.nl:hover   { color: var(--fg); background: var(--bg2); }
-.nl.on      { color: var(--accent); }
-
-.nav-right {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-left: auto;
-}
-
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 8px 18px;
-  border-radius: 8px;
-  font-size: 0.875rem;
-  font-weight: 600;
-  font-family: 'Inter', system-ui, sans-serif;
-  cursor: pointer;
-  border: none;
-  transition: opacity .15s, transform .1s;
-}
-.btn:hover  { opacity: .88; }
-.btn:active { transform: scale(.97); }
-
-.btn-primary { background: var(--accent); color: #fff; }
-.btn-ghost   {
-  background: transparent;
-  color: var(--fg2);
-  border: 1.5px solid var(--border);
-}
-.btn-ghost:hover { border-color: var(--fg3); color: var(--fg); }
-
-.theme-btn {
-  width: 36px; height: 36px; padding: 0;
-  background: var(--bg2);
-  border: 1.5px solid var(--border);
-  border-radius: 8px;
-  color: var(--fg2);
-  cursor: pointer;
-  font-size: 0.9375rem;
-  display: flex; align-items: center; justify-content: center;
-  transition: background .15s;
-}
-.theme-btn:hover { background: var(--border); }
-
-/* ── HERO ───────────────────────────────────────────────────── */
-.hero {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 56px;
-  align-items: center;
-  padding-block: 72px 64px;
-}
-
-.eyebrow {
-  font-size: 0.6875rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: .14em;
-  color: var(--accent);
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 18px;
-}
-.eyebrow::before { content: ''; width: 22px; height: 2px; background: var(--accent); flex-shrink: 0; }
-
-h1 {
-  font-family: 'Playfair Display', Georgia, serif;
-  font-size: clamp(2.25rem, 5vw, 3.5rem);
-  font-weight: 700;
-  line-height: 1.08;
-  text-wrap: balance;
-  letter-spacing: -.025em;
-  margin: 0 0 20px;
-}
-h1 em { font-style: normal; color: var(--accent); }
-
-.hero-sub {
-  color: var(--fg2);
-  font-size: 1.0625rem;
-  line-height: 1.75;
-  margin: 0 0 32px;
-  max-width: 460px;
-}
-
-.hero-ctas {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-bottom: 28px;
-}
-
-.hero-ctas .btn { padding: 12px 28px; font-size: 1rem; }
-
-.trust-row {
-  display: flex;
-  gap: 20px;
-  flex-wrap: wrap;
-}
-
-.trust-item {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.8125rem;
-  color: var(--fg3);
-}
-.trust-dot {
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  background: var(--green);
-  flex-shrink: 0;
-}
-
-/* ── COUNTDOWN ──────────────────────────────────────────────── */
-.cd-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 30px;
-  position: relative;
+  padding: 7px 0;
   overflow: hidden;
-}
-.cd-card::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at 90% 10%, rgba(245,158,11,.09) 0%, transparent 55%);
-  pointer-events: none;
-}
-
-.cd-label {
-  font-size: 0.6875rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: .1em;
-  color: var(--fg3);
-  margin-bottom: 4px;
-}
-.cd-exam {
-  font-family: 'Playfair Display', Georgia, serif;
-  font-size: 1.1875rem;
-  font-weight: 700;
-  margin-bottom: 24px;
-}
-
-.cd-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
-  margin-bottom: 22px;
-}
-.cd-unit {
-  background: var(--bg2);
-  border-radius: 11px;
-  padding: 14px 8px;
-  text-align: center;
-}
-.cd-num {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 1.75rem;
-  font-weight: 600;
-  color: var(--accent);
-  line-height: 1;
-  margin-bottom: 4px;
-  font-variant-numeric: tabular-nums;
-}
-.cd-ulabel {
-  font-size: 0.625rem;
-  text-transform: uppercase;
-  letter-spacing: .09em;
-  color: var(--fg3);
-}
-
-.prep-bar {
-  margin-bottom: 18px;
-}
-.prep-header {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.8125rem;
-  margin-bottom: 7px;
-  color: var(--fg2);
-}
-.prep-pct { font-family: 'JetBrains Mono', monospace; color: var(--accent); font-variant-numeric: tabular-nums; }
-
-.pbar { height: 7px; background: var(--bg2); border-radius: 100px; overflow: hidden; }
-.pfill {
-  height: 100%;
-  border-radius: 100px;
-  background: linear-gradient(90deg, var(--accent), var(--accent2));
-  transition: width .5s ease;
-}
-.pfill.g { background: linear-gradient(90deg, var(--green), #34D399); }
-.pfill.b { background: linear-gradient(90deg, var(--blue), #93C5FD); }
-
-.tag-row { display: flex; gap: 7px; flex-wrap: wrap; }
-.tag {
-  padding: 4px 10px;
-  border-radius: 100px;
-  font-size: 0.75rem;
-  font-weight: 500;
-  background: var(--bg2);
-  color: var(--fg2);
-  border: 1px solid var(--border);
-}
-.tag.a { background: rgba(245,158,11,.12); color: var(--accent); border-color: rgba(245,158,11,.25); }
-.tag.g { background: rgba(16,185,129,.11); color: var(--green); border-color: rgba(16,185,129,.22); }
-.tag.b { background: rgba(96,165,250,.11); color: var(--blue); border-color: rgba(96,165,250,.22); }
-
-/* ── STATS BAR ──────────────────────────────────────────────── */
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 14px;
-  padding-bottom: 44px;
-}
-.stat-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 19px 19px 17px;
-  position: relative;
-}
-.stat-icon { font-size: 1.25rem; margin-bottom: 9px; }
-.stat-num {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 1.75rem;
-  font-weight: 600;
-  color: var(--fg);
-  line-height: 1;
-  margin-bottom: 3px;
-  font-variant-numeric: tabular-nums;
-}
-.stat-lbl { font-size: 0.8125rem; color: var(--fg2); }
-.stat-delta {
-  position: absolute;
-  top: 16px; right: 16px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  font-family: 'JetBrains Mono', monospace;
-  color: var(--green);
-  font-variant-numeric: tabular-nums;
-}
-.stat-delta.down { color: var(--red); }
-
-/* ── SECTION HEADINGS ───────────────────────────────────────── */
-.sec-head { margin-bottom: 20px; }
-.sec-head.row {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-}
-.sec-title {
-  font-family: 'Playfair Display', Georgia, serif;
-  font-size: 1.4375rem;
-  font-weight: 700;
-  margin: 0 0 3px;
-}
-.sec-sub {
-  font-size: 0.875rem;
-  color: var(--fg2);
-  margin: 0;
-}
-
-/* ── MAIN GRID ──────────────────────────────────────────────── */
-.main-grid {
-  display: grid;
-  grid-template-columns: 3fr 2fr;
-  gap: 22px;
-  padding-bottom: 48px;
-}
-
-/* SYLLABUS */
-.syllabus-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 22px;
-}
-.syl-tabs {
-  display: flex;
-  gap: 3px;
-  background: var(--bg2);
-  padding: 4px;
-  border-radius: 10px;
-  margin-bottom: 22px;
-}
-.syl-tab {
-  flex: 1;
-  padding: 7px 4px;
-  text-align: center;
-  font-size: 0.8125rem;
-  font-weight: 500;
-  border-radius: 7px;
-  cursor: pointer;
-  color: var(--fg2);
-  border: none;
-  background: transparent;
-  font-family: 'Inter', system-ui, sans-serif;
-  transition: all .15s;
   white-space: nowrap;
 }
-.syl-tab.on {
-  background: var(--surface);
-  color: var(--fg);
-  box-shadow: 0 1px 3px rgba(0,0,0,.12);
+.ticker-inner {
+  display: inline-block;
+  animation: tickerScroll 38s linear infinite;
 }
-
-.sub-row { margin-bottom: 17px; }
-.sub-hdr {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  margin-bottom: 6px;
+.ticker-inner:hover { animation-play-state: paused; }
+.ticker-sep { display: inline-block; margin: 0 28px; opacity: .5; }
+@keyframes tickerScroll {
+  from { transform: translateX(100vw); }
+  to   { transform: translateX(-100%); }
 }
-.sub-name { font-size: 0.9375rem; font-weight: 500; }
-.sub-meta {
-  font-size: 0.8125rem;
-  font-family: 'JetBrains Mono', monospace;
-  color: var(--fg3);
-  font-variant-numeric: tabular-nums;
-}
-
-.chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-  margin-top: 7px;
-}
-.chip {
-  font-size: 0.6875rem;
-  padding: 2px 8px;
+.ticker-tag {
+  display: inline-block;
+  background: rgba(255,255,255,.22);
   border-radius: 4px;
-  background: var(--bg2);
-  color: var(--fg3);
-  border: 1px solid var(--border);
-}
-.chip.done {
-  background: rgba(16,185,129,.09);
-  color: var(--green);
-  border-color: rgba(16,185,129,.2);
-  text-decoration: line-through;
-}
-
-/* TODAY PLAN */
-.plan-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 22px;
-}
-.plan-row {
-  display: flex;
-  gap: 11px;
-  align-items: flex-start;
-  padding-bottom: 13px;
-  margin-bottom: 13px;
-  border-bottom: 1px solid var(--border);
-}
-.plan-row:last-of-type { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-.plan-time {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.75rem;
-  color: var(--fg3);
-  width: 36px;
-  flex-shrink: 0;
-  padding-top: 2px;
-  font-variant-numeric: tabular-nums;
-}
-.plan-pip {
-  width: 7px; height: 7px;
-  border-radius: 50%;
-  background: var(--accent);
-  flex-shrink: 0;
-  margin-top: 7px;
-}
-.plan-pip.g { background: var(--green); }
-.plan-pip.b { background: var(--blue); }
-.plan-pip.x { background: var(--fg3); }
-.plan-body { flex: 1; min-width: 0; }
-.plan-topic {
-  font-size: 0.875rem;
-  font-weight: 500;
-  margin-bottom: 2px;
-}
-.plan-topic.done { color: var(--fg3); text-decoration: line-through; }
-.plan-detail { font-size: 0.8125rem; color: var(--fg3); }
-
-.focus-box {
-  background: rgba(245,158,11,.07);
-  border: 1px solid rgba(245,158,11,.22);
-  border-radius: 11px;
-  padding: 15px;
-  margin-top: 14px;
-}
-.focus-label {
-  font-size: 0.6875rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: .1em;
-  color: var(--accent);
-  margin-bottom: 5px;
-}
-.focus-topic { font-size: 0.9375rem; font-weight: 600; margin-bottom: 3px; }
-.focus-note { font-size: 0.8125rem; color: var(--fg2); }
-
-/* ── CURRENT AFFAIRS ────────────────────────────────────────── */
-.ca-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 14px;
-  padding-bottom: 48px;
-}
-.ca-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 18px;
-  cursor: pointer;
-  transition: border-color .15s, transform .15s;
-  text-decoration: none;
-  color: inherit;
-  display: flex;
-  flex-direction: column;
-}
-.ca-card:hover { border-color: var(--accent); transform: translateY(-2px); }
-.ca-cat {
-  font-size: 0.6875rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: .1em;
-  color: var(--accent);
-  margin-bottom: 7px;
-}
-.ca-hl {
-  font-size: 0.9375rem;
-  font-weight: 600;
-  line-height: 1.4;
-  margin-bottom: 7px;
-  flex: 1;
-}
-.ca-src { font-size: 0.8125rem; color: var(--fg3); }
-.imps {
-  display: flex;
-  gap: 3px;
-  margin-top: 10px;
-}
-.imp { width: 6px; height: 6px; border-radius: 50%; background: var(--border); }
-.imp.on { background: var(--accent); }
-
-/* ── ANALYTICS ──────────────────────────────────────────────── */
-.analytics-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 22px;
-  padding-bottom: 48px;
-}
-.chart-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 22px;
-}
-.chart-title { font-size: 1rem; font-weight: 600; margin-bottom: 3px; }
-.chart-sub { font-size: 0.8125rem; color: var(--fg2); margin-bottom: 18px; }
-.chart-wrap { position: relative; height: 240px; }
-
-/* ── MOCK TESTS ─────────────────────────────────────────────── */
-.tests-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  padding-bottom: 48px;
-}
-.test-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 20px;
-  position: relative;
-}
-.test-card.hot { border-color: var(--accent); }
-.test-badge {
-  position: absolute;
-  top: -9px; left: 16px;
-  background: var(--accent);
-  color: #fff;
+  padding: 1px 7px;
   font-size: 0.6875rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: .07em;
-  padding: 2px 9px;
-  border-radius: 100px;
+  margin-right: 6px;
 }
-.test-name { font-weight: 600; font-size: 0.9375rem; margin-bottom: 3px; }
-.test-meta { font-size: 0.8125rem; color: var(--fg2); margin-bottom: 12px; }
-.test-nums {
-  display: flex;
-  gap: 14px;
-  margin-bottom: 14px;
-}
-.tn { }
-.tn-n {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 1.125rem;
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
-}
-.tn-l {
-  font-size: 0.6875rem;
-  text-transform: uppercase;
-  letter-spacing: .06em;
-  color: var(--fg3);
-}
+.ticker-text { font-size: 0.8125rem; font-weight: 500; }
 
-/* ── FEATURES BAND ──────────────────────────────────────────── */
-.features-band {
-  background: var(--bg2);
-  border-top: 1px solid var(--border);
+/* ── NAV ─────────────────────────────────────────────────── */
+nav {
+  position: sticky;
+  top: env(safe-area-inset-top,0px);
+  z-index: 200;
+  background: var(--bg);
   border-bottom: 1px solid var(--border);
-  padding-block: 64px;
 }
-.features-heading {
-  text-align: center;
-  margin-bottom: 44px;
+.nav-row { display:flex;align-items:center;gap:8px;padding-block:13px; }
+.logo {
+  font-family:'Playfair Display',Georgia,serif;
+  font-size:1.1875rem;font-weight:700;
+  color:var(--fg);text-decoration:none;
+  display:flex;align-items:center;gap:9px;flex-shrink:0;
 }
-.features-heading .eyebrow { justify-content: center; }
-.features-heading .eyebrow::before { display: none; }
-.features-heading h2 {
-  font-family: 'Playfair Display', Georgia, serif;
-  font-size: clamp(1.75rem, 4vw, 2.5rem);
-  font-weight: 700;
-  text-wrap: balance;
-  margin: 0;
+.logo-mark {
+  width:30px;height:30px;background:var(--accent);border-radius:7px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'JetBrains Mono',monospace;font-size:.8125rem;font-weight:600;color:#fff;
+}
+.nav-links { display:flex;gap:2px;margin-left:20px; }
+.nl { padding:6px 11px;font-size:.875rem;font-weight:500;color:var(--fg2);text-decoration:none;border-radius:7px;transition:color .15s,background .15s; }
+.nl:hover { color:var(--fg);background:var(--bg2); }
+.nl.on { color:var(--accent); }
+.nav-right { display:flex;align-items:center;gap:8px;margin-left:auto; }
+.btn {
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  padding:8px 18px;border-radius:8px;font-size:.875rem;font-weight:600;
+  font-family:'Inter',system-ui,sans-serif;cursor:pointer;border:none;
+  transition:opacity .15s,transform .1s;
+}
+.btn:hover  { opacity:.88; }
+.btn:active { transform:scale(.97); }
+.btn-primary { background:var(--accent);color:#fff; }
+.btn-ghost   { background:transparent;color:var(--fg2);border:1.5px solid var(--border); }
+.btn-ghost:hover { border-color:var(--fg3);color:var(--fg); }
+.theme-btn {
+  width:36px;height:36px;padding:0;background:var(--bg2);
+  border:1.5px solid var(--border);border-radius:8px;color:var(--fg2);
+  cursor:pointer;font-size:.9375rem;display:flex;align-items:center;justify-content:center;transition:background .15s;
+}
+.theme-btn:hover { background:var(--border); }
+
+/* ── HERO ─────────────────────────────────────────────────── */
+.hero {
+  display:grid;grid-template-columns:1fr 1fr;gap:52px;
+  align-items:center;padding-block:60px 52px;
+}
+.eyebrow {
+  font-size:.6875rem;font-weight:700;text-transform:uppercase;letter-spacing:.14em;
+  color:var(--accent);display:flex;align-items:center;gap:10px;margin-bottom:16px;
+}
+.eyebrow::before { content:'';width:22px;height:2px;background:var(--accent);flex-shrink:0; }
+h1 {
+  font-family:'Playfair Display',Georgia,serif;
+  font-size:clamp(2rem,4.5vw,3.25rem);font-weight:900;line-height:1.08;
+  text-wrap:balance;letter-spacing:-.025em;margin:0 0 16px;
+}
+h1 em { font-style:italic;color:var(--accent); }
+.hero-sub { color:var(--fg2);font-size:1.0625rem;line-height:1.75;margin:0 0 28px;max-width:460px; }
+.hero-ctas { display:flex;gap:12px;flex-wrap:wrap;margin-bottom:22px; }
+.hero-ctas .btn { padding:12px 28px;font-size:1rem; }
+.trust-row { display:flex;gap:16px;flex-wrap:wrap; }
+.trust-item { display:flex;align-items:center;gap:6px;font-size:.8125rem;color:var(--fg3); }
+.trust-dot { width:6px;height:6px;border-radius:50%;background:var(--green);flex-shrink:0; }
+
+/* CHANGE 1b: bigger, more prominent countdown card */
+.cd-card {
+  background:var(--surface);border:1px solid var(--border);border-radius:20px;
+  padding:28px 28px 24px;position:relative;overflow:hidden;
+}
+.cd-card::before {
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at 80% 0%, rgba(245,158,11,.1) 0%, transparent 60%);
+  pointer-events:none;
+}
+.cd-label  { font-size:.6875rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--fg3);margin-bottom:4px; }
+.cd-exam   { font-family:'Playfair Display',Georgia,serif;font-size:1.25rem;font-weight:700;margin-bottom:22px; }
+.cd-grid   { display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px; }
+.cd-unit   { background:var(--bg2);border-radius:12px;padding:16px 8px;text-align:center; }
+.cd-num    { font-family:'JetBrains Mono',monospace;font-size:2rem;font-weight:600;color:var(--accent);line-height:1;margin-bottom:4px;font-variant-numeric:tabular-nums; }
+.cd-ulabel { font-size:.625rem;text-transform:uppercase;letter-spacing:.09em;color:var(--fg3); }
+.pbar      { height:7px;background:var(--bg2);border-radius:100px;overflow:hidden; }
+.pfill     { height:100%;border-radius:100px;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .5s ease; }
+.pfill.g   { background:linear-gradient(90deg,var(--green),#34D399); }
+.pfill.b   { background:linear-gradient(90deg,var(--blue),#93C5FD); }
+.prep-hdr  { display:flex;justify-content:space-between;font-size:.8125rem;margin-bottom:7px;color:var(--fg2); }
+.prep-pct  { font-family:'JetBrains Mono',monospace;color:var(--accent);font-variant-numeric:tabular-nums; }
+.tag-row   { display:flex;gap:7px;flex-wrap:wrap;margin-top:14px; }
+.tag       { padding:4px 10px;border-radius:100px;font-size:.75rem;font-weight:500;background:var(--bg2);color:var(--fg2);border:1px solid var(--border); }
+.tag.a     { background:rgba(245,158,11,.12);color:var(--accent);border-color:rgba(245,158,11,.28); }
+.tag.g     { background:rgba(16,185,129,.11);color:var(--green);border-color:rgba(16,185,129,.24); }
+.tag.b     { background:rgba(96,165,250,.11);color:var(--blue);border-color:rgba(96,165,250,.24); }
+
+/* ── SOCIAL PROOF STRIP ──────────────────────────────────── */
+.proof-strip {
+  background:var(--accent);
+  padding:20px 0;
+}
+.proof-inner {
+  display:flex;justify-content:space-around;align-items:center;flex-wrap:wrap;gap:16px;
+}
+.proof-item { text-align:center;color:#fff; }
+.proof-num  { font-family:'JetBrains Mono',monospace;font-size:1.875rem;font-weight:600;line-height:1;margin-bottom:3px;font-variant-numeric:tabular-nums; }
+.proof-lbl  { font-size:.8125rem;opacity:.85; }
+
+/* ── SECTION HEADINGS ────────────────────────────────────── */
+.sec { padding-bottom:52px; }
+.sh  { margin-bottom:24px; }
+.sh.row { display:flex;align-items:baseline;justify-content:space-between; }
+.st  { font-family:'Playfair Display',Georgia,serif;font-size:1.5rem;font-weight:700;margin:0 0 4px; }
+.ss  { font-size:.875rem;color:var(--fg2);margin:0; }
+
+/* ── LIVE DEMO SECTION ──────────────────────────────────── */
+/* CHANGE 2: interactive demo panel — no competitor shows the actual product without signup */
+.demo-section {
+  background:var(--bg2);
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  padding-block:56px;
+}
+.demo-heading { text-align:center;margin-bottom:32px; }
+.demo-heading h2 {
+  font-family:'Playfair Display',Georgia,serif;
+  font-size:clamp(1.75rem,3.5vw,2.375rem);font-weight:700;margin:0 0 8px;
+}
+.demo-heading p { font-size:1rem;color:var(--fg2);margin:0; }
+
+.demo-shell {
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:18px;
+  overflow:hidden;
+  box-shadow:0 20px 60px rgba(0,0,0,.08);
+}
+.demo-topbar {
+  background:var(--bg2);
+  border-bottom:1px solid var(--border);
+  padding:12px 20px;
+  display:flex;align-items:center;gap:12px;
+}
+.demo-dots { display:flex;gap:6px; }
+.demo-dot  { width:10px;height:10px;border-radius:50%; }
+.demo-tabs {
+  display:flex;gap:3px;background:var(--bg);padding:4px;border-radius:9px;
+}
+.demo-tab {
+  padding:5px 14px;font-size:.8125rem;font-weight:500;border-radius:6px;
+  cursor:pointer;color:var(--fg2);border:none;background:transparent;
+  font-family:'Inter',system-ui,sans-serif;transition:all .15s;
+}
+.demo-tab.on { background:var(--surface);color:var(--fg);box-shadow:0 1px 3px rgba(0,0,0,.1); }
+
+.demo-body { padding:24px; }
+.demo-panel { display:none; }
+.demo-panel.on { display:block; }
+
+/* Demo panel: Syllabus */
+.demo-syl-grid { display:grid;grid-template-columns:repeat(5,1fr);gap:12px; }
+.dsyl-card {
+  background:var(--bg2);border-radius:12px;padding:16px 14px;
+}
+.dsyl-title { font-size:.8125rem;font-weight:600;margin-bottom:10px; }
+.dsyl-ring {
+  width:60px;height:60px;margin:0 auto 10px;
+  position:relative;display:flex;align-items:center;justify-content:center;
+}
+.dsyl-ring svg { position:absolute;inset:0;transform:rotate(-90deg); }
+.dsyl-ring .ring-bg { fill:none;stroke:var(--border);stroke-width:4; }
+.dsyl-ring .ring-fg { fill:none;stroke-width:4;stroke-linecap:round; }
+.dsyl-ring .ring-pct { position:relative;z-index:1;font-family:'JetBrains Mono',monospace;font-size:.875rem;font-weight:600;font-variant-numeric:tabular-nums; }
+.dsyl-sub { font-size:.75rem;color:var(--fg3); }
+
+/* Demo panel: Current Affairs */
+.demo-ca-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:12px; }
+.dca-card { background:var(--bg2);border-radius:10px;padding:14px; }
+.dca-gs   { font-size:.6875rem;font-weight:700;text-transform:uppercase;letter-spacing:.09em;margin-bottom:5px; }
+.dca-gs.gs1 { color:var(--blue); }
+.dca-gs.gs2 { color:var(--green); }
+.dca-gs.gs3 { color:var(--accent); }
+.dca-gs.gs4 { color:var(--purple); }
+.dca-hl { font-size:.875rem;font-weight:500;line-height:1.4;margin-bottom:6px; }
+.dca-src { font-size:.75rem;color:var(--fg3); }
+
+/* Demo panel: Performance */
+.demo-perf { display:grid;grid-template-columns:1fr 1fr;gap:16px; }
+.dperf-card { background:var(--bg2);border-radius:12px;padding:18px; }
+.dperf-title { font-size:.875rem;font-weight:600;margin-bottom:14px; }
+.dperf-row { display:flex;align-items:center;gap:8px;margin-bottom:8px; }
+.dperf-lbl { font-size:.75rem;width:72px;flex-shrink:0;color:var(--fg2); }
+.dperf-barwrap { flex:1;height:6px;background:var(--border);border-radius:100px;overflow:hidden; }
+.dperf-bar { height:100%;border-radius:100px; }
+.dperf-val { font-family:'JetBrains Mono',monospace;font-size:.75rem;width:32px;text-align:right;color:var(--fg2);font-variant-numeric:tabular-nums; }
+
+/* ── FEATURE CARDS (CHANGE 3) ───────────────────────────── */
+/* CHANGE 3: 3-col grid, each card has icon + mini visual — not just text boxes */
+.feat-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:18px; }
+.feat-card {
+  background:var(--surface);border:1px solid var(--border);border-radius:16px;
+  padding:24px;display:flex;flex-direction:column;
+}
+.feat-icon { font-size:2rem;margin-bottom:12px; }
+.feat-name { font-size:1rem;font-weight:700;margin-bottom:6px; }
+.feat-desc { font-size:.875rem;color:var(--fg2);line-height:1.65;flex:1;margin-bottom:16px; }
+.feat-visual { background:var(--bg2);border-radius:10px;padding:12px; }
+
+/* mini sparkline bars */
+.sparkline { display:flex;align-items:flex-end;gap:4px;height:32px; }
+.spark-bar { flex:1;border-radius:3px 3px 0 0; }
+
+/* mini streak */
+.streak-row { display:flex;gap:4px; }
+.streak-dot { width:18px;height:18px;border-radius:4px; }
+
+/* mini progress rows */
+.mini-prog-row { display:flex;align-items:center;gap:8px;margin-bottom:6px; }
+.mini-prog-row:last-child { margin-bottom:0; }
+.mini-prog-lbl { font-size:.75rem;color:var(--fg2);width:40px;flex-shrink:0; }
+.mini-pbar { flex:1;height:5px;background:var(--border);border-radius:100px;overflow:hidden; }
+.mini-pfill { height:100%;border-radius:100px; }
+
+/* mini calendar dots */
+.cal-grid { display:grid;grid-template-columns:repeat(7,1fr);gap:3px; }
+.cal-dot { aspect-ratio:1;border-radius:3px;background:var(--border); }
+.cal-dot.done { background:var(--green); }
+.cal-dot.today { background:var(--accent); }
+.cal-dot.plan { background:rgba(245,158,11,.3); }
+
+/* mini notification list */
+.notif-row { display:flex;align-items:flex-start;gap:8px;margin-bottom:8px; }
+.notif-row:last-child { margin-bottom:0; }
+.notif-pip { width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:5px; }
+.notif-text { font-size:.75rem;color:var(--fg2);line-height:1.4; }
+
+/* ── STATS BAR ───────────────────────────────────────────── */
+.stats-grid { display:grid;grid-template-columns:repeat(4,1fr);gap:14px;padding-bottom:44px; }
+.stat-card  { background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:19px 19px 17px;position:relative; }
+.stat-icon  { font-size:1.25rem;margin-bottom:9px; }
+.stat-num   { font-family:'JetBrains Mono',monospace;font-size:1.75rem;font-weight:600;line-height:1;margin-bottom:3px;font-variant-numeric:tabular-nums; }
+.stat-lbl   { font-size:.8125rem;color:var(--fg2); }
+.stat-delta { position:absolute;top:16px;right:16px;font-size:.75rem;font-weight:600;font-family:'JetBrains Mono',monospace;color:var(--green);font-variant-numeric:tabular-nums; }
+.stat-delta.down { color:var(--red); }
+
+/* ── MAIN GRID ───────────────────────────────────────────── */
+.main-grid { display:grid;grid-template-columns:3fr 2fr;gap:22px;padding-bottom:48px; }
+.syllabus-card { background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px; }
+.syl-tabs { display:flex;gap:3px;background:var(--bg2);padding:4px;border-radius:10px;margin-bottom:22px; }
+.syl-tab { flex:1;padding:7px 4px;text-align:center;font-size:.8125rem;font-weight:500;border-radius:7px;cursor:pointer;color:var(--fg2);border:none;background:transparent;font-family:'Inter',system-ui,sans-serif;transition:all .15s;white-space:nowrap; }
+.syl-tab.on { background:var(--surface);color:var(--fg);box-shadow:0 1px 3px rgba(0,0,0,.12); }
+.sub-row { margin-bottom:17px; }
+.sub-hdr { display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px; }
+.sub-name { font-size:.9375rem;font-weight:500; }
+.sub-meta { font-size:.8125rem;font-family:'JetBrains Mono',monospace;color:var(--fg3);font-variant-numeric:tabular-nums; }
+.chips { display:flex;flex-wrap:wrap;gap:5px;margin-top:7px; }
+.chip { font-size:.6875rem;padding:2px 8px;border-radius:4px;background:var(--bg2);color:var(--fg3);border:1px solid var(--border); }
+.chip.done { background:rgba(16,185,129,.09);color:var(--green);border-color:rgba(16,185,129,.2);text-decoration:line-through; }
+.plan-card { background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px; }
+.plan-row { display:flex;gap:11px;align-items:flex-start;padding-bottom:13px;margin-bottom:13px;border-bottom:1px solid var(--border); }
+.plan-row:last-of-type { border-bottom:none;margin-bottom:0;padding-bottom:0; }
+.plan-time { font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--fg3);width:36px;flex-shrink:0;padding-top:2px;font-variant-numeric:tabular-nums; }
+.plan-pip  { width:7px;height:7px;border-radius:50%;background:var(--accent);flex-shrink:0;margin-top:7px; }
+.plan-pip.g { background:var(--green); }
+.plan-pip.b { background:var(--blue); }
+.plan-pip.x { background:var(--fg3); }
+.plan-body { flex:1;min-width:0; }
+.plan-topic { font-size:.875rem;font-weight:500;margin-bottom:2px; }
+.plan-topic.done { color:var(--fg3);text-decoration:line-through; }
+.plan-detail { font-size:.8125rem;color:var(--fg3); }
+.focus-box { background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.22);border-radius:11px;padding:15px;margin-top:14px; }
+.focus-label { font-size:.6875rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin-bottom:5px; }
+.focus-topic { font-size:.9375rem;font-weight:600;margin-bottom:3px; }
+.focus-note { font-size:.8125rem;color:var(--fg2); }
+
+/* ── CURRENT AFFAIRS ─────────────────────────────────────── */
+.ca-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:14px; }
+.ca-card { background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px;cursor:pointer;transition:border-color .15s,transform .15s;text-decoration:none;color:inherit;display:flex;flex-direction:column; }
+.ca-card:hover { border-color:var(--accent);transform:translateY(-2px); }
+.ca-cat  { font-size:.6875rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin-bottom:7px; }
+.ca-hl   { font-size:.9375rem;font-weight:600;line-height:1.4;margin-bottom:7px;flex:1; }
+.ca-src  { font-size:.8125rem;color:var(--fg3); }
+.imps    { display:flex;gap:3px;margin-top:10px; }
+.imp     { width:6px;height:6px;border-radius:50%;background:var(--border); }
+.imp.on  { background:var(--accent); }
+
+/* ── ANALYTICS ───────────────────────────────────────────── */
+.analytics-grid { display:grid;grid-template-columns:1fr 1fr;gap:22px; }
+.chart-card { background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px; }
+.chart-title { font-size:1rem;font-weight:600;margin-bottom:3px; }
+.chart-sub { font-size:.8125rem;color:var(--fg2);margin-bottom:18px; }
+.chart-wrap { position:relative;height:240px; }
+
+/* ── MOCK TESTS ──────────────────────────────────────────── */
+.tests-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:16px; }
+.test-card  { background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;position:relative; }
+.test-card.hot { border-color:var(--accent); }
+.test-badge { position:absolute;top:-9px;left:16px;background:var(--accent);color:#fff;font-size:.6875rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;padding:2px 9px;border-radius:100px; }
+.test-name  { font-weight:600;font-size:.9375rem;margin-bottom:3px; }
+.test-meta  { font-size:.8125rem;color:var(--fg2);margin-bottom:12px; }
+.test-nums  { display:flex;gap:14px;margin-bottom:14px; }
+.tn-n { font-family:'JetBrains Mono',monospace;font-size:1.125rem;font-weight:600;font-variant-numeric:tabular-nums; }
+.tn-l { font-size:.6875rem;text-transform:uppercase;letter-spacing:.06em;color:var(--fg3); }
+
+/* ── TOPPER STORIES (CHANGE 4) ───────────────────────────── */
+/* CHANGE 4: Data-driven AIR rank cards — not illustrated portraits, shows subject strength bars */
+.toppers-scroll {
+  display:flex;gap:16px;overflow-x:auto;padding-bottom:8px;
+  scroll-snap-type:x mandatory;
+  -ms-overflow-style:none;scrollbar-width:none;
+}
+.toppers-scroll::-webkit-scrollbar { display:none; }
+.topper-card {
+  background:var(--surface);border:1px solid var(--border);border-radius:16px;
+  padding:22px;min-width:220px;flex-shrink:0;scroll-snap-align:start;
+  position:relative;overflow:hidden;
+}
+.topper-card::before {
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+}
+.topper-card.gold::before { background:linear-gradient(90deg,#D4860A,#F59E0B); }
+.topper-card.silver::before { background:linear-gradient(90deg,#6B7280,#9CA3AF); }
+.topper-card.bronze::before { background:linear-gradient(90deg,#92400E,#B45309); }
+.topper-card.blue::before { background:linear-gradient(90deg,var(--blue),#93C5FD); }
+.topper-card.green::before { background:linear-gradient(90deg,var(--green),#34D399); }
+
+.air-badge {
+  display:inline-flex;align-items:center;justify-content:center;
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:8px;padding:4px 10px;margin-bottom:12px;
+}
+.air-label { font-size:.625rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--fg3);margin-right:5px; }
+.air-num   { font-family:'JetBrains Mono',monospace;font-size:1.125rem;font-weight:700;color:var(--accent);font-variant-numeric:tabular-nums; }
+
+.topper-name  { font-size:1rem;font-weight:700;margin-bottom:2px; }
+.topper-meta  { font-size:.8125rem;color:var(--fg3);margin-bottom:14px; }
+.topper-quote { font-size:.8125rem;color:var(--fg2);line-height:1.5;font-style:italic;margin-bottom:14px;border-left:2px solid var(--accent);padding-left:10px; }
+.topper-bars  { display:flex;flex-direction:column;gap:6px; }
+.tb-row { display:flex;align-items:center;gap:6px; }
+.tb-lbl { font-size:.6875rem;color:var(--fg3);width:54px;flex-shrink:0; }
+.tb-wrap { flex:1;height:5px;background:var(--border);border-radius:100px;overflow:hidden; }
+.tb-fill { height:100%;border-radius:100px; }
+.tb-val  { font-family:'JetBrains Mono',monospace;font-size:.6875rem;color:var(--fg3);width:28px;text-align:right;font-variant-numeric:tabular-nums; }
+
+/* ── COMPARISON TABLE (CHANGE 5) ────────────────────────── */
+/* CHANGE 5: No competitor shows this — immediately communicates superiority */
+.compare-section {
+  background:var(--bg2);
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  padding-block:56px;
+}
+.compare-table-wrap { overflow-x:auto; }
+.compare-table {
+  width:100%;border-collapse:collapse;min-width:600px;
+}
+.compare-table th, .compare-table td { padding:12px 16px;text-align:left;border-bottom:1px solid var(--border);font-size:.9375rem; }
+.compare-table th { font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--fg3);padding-bottom:8px; }
+.compare-table th.hl { color:var(--accent); }
+.compare-table td:first-child { color:var(--fg2); }
+.compare-table tr:last-child td { border-bottom:none; }
+.compare-table .col-us { background:rgba(245,158,11,.05); }
+.compare-table th.col-us { background:rgba(245,158,11,.08);border-radius:8px 8px 0 0; }
+.check { color:var(--green);font-size:1rem; }
+.cross { color:var(--red);font-size:1rem; }
+.part  { color:var(--fg3); }
+
+/* ── FAQ ACCORDION (CHANGE 6) ────────────────────────────── */
+/* CHANGE 6: FAQ with smooth accordion — no UPSC site has a properly designed FAQ */
+.faq-list { display:flex;flex-direction:column;gap:10px;max-width:820px;margin:0 auto; }
+.faq-item { background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden; }
+.faq-q {
+  width:100%;padding:18px 20px;display:flex;justify-content:space-between;align-items:center;
+  background:transparent;border:none;font-family:'Inter',system-ui,sans-serif;
+  font-size:.9375rem;font-weight:600;color:var(--fg);cursor:pointer;text-align:left;gap:12px;
+  transition:background .15s;
+}
+.faq-q:hover { background:var(--bg2); }
+.faq-icon {
+  width:22px;height:22px;border-radius:50%;background:var(--bg2);
+  border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;font-size:.875rem;transition:transform .25s;color:var(--accent);
+}
+.faq-item.open .faq-icon { transform:rotate(45deg); }
+.faq-a { max-height:0;overflow:hidden;transition:max-height .3s ease,padding .2s ease; }
+.faq-a-inner { padding:0 20px 18px;font-size:.9375rem;color:var(--fg2);line-height:1.7; }
+.faq-item.open .faq-a { max-height:300px; }
+
+/* ── FINAL CTA BAND (CHANGE 7) ──────────────────────────── */
+/* CHANGE 7: Bold full-bleed CTA — no existing UPSC site has a proper one */
+.cta-band {
+  background:var(--accent);
+  padding-block:56px;
+  text-align:center;
+}
+.cta-band h2 {
+  font-family:'Playfair Display',Georgia,serif;
+  font-size:clamp(1.75rem,4vw,2.625rem);font-weight:700;
+  color:#fff;margin:0 0 12px;text-wrap:balance;
+}
+.cta-band p { color:rgba(255,255,255,.85);font-size:1.0625rem;margin:0 0 28px; }
+.cta-buttons { display:flex;gap:12px;justify-content:center;flex-wrap:wrap; }
+.btn-white { background:#fff;color:var(--accent);padding:13px 32px;font-size:1rem;font-weight:700; }
+.btn-outline-white { background:transparent;color:#fff;border:2px solid rgba(255,255,255,.5);padding:13px 28px;font-size:1rem;font-weight:600; }
+.btn-outline-white:hover { border-color:#fff;opacity:1; }
+
+/* ── FOOTER ──────────────────────────────────────────────── */
+footer { border-top:1px solid var(--border);padding-block:36px; }
+.footer-row { display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px; }
+.footer-brand { font-family:'Playfair Display',Georgia,serif;font-size:1rem;font-weight:700;display:flex;align-items:center;gap:8px;color:var(--fg);text-decoration:none; }
+.footer-copy { font-size:.8125rem;color:var(--fg3);margin-top:4px; }
+.footer-links { display:flex;gap:20px; }
+.footer-links a { font-size:.875rem;color:var(--fg3);text-decoration:none;transition:color .15s; }
+.footer-links a:hover { color:var(--fg2); }
+
+/* ── RESPONSIVE ──────────────────────────────────────────── */
+@media(max-width:920px){
+  .hero{grid-template-columns:1fr;gap:32px;padding-block:44px 32px}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+  .main-grid{grid-template-columns:1fr}
+  .ca-grid{grid-template-columns:repeat(2,1fr)}
+  .analytics-grid{grid-template-columns:1fr}
+  .tests-grid{grid-template-columns:1fr 1fr}
+  .feat-grid{grid-template-columns:repeat(2,1fr)}
+  .demo-syl-grid{grid-template-columns:repeat(3,1fr)}
+  .demo-ca-grid{grid-template-columns:repeat(2,1fr)}
+  .demo-perf{grid-template-columns:1fr}
+  .d-hide{display:none}
+}
+@media(max-width:600px){
+  .ca-grid{grid-template-columns:1fr}
+  .tests-grid{grid-template-columns:1fr}
+  .feat-grid{grid-template-columns:1fr}
+  .cd-grid{gap:7px}
+  .cd-num{font-size:1.5rem}
+  .demo-syl-grid{grid-template-columns:repeat(2,1fr)}
+  .demo-ca-grid{grid-template-columns:1fr}
+  .proof-inner{gap:24px}
 }
 
-.features-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 18px;
+/* ── MOTION ──────────────────────────────────────────────── */
+@media(prefers-reduced-motion:no-preference){
+  .hero-content>*{animation:rise .5s ease both}
+  .hero-content>*:nth-child(2){animation-delay:.08s}
+  .hero-content>*:nth-child(3){animation-delay:.16s}
+  .hero-content>*:nth-child(4){animation-delay:.22s}
+  .cd-card{animation:rise .5s .1s ease both}
 }
-.feat {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 22px;
-}
-.feat-icon { font-size: 1.75rem; margin-bottom: 11px; }
-.feat-name { font-weight: 600; font-size: 0.9375rem; margin-bottom: 6px; }
-.feat-desc { font-size: 0.875rem; color: var(--fg2); line-height: 1.65; }
-
-/* ── FOOTER ─────────────────────────────────────────────────── */
-footer {
-  border-top: 1px solid var(--border);
-  padding-block: 36px;
-}
-.footer-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 14px;
-}
-.footer-brand {
-  font-family: 'Playfair Display', Georgia, serif;
-  font-size: 1rem;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--fg);
-  text-decoration: none;
-}
-.footer-copy { font-size: 0.8125rem; color: var(--fg3); margin-top: 4px; }
-.footer-links { display: flex; gap: 20px; }
-.footer-links a {
-  font-size: 0.875rem;
-  color: var(--fg3);
-  text-decoration: none;
-  transition: color .15s;
-}
-.footer-links a:hover { color: var(--fg2); }
-
-/* ── RESPONSIVE ─────────────────────────────────────────────── */
-@media (max-width: 920px) {
-  .hero       { grid-template-columns: 1fr; gap: 32px; padding-block: 48px 36px; }
-  .stats-grid { grid-template-columns: repeat(2, 1fr); }
-  .main-grid  { grid-template-columns: 1fr; }
-  .ca-grid    { grid-template-columns: repeat(2, 1fr); }
-  .analytics-grid { grid-template-columns: 1fr; }
-  .tests-grid { grid-template-columns: 1fr 1fr; }
-  .features-grid { grid-template-columns: repeat(2, 1fr); }
-  .d-hide     { display: none; }
-}
-@media (max-width: 600px) {
-  .ca-grid    { grid-template-columns: 1fr; }
-  .tests-grid { grid-template-columns: 1fr; }
-  .features-grid { grid-template-columns: 1fr; }
-  .cd-grid    { gap: 7px; }
-  .cd-num     { font-size: 1.4375rem; }
-  .syl-tabs   { overflow-x: auto; }
-}
-
-/* ── MOTION ─────────────────────────────────────────────────── */
-@media (prefers-reduced-motion: no-preference) {
-  .hero-content > * { animation: rise .5s ease both; }
-  .hero-content > *:nth-child(2) { animation-delay: .08s; }
-  .hero-content > *:nth-child(3) { animation-delay: .16s; }
-  .hero-content > *:nth-child(4) { animation-delay: .22s; }
-  .cd-card    { animation: rise .5s .1s ease both; }
-}
-@keyframes rise {
-  from { opacity: 0; transform: translateY(18px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+@keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
 </style>
 
-<!-- ═══════════════════════════════ NAV ═══════════════════════ -->
+<!-- ═══ CHANGE 1: NOTIFICATION TICKER — tells users about live UPSC updates instantly ═══ -->
+<div class="ticker-bar" role="marquee" aria-label="UPSC notifications">
+  <div class="ticker-inner">
+    <span class="ticker-tag">New</span><span class="ticker-text">UPSC CSE 2027 Notification released — Download official PDF</span>
+    <span class="ticker-sep">·</span>
+    <span class="ticker-tag">Alert</span><span class="ticker-text">Admit card for UPSC CDS II 2026 now available — Hall Ticket download open</span>
+    <span class="ticker-sep">·</span>
+    <span class="ticker-tag">Result</span><span class="ticker-text">UPSC CSE 2025 Final Result declared — 1009 candidates selected</span>
+    <span class="ticker-sep">·</span>
+    <span class="ticker-tag">Date</span><span class="ticker-text">UPSC CSE Prelims 2027 scheduled for 6 June 2027 — 231 days remaining</span>
+    <span class="ticker-sep">·</span>
+    <span class="ticker-tag">New</span><span class="ticker-text">UPSC CAPF 2027 notification out — Last date to apply 12 Nov 2026</span>
+    <span class="ticker-sep">·</span>
+  </div>
+</div>
+
+<!-- ═══ NAV ═══ -->
 <nav>
   <div class="c nav-row">
     <a href="#" class="logo">
@@ -777,592 +557,660 @@ footer {
       <a href="#" class="nl">Community</a>
     </nav>
     <div class="nav-right">
-      <button class="theme-btn" id="themeBtn" aria-label="Toggle colour theme">🌓</button>
+      <button class="theme-btn" id="themeBtn" aria-label="Toggle theme">🌓</button>
       <button class="btn btn-ghost d-hide">Log in</button>
       <button class="btn btn-primary">Start Free</button>
     </div>
   </div>
 </nav>
 
-<!-- ═══════════════════════════════ HERO ══════════════════════ -->
+<!-- ═══ HERO ═══ -->
 <div class="c">
   <section class="hero">
     <div class="hero-content">
-      <div class="eyebrow">India's smartest UPSC prep platform</div>
-      <h1>Crack IAS with a <em>clear strategy,</em> not just hard work</h1>
-      <p class="hero-sub">Track your entire syllabus, master current affairs with mapped tags, take AI-adaptive mock tests, and see exactly how you stack up — all in one place. No clutter. No outdated UI.</p>
+      <div class="eyebrow">India's smartest UPSC prep platform · 231 days to Prelims</div>
+      <h1>Crack Prelims.<br><em>Master Mains.</em><br>Clear Interview.</h1>
+      <p class="hero-sub">Track your entire syllabus, study GS-tagged current affairs, take adaptive mock tests, and see your percentile among 2,40,000 real aspirants — all in one place. No signup walls.</p>
       <div class="hero-ctas">
-        <button class="btn btn-primary">Start for Free</button>
-        <button class="btn btn-ghost">Watch Demo</button>
+        <button class="btn btn-primary" style="padding:13px 30px;font-size:1rem">Start Free — 30 Days</button>
+        <button class="btn btn-ghost" style="padding:13px 24px;font-size:1rem">See Live Demo ↓</button>
       </div>
       <div class="trust-row">
         <div class="trust-item"><div class="trust-dot"></div>2,40,000+ aspirants</div>
-        <div class="trust-item"><div class="trust-dot"></div>847 IAS / IPS selected</div>
-        <div class="trust-item"><div class="trust-dot"></div>Free for 30 days</div>
+        <div class="trust-item"><div class="trust-dot"></div>847 IAS / IPS / IFS selected</div>
+        <div class="trust-item"><div class="trust-dot"></div>₹0 for first 30 days</div>
       </div>
     </div>
 
-    <!-- COUNTDOWN -->
+    <!-- CHANGE 1b: bigger, bolder countdown directly in hero -->
     <div class="cd-card">
-      <div class="cd-label">Next major exam</div>
-      <div class="cd-exam">UPSC CSE Prelims 2027</div>
+      <div class="cd-label">Time left to next Prelims</div>
+      <div class="cd-exam">UPSC CSE Prelims 2027 — 6 June 2027</div>
       <div class="cd-grid">
         <div class="cd-unit"><div class="cd-num" id="cdD">---</div><div class="cd-ulabel">Days</div></div>
         <div class="cd-unit"><div class="cd-num" id="cdH">--</div><div class="cd-ulabel">Hours</div></div>
         <div class="cd-unit"><div class="cd-num" id="cdM">--</div><div class="cd-ulabel">Mins</div></div>
         <div class="cd-unit"><div class="cd-num" id="cdS">--</div><div class="cd-ulabel">Secs</div></div>
       </div>
-      <div class="prep-bar">
-        <div class="prep-header">
-          <span>Preparation progress</span>
-          <span class="prep-pct">54%</span>
-        </div>
-        <div class="pbar"><div class="pfill" style="width:54%"></div></div>
+      <div class="prep-hdr">
+        <span>Your preparation progress</span>
+        <span class="prep-pct">54%</span>
       </div>
+      <div class="pbar" style="margin-bottom:14px"><div class="pfill" style="width:54%"></div></div>
       <div class="tag-row">
         <span class="tag a">Prelims GS</span>
         <span class="tag g">Mains</span>
         <span class="tag b">Interview</span>
         <span class="tag">CSAT</span>
-        <span class="tag">Optional</span>
       </div>
     </div>
   </section>
+</div>
 
-  <!-- ══════════════════════════ STATS BAR ════════════════════ -->
-  <div class="stats-grid">
-    <div class="stat-card">
-      <div class="stat-icon">🔥</div>
-      <div class="stat-num">42</div>
-      <div class="stat-lbl">Day study streak</div>
-      <div class="stat-delta">+3 this week</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon">📚</div>
-      <div class="stat-num">847</div>
-      <div class="stat-lbl">Topics covered of 2,340</div>
-      <div class="stat-delta">+12 today</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon">📝</div>
-      <div class="stat-num">118/200</div>
-      <div class="stat-lbl">Mock test average</div>
-      <div class="stat-delta down">−4 vs last test</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon">🎯</div>
-      <div class="stat-num">Top 5%</div>
-      <div class="stat-lbl">Among active users</div>
-      <div class="stat-delta">↑ 2% this month</div>
-    </div>
-  </div>
-
-  <!-- ══════════════════════ SYLLABUS + PLAN ═══════════════════ -->
-  <div class="sec-head">
-    <div class="sec-title">Study Dashboard</div>
-    <div class="sec-sub">Your syllabus coverage and today's schedule at a glance</div>
-  </div>
-  <div class="main-grid">
-
-    <!-- SYLLABUS TRACKER -->
-    <div>
-      <div class="syllabus-card">
-        <div class="syl-tabs" id="sylTabs">
-          <button class="syl-tab on" data-tab="gs1">GS Paper 1</button>
-          <button class="syl-tab"    data-tab="gs2">GS Paper 2</button>
-          <button class="syl-tab"    data-tab="gs3">GS Paper 3</button>
-          <button class="syl-tab"    data-tab="gs4">GS Paper 4</button>
-          <button class="syl-tab"    data-tab="csat">CSAT</button>
-        </div>
-
-        <div id="gs1">
-          <div class="sub-row">
-            <div class="sub-hdr"><span class="sub-name">Indian History &amp; Culture</span><span class="sub-meta">34/48</span></div>
-            <div class="pbar"><div class="pfill g" style="width:71%"></div></div>
-            <div class="chips">
-              <span class="chip done">Indus Valley</span><span class="chip done">Vedic Period</span>
-              <span class="chip done">Maurya Empire</span><span class="chip done">Gupta Age</span>
-              <span class="chip">Medieval India</span><span class="chip done">Art &amp; Architecture</span>
-              <span class="chip">Bhakti Movement</span>
-            </div>
-          </div>
-          <div class="sub-row">
-            <div class="sub-hdr"><span class="sub-name">Modern Indian History</span><span class="sub-meta">22/30</span></div>
-            <div class="pbar"><div class="pfill" style="width:73%"></div></div>
-          </div>
-          <div class="sub-row">
-            <div class="sub-hdr"><span class="sub-name">Indian &amp; World Geography</span><span class="sub-meta">18/40</span></div>
-            <div class="pbar"><div class="pfill b" style="width:45%"></div></div>
-            <div class="chips">
-              <span class="chip done">Physical Geography</span><span class="chip done">Indian Monsoon</span>
-              <span class="chip">Economic Geography</span><span class="chip">World Geography</span>
-              <span class="chip done">Rivers &amp; Drainage</span>
-            </div>
-          </div>
-          <div class="sub-row">
-            <div class="sub-hdr"><span class="sub-name">Indian Society &amp; Social Issues</span><span class="sub-meta">12/22</span></div>
-            <div class="pbar"><div class="pfill g" style="width:55%"></div></div>
-          </div>
-          <div class="sub-row">
-            <div class="sub-hdr"><span class="sub-name">World History (post-1750)</span><span class="sub-meta">8/20</span></div>
-            <div class="pbar"><div class="pfill" style="width:40%"></div></div>
-          </div>
-        </div>
-
-        <div id="gs2" style="display:none">
-          <div class="sub-row">
-            <div class="sub-hdr"><span class="sub-name">Indian Polity &amp; Constitution</span><span class="sub-meta">28/50</span></div>
-            <div class="pbar"><div class="pfill" style="width:56%"></div></div>
-          </div>
-          <div class="sub-row">
-            <div class="sub-hdr"><span class="sub-name">Governance &amp; Public Policy</span><span class="sub-meta">10/30</span></div>
-            <div class="pbar"><div class="pfill b" style="width:33%"></div></div>
-          </div>
-          <div class="sub-row">
-            <div class="sub-hdr"><span class="sub-name">Social Justice &amp; Rights</span><span class="sub-meta">8/20</span></div>
-            <div class="pbar"><div class="pfill g" style="width:40%"></div></div>
-          </div>
-          <div class="sub-row">
-            <div class="sub-hdr"><span class="sub-name">International Relations</span><span class="sub-meta">6/25</span></div>
-            <div class="pbar"><div class="pfill" style="width:24%"></div></div>
-          </div>
-        </div>
-
-        <div id="gs3" style="display:none">
-          <div class="sub-row">
-            <div class="sub-hdr"><span class="sub-name">Indian Economy &amp; Development</span><span class="sub-meta">20/45</span></div>
-            <div class="pbar"><div class="pfill" style="width:44%"></div></div>
-          </div>
-          <div class="sub-row">
-            <div class="sub-hdr"><span class="sub-name">Agriculture &amp; Food Security</span><span class="sub-meta">8/18</span></div>
-            <div class="pbar"><div class="pfill g" style="width:44%"></div></div>
-          </div>
-          <div class="sub-row">
-            <div class="sub-hdr"><span class="sub-name">Environment &amp; Ecology</span><span class="sub-meta">12/28</span></div>
-            <div class="pbar"><div class="pfill b" style="width:43%"></div></div>
-          </div>
-          <div class="sub-row">
-            <div class="sub-hdr"><span class="sub-name">Science &amp; Technology</span><span class="sub-meta">9/25</span></div>
-            <div class="pbar"><div class="pfill" style="width:36%"></div></div>
-          </div>
-        </div>
-
-        <div id="gs4" style="display:none">
-          <div class="sub-row">
-            <div class="sub-hdr"><span class="sub-name">Ethics, Integrity &amp; Aptitude</span><span class="sub-meta">18/24</span></div>
-            <div class="pbar"><div class="pfill g" style="width:75%"></div></div>
-          </div>
-          <div class="sub-row">
-            <div class="sub-hdr"><span class="sub-name">Attitude, Emotions &amp; Values</span><span class="sub-meta">10/14</span></div>
-            <div class="pbar"><div class="pfill" style="width:71%"></div></div>
-          </div>
-          <div class="sub-row">
-            <div class="sub-hdr"><span class="sub-name">Case Studies &amp; Applications</span><span class="sub-meta">6/12</span></div>
-            <div class="pbar"><div class="pfill b" style="width:50%"></div></div>
-          </div>
-        </div>
-
-        <div id="csat" style="display:none">
-          <div class="sub-row">
-            <div class="sub-hdr"><span class="sub-name">Reading Comprehension</span><span class="sub-meta">20/22</span></div>
-            <div class="pbar"><div class="pfill g" style="width:91%"></div></div>
-          </div>
-          <div class="sub-row">
-            <div class="sub-hdr"><span class="sub-name">Logical Reasoning</span><span class="sub-meta">16/20</span></div>
-            <div class="pbar"><div class="pfill" style="width:80%"></div></div>
-          </div>
-          <div class="sub-row">
-            <div class="sub-hdr"><span class="sub-name">Maths &amp; Data Interpretation</span><span class="sub-meta">12/18</span></div>
-            <div class="pbar"><div class="pfill b" style="width:67%"></div></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- TODAY'S PLAN -->
-    <div>
-      <div class="plan-card">
-        <div style="font-size:0.8125rem;color:var(--fg3);margin-bottom:16px;font-variant-numeric:tabular-nums;">Sunday, 18 October 2026</div>
-        <div class="plan-row">
-          <div class="plan-time">6:00</div>
-          <div class="plan-pip x"></div>
-          <div class="plan-body">
-            <div class="plan-topic done">The Hindu Editorial Analysis</div>
-            <div class="plan-detail">Done · 45 min</div>
-          </div>
-        </div>
-        <div class="plan-row">
-          <div class="plan-time">7:30</div>
-          <div class="plan-pip x"></div>
-          <div class="plan-body">
-            <div class="plan-topic done">Geography: Tropical Monsoon Systems</div>
-            <div class="plan-detail">Done · 90 min</div>
-          </div>
-        </div>
-        <div class="plan-row">
-          <div class="plan-time">10:00</div>
-          <div class="plan-pip"></div>
-          <div class="plan-body">
-            <div class="plan-topic">Polity: Constitutional Amendments</div>
-            <div class="plan-detail">Planned · 60 min</div>
-          </div>
-        </div>
-        <div class="plan-row">
-          <div class="plan-time">14:00</div>
-          <div class="plan-pip g"></div>
-          <div class="plan-body">
-            <div class="plan-topic">GS3 Mock Test — Environment</div>
-            <div class="plan-detail">100 Q · 2 hrs · 2,847 enrolled</div>
-          </div>
-        </div>
-        <div class="plan-row">
-          <div class="plan-time">17:00</div>
-          <div class="plan-pip b"></div>
-          <div class="plan-body">
-            <div class="plan-topic">Current Affairs Weekly Digest</div>
-            <div class="plan-detail">Review · 45 min</div>
-          </div>
-        </div>
-        <div class="plan-row">
-          <div class="plan-time">20:00</div>
-          <div class="plan-pip"></div>
-          <div class="plan-body">
-            <div class="plan-topic">Answer Writing — Ethics Case Study</div>
-            <div class="plan-detail">Planned · 60 min</div>
-          </div>
-        </div>
-        <button class="btn btn-ghost" style="width:100%;margin-top:14px;font-size:0.875rem;">Edit Today's Plan</button>
-      </div>
-      <div class="focus-box">
-        <div class="focus-label">Today's Focus Topic</div>
-        <div class="focus-topic">Constitutional Amendments</div>
-        <div class="focus-note">Appeared in 12 of the last 15 Prelims papers. High-priority revision.</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ═════════════════════ CURRENT AFFAIRS ═══════════════════ -->
-  <div class="sec-head row">
-    <div>
-      <div class="sec-title">Today's Current Affairs</div>
-      <div class="sec-sub">Curated from The Hindu, Indian Express &amp; PIB — mapped to GS papers</div>
-    </div>
-    <button class="btn btn-ghost d-hide" style="font-size:0.875rem;white-space:nowrap">View all 24 →</button>
-  </div>
-  <div class="ca-grid">
-    <a href="#" class="ca-card">
-      <div class="ca-cat">Economy · GS3</div>
-      <div class="ca-hl">RBI's new digital lending framework takes effect for NBFCs and fintechs</div>
-      <div class="ca-src">The Hindu · Business</div>
-      <div class="imps"><div class="imp on"></div><div class="imp on"></div><div class="imp on"></div><div class="imp"></div><div class="imp"></div></div>
-    </a>
-    <a href="#" class="ca-card">
-      <div class="ca-cat">International Relations · GS2</div>
-      <div class="ca-hl">India chairs SCO summit: Key outcomes for regional connectivity and security</div>
-      <div class="ca-src">Indian Express · World</div>
-      <div class="imps"><div class="imp on"></div><div class="imp on"></div><div class="imp on"></div><div class="imp on"></div><div class="imp on"></div></div>
-    </a>
-    <a href="#" class="ca-card">
-      <div class="ca-cat">Environment · GS3</div>
-      <div class="ca-hl">IPCC report flags accelerated glacial retreat in Hindu Kush–Himalaya range</div>
-      <div class="ca-src">PIB · Environment Ministry</div>
-      <div class="imps"><div class="imp on"></div><div class="imp on"></div><div class="imp on"></div><div class="imp on"></div><div class="imp"></div></div>
-    </a>
-    <a href="#" class="ca-card">
-      <div class="ca-cat">Polity &amp; Governance · GS2</div>
-      <div class="ca-hl">SC upholds delimitation commission's mandate under Article 82</div>
-      <div class="ca-src">Bar &amp; Bench · Legal</div>
-      <div class="imps"><div class="imp on"></div><div class="imp on"></div><div class="imp on"></div><div class="imp"></div><div class="imp"></div></div>
-    </a>
-    <a href="#" class="ca-card">
-      <div class="ca-cat">Science &amp; Tech · GS3</div>
-      <div class="ca-hl">ISRO's NISAR satellite completes thermal vacuum testing ahead of 2027 launch</div>
-      <div class="ca-src">ISRO Official · Space News</div>
-      <div class="imps"><div class="imp on"></div><div class="imp on"></div><div class="imp on"></div><div class="imp on"></div><div class="imp"></div></div>
-    </a>
-    <a href="#" class="ca-card">
-      <div class="ca-cat">Social Justice · GS2</div>
-      <div class="ca-hl">PM-JANMAN Phase 2 covers 180 Particularly Vulnerable Tribal Groups</div>
-      <div class="ca-src">PIB · Social Welfare</div>
-      <div class="imps"><div class="imp on"></div><div class="imp on"></div><div class="imp on"></div><div class="imp"></div><div class="imp"></div></div>
-    </a>
-  </div>
-
-  <!-- ═══════════════════════ ANALYTICS ═══════════════════════ -->
-  <div class="sec-head">
-    <div class="sec-title">Performance Analytics</div>
-    <div class="sec-sub">Mock test scores by subject vs. topper averages · weekly study hours over 8 weeks</div>
-  </div>
-  <div class="analytics-grid">
-    <div class="chart-card">
-      <div class="chart-title">Subject-wise Score</div>
-      <div class="chart-sub">Your % vs. top-50 percentile (last 5 tests)</div>
-      <div class="chart-wrap"><canvas id="radarC"></canvas></div>
-    </div>
-    <div class="chart-card">
-      <div class="chart-title">Weekly Study Hours</div>
-      <div class="chart-sub">Hours logged per week — last 8 weeks</div>
-      <div class="chart-wrap"><canvas id="barC"></canvas></div>
-    </div>
-  </div>
-
-  <!-- ═══════════════════════ MOCK TESTS ══════════════════════ -->
-  <div class="sec-head row">
-    <div>
-      <div class="sec-title">Mock Tests</div>
-      <div class="sec-sub">Adaptive tests that mirror UPSC's question pattern and negative marking</div>
-    </div>
-    <button class="btn btn-ghost d-hide" style="font-size:0.875rem;white-space:nowrap">Full schedule →</button>
-  </div>
-  <div class="tests-grid">
-    <div class="test-card hot">
-      <div class="test-badge">Today — 2 PM</div>
-      <div style="margin-top:8px">
-        <div class="test-name">GS3 Sectional — Environment</div>
-        <div class="test-meta">Environment · Agriculture · S&amp;T</div>
-        <div class="test-nums">
-          <div class="tn"><div class="tn-n">100</div><div class="tn-l">Questions</div></div>
-          <div class="tn"><div class="tn-n">120</div><div class="tn-l">Minutes</div></div>
-          <div class="tn"><div class="tn-n">2,847</div><div class="tn-l">Enrolled</div></div>
-        </div>
-        <button class="btn btn-primary" style="width:100%;font-size:0.875rem">Attempt Now</button>
-      </div>
-    </div>
-    <div class="test-card">
-      <div class="test-name">Full UPSC Prelims Simulation</div>
-      <div class="test-meta">All subjects · Tomorrow, 9 AM</div>
-      <div class="test-nums">
-        <div class="tn"><div class="tn-n">200</div><div class="tn-l">Questions</div></div>
-        <div class="tn"><div class="tn-n">120</div><div class="tn-l">Minutes</div></div>
-        <div class="tn"><div class="tn-n">8.4K</div><div class="tn-l">Enrolled</div></div>
-      </div>
-      <button class="btn btn-ghost" style="width:100%;font-size:0.875rem">Set Reminder</button>
-    </div>
-    <div class="test-card">
-      <div class="test-name">Polity &amp; Constitution Deep Dive</div>
-      <div class="test-meta">GS Paper 2 · Wed, 22 Oct</div>
-      <div class="test-nums">
-        <div class="tn"><div class="tn-n">80</div><div class="tn-l">Questions</div></div>
-        <div class="tn"><div class="tn-n">90</div><div class="tn-l">Minutes</div></div>
-        <div class="tn"><div class="tn-n">3.1K</div><div class="tn-l">Enrolled</div></div>
-      </div>
-      <button class="btn btn-ghost" style="width:100%;font-size:0.875rem">Set Reminder</button>
-    </div>
-  </div>
-</div><!-- /.c -->
-
-<!-- ═══════════════════ FEATURES BAND ════════════════════════ -->
-<section class="features-band">
+<!-- ═══ SOCIAL PROOF STRIP ═══ -->
+<div class="proof-strip">
   <div class="c">
-    <div class="features-heading">
-      <div class="eyebrow">What makes us different</div>
-      <h2>Everything existing UPSC sites get wrong — we fixed it</h2>
+    <div class="proof-inner">
+      <div class="proof-item"><div class="proof-num">2,40,000+</div><div class="proof-lbl">Active aspirants</div></div>
+      <div class="proof-item"><div class="proof-num">847</div><div class="proof-lbl">IAS / IPS / IFS selected</div></div>
+      <div class="proof-item"><div class="proof-num">12,400+</div><div class="proof-lbl">Mock tests attempted</div></div>
+      <div class="proof-item"><div class="proof-num">98.4%</div><div class="proof-lbl">Prelims cut-off accuracy</div></div>
     </div>
-    <div class="features-grid">
-      <div class="feat">
-        <div class="feat-icon">🧭</div>
-        <div class="feat-name">Personalised Study Path</div>
-        <div class="feat-desc">Based on your weak areas and time left, we generate a day-by-day syllabus plan — not a static PDF you never open.</div>
+  </div>
+</div>
+
+<!-- ═══ CHANGE 2: LIVE INTERACTIVE DEMO — see the product without signing up ═══ -->
+<section class="demo-section" id="demo">
+  <div class="c">
+    <div class="demo-heading">
+      <div class="eyebrow" style="justify-content:center"><span>Try it right now</span></div>
+      <h2>See your dashboard before you sign up</h2>
+      <p>No other UPSC platform shows you the actual product. We do.</p>
+    </div>
+    <div class="demo-shell">
+      <div class="demo-topbar">
+        <div class="demo-dots">
+          <div class="demo-dot" style="background:#F87171"></div>
+          <div class="demo-dot" style="background:#FCD34D"></div>
+          <div class="demo-dot" style="background:#34D399"></div>
+        </div>
+        <div class="demo-tabs" id="demoTabs">
+          <button class="demo-tab on" data-panel="p-syl">📚 Syllabus</button>
+          <button class="demo-tab" data-panel="p-ca">📰 Current Affairs</button>
+          <button class="demo-tab" data-panel="p-perf">📊 Performance</button>
+        </div>
+        <span style="margin-left:auto;font-size:.75rem;color:var(--fg3)">Demo data</span>
       </div>
-      <div class="feat">
-        <div class="feat-icon">📰</div>
-        <div class="feat-name">GS-Tagged Current Affairs</div>
-        <div class="feat-desc">Every news story is mapped to its GS paper, topic, and UPSC importance level. No more hunting across six newspapers.</div>
-      </div>
-      <div class="feat">
-        <div class="feat-icon">📊</div>
-        <div class="feat-name">Deep Performance Analytics</div>
-        <div class="feat-desc">Track mock scores, accuracy by topic, time per question, and percentile rank across 2 lakh real aspirants.</div>
-      </div>
-      <div class="feat">
-        <div class="feat-icon">✍️</div>
-        <div class="feat-name">Answer Writing Feedback</div>
-        <div class="feat-desc">Submit Mains answers and receive structured feedback on structure, content, and presentation within 24 hours.</div>
-      </div>
-      <div class="feat">
-        <div class="feat-icon">📅</div>
-        <div class="feat-name">Adaptive Study Planner</div>
-        <div class="feat-desc">Miss a session? The planner automatically redistributes topics — your prep stays on track even when life doesn't cooperate.</div>
-      </div>
-      <div class="feat">
-        <div class="feat-icon">🔔</div>
-        <div class="feat-name">Exam Notification Hub</div>
-        <div class="feat-desc">Admit cards, notification PDFs, result dates, and interview call letters — tracked and delivered before you need to check.</div>
+      <div class="demo-body">
+
+        <!-- Syllabus panel -->
+        <div class="demo-panel on" id="p-syl">
+          <div style="font-size:.875rem;color:var(--fg2);margin-bottom:16px">GS Paper coverage — your 5-paper breakdown at a glance</div>
+          <div class="demo-syl-grid">
+            <div class="dsyl-card">
+              <div class="dsyl-title">GS Paper 1</div>
+              <div class="dsyl-ring">
+                <svg viewBox="0 0 60 60"><circle class="ring-bg" cx="30" cy="30" r="26"/><circle class="ring-fg" cx="30" cy="30" r="26" stroke="var(--accent)" stroke-dasharray="108 163"/></svg>
+                <div class="dsyl-ring-pct" style="font-family:'JetBrains Mono',monospace;font-size:.875rem;font-weight:600;position:relative;z-index:1">66%</div>
+              </div>
+              <div class="dsyl-sub" style="text-align:center;font-size:.75rem;color:var(--fg3)">94/142 topics</div>
+            </div>
+            <div class="dsyl-card">
+              <div class="dsyl-title">GS Paper 2</div>
+              <div class="dsyl-ring">
+                <svg viewBox="0 0 60 60"><circle class="ring-bg" cx="30" cy="30" r="26"/><circle class="ring-fg" cx="30" cy="30" r="26" stroke="var(--blue)" stroke-dasharray="70 163"/></svg>
+                <div class="dsyl-ring-pct" style="font-family:'JetBrains Mono',monospace;font-size:.875rem;font-weight:600;position:relative;z-index:1">43%</div>
+              </div>
+              <div class="dsyl-sub" style="text-align:center;font-size:.75rem;color:var(--fg3)">52/125 topics</div>
+            </div>
+            <div class="dsyl-card">
+              <div class="dsyl-title">GS Paper 3</div>
+              <div class="dsyl-ring">
+                <svg viewBox="0 0 60 60"><circle class="ring-bg" cx="30" cy="30" r="26"/><circle class="ring-fg" cx="30" cy="30" r="26" stroke="var(--green)" stroke-dasharray="58 163"/></svg>
+                <div class="dsyl-ring-pct" style="font-family:'JetBrains Mono',monospace;font-size:.875rem;font-weight:600;position:relative;z-index:1">36%</div>
+              </div>
+              <div class="dsyl-sub" style="text-align:center;font-size:.75rem;color:var(--fg3)">42/116 topics</div>
+            </div>
+            <div class="dsyl-card">
+              <div class="dsyl-title">GS Paper 4</div>
+              <div class="dsyl-ring">
+                <svg viewBox="0 0 60 60"><circle class="ring-bg" cx="30" cy="30" r="26"/><circle class="ring-fg" cx="30" cy="30" r="26" stroke="var(--purple)" stroke-dasharray="123 163"/></svg>
+                <div class="dsyl-ring-pct" style="font-family:'JetBrains Mono',monospace;font-size:.875rem;font-weight:600;position:relative;z-index:1">75%</div>
+              </div>
+              <div class="dsyl-sub" style="text-align:center;font-size:.75rem;color:var(--fg3)">37/50 topics</div>
+            </div>
+            <div class="dsyl-card">
+              <div class="dsyl-title">CSAT</div>
+              <div class="dsyl-ring">
+                <svg viewBox="0 0 60 60"><circle class="ring-bg" cx="30" cy="30" r="26"/><circle class="ring-fg" cx="30" cy="30" r="26" stroke="var(--green)" stroke-dasharray="141 163"/></svg>
+                <div class="dsyl-ring-pct" style="font-family:'JetBrains Mono',monospace;font-size:.875rem;font-weight:600;position:relative;z-index:1">87%</div>
+              </div>
+              <div class="dsyl-sub" style="text-align:center;font-size:.75rem;color:var(--fg3)">52/60 topics</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Current Affairs panel -->
+        <div class="demo-panel" id="p-ca">
+          <div style="font-size:.875rem;color:var(--fg2);margin-bottom:16px">Every story tagged to its GS paper — curated from 6 sources daily</div>
+          <div class="demo-ca-grid">
+            <div class="dca-card"><div class="dca-gs gs1">GS-I · History</div><div class="dca-hl">UN flags India's linguistic diversity preservation efforts under NEP 2020</div><div class="dca-src">The Hindu · 18 Oct</div></div>
+            <div class="dca-card"><div class="dca-gs gs2">GS-II · Polity</div><div class="dca-hl">SC upholds validity of delimitation commission's timeline under Art. 82</div><div class="dca-src">Indian Express · 18 Oct</div></div>
+            <div class="dca-card"><div class="dca-gs gs3">GS-III · Economy</div><div class="dca-hl">RBI's digital lending framework for NBFCs: what changes from 1 Nov</div><div class="dca-src">Business Standard · 18 Oct</div></div>
+            <div class="dca-card"><div class="dca-gs gs2">GS-II · IR</div><div class="dca-hl">India chairs SCO summit: connectivity corridor outcomes explained</div><div class="dca-src">Indian Express · 18 Oct</div></div>
+            <div class="dca-card"><div class="dca-gs gs3">GS-III · Environment</div><div class="dca-hl">IPCC mid-cycle report: Himalayan glaciers losing ice 65% faster than 2015</div><div class="dca-src">PIB · 18 Oct</div></div>
+            <div class="dca-card"><div class="dca-gs gs4">GS-IV · Ethics</div><div class="dca-hl">Global Corruption Index 2026: India improves 12 ranks — key drivers</div><div class="dca-src">Transparency Intl · 18 Oct</div></div>
+          </div>
+        </div>
+
+        <!-- Performance panel -->
+        <div class="demo-panel" id="p-perf">
+          <div style="font-size:.875rem;color:var(--fg2);margin-bottom:16px">Your last 5 mock tests — subject accuracy vs. top-50th percentile</div>
+          <div class="demo-perf">
+            <div class="dperf-card">
+              <div class="dperf-title">Your Score by Subject</div>
+              <div class="dperf-row"><div class="dperf-lbl">History</div><div class="dperf-barwrap"><div class="dperf-bar" style="background:var(--accent);width:72%"></div></div><div class="dperf-val">72%</div></div>
+              <div class="dperf-row"><div class="dperf-lbl">Geography</div><div class="dperf-barwrap"><div class="dperf-bar" style="background:var(--blue);width:58%"></div></div><div class="dperf-val">58%</div></div>
+              <div class="dperf-row"><div class="dperf-lbl">Polity</div><div class="dperf-barwrap"><div class="dperf-bar" style="background:var(--green);width:64%"></div></div><div class="dperf-val">64%</div></div>
+              <div class="dperf-row"><div class="dperf-lbl">Economy</div><div class="dperf-barwrap"><div class="dperf-bar" style="background:var(--red);width:48%"></div></div><div class="dperf-val">48%</div></div>
+              <div class="dperf-row"><div class="dperf-lbl">Ethics</div><div class="dperf-barwrap"><div class="dperf-bar" style="background:var(--purple);width:80%"></div></div><div class="dperf-val">80%</div></div>
+            </div>
+            <div class="dperf-card">
+              <div class="dperf-title">Weekly Score Trend (last 8 tests)</div>
+              <div style="display:flex;align-items:flex-end;gap:6px;height:120px;margin-bottom:8px">
+                <div style="flex:1;background:var(--border);border-radius:4px 4px 0 0;height:58%"></div>
+                <div style="flex:1;background:var(--border);border-radius:4px 4px 0 0;height:64%"></div>
+                <div style="flex:1;background:var(--border);border-radius:4px 4px 0 0;height:50%"></div>
+                <div style="flex:1;background:var(--border);border-radius:4px 4px 0 0;height:72%"></div>
+                <div style="flex:1;background:var(--border);border-radius:4px 4px 0 0;height:68%"></div>
+                <div style="flex:1;background:var(--accent);border-radius:4px 4px 0 0;height:80%"></div>
+                <div style="flex:1;background:var(--accent);border-radius:4px 4px 0 0;height:84%"></div>
+                <div style="flex:1;background:var(--green);border-radius:4px 4px 0 0;height:90%"></div>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-size:.6875rem;color:var(--fg3);font-family:'JetBrains Mono',monospace">
+                <span>Wk1</span><span>Wk2</span><span>Wk3</span><span>Wk4</span><span>Wk5</span><span>Wk6</span><span>Wk7</span><span>Wk8</span>
+              </div>
+              <div style="margin-top:14px;padding:10px;background:rgba(16,185,129,.09);border-radius:8px;border:1px solid rgba(16,185,129,.2)">
+                <div style="font-size:.75rem;font-weight:600;color:var(--green)">📈 Improving trend</div>
+                <div style="font-size:.8125rem;color:var(--fg2);margin-top:3px">Score up 32% over 8 weeks. Keep it up!</div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ═══════════════════════ FOOTER ═══════════════════════════ -->
+<!-- ═══ MAIN CONTENT ═══ -->
+<div class="c">
+
+  <!-- STATS BAR -->
+  <div style="padding-top:48px">
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-icon">🔥</div><div class="stat-num">42</div><div class="stat-lbl">Day study streak</div><div class="stat-delta">+3 this week</div></div>
+      <div class="stat-card"><div class="stat-icon">📚</div><div class="stat-num">847</div><div class="stat-lbl">Topics covered of 2,340</div><div class="stat-delta">+12 today</div></div>
+      <div class="stat-card"><div class="stat-icon">📝</div><div class="stat-num">118/200</div><div class="stat-lbl">Mock test average</div><div class="stat-delta down">−4 vs last</div></div>
+      <div class="stat-card"><div class="stat-icon">🎯</div><div class="stat-num">Top 5%</div><div class="stat-lbl">Among active users</div><div class="stat-delta">↑ 2% this month</div></div>
+    </div>
+  </div>
+
+  <!-- STUDY DASHBOARD -->
+  <div class="sh">
+    <div class="st">Study Dashboard</div>
+    <div class="ss">Your syllabus coverage and today's schedule at a glance</div>
+  </div>
+  <div class="main-grid">
+    <div>
+      <div class="syllabus-card">
+        <div class="syl-tabs" id="sylTabs">
+          <button class="syl-tab on" data-tab="gs1">GS Paper 1</button>
+          <button class="syl-tab" data-tab="gs2">GS Paper 2</button>
+          <button class="syl-tab" data-tab="gs3">GS Paper 3</button>
+          <button class="syl-tab" data-tab="gs4">GS Paper 4</button>
+          <button class="syl-tab" data-tab="csat">CSAT</button>
+        </div>
+        <div id="gs1">
+          <div class="sub-row"><div class="sub-hdr"><span class="sub-name">Indian History &amp; Culture</span><span class="sub-meta">34/48</span></div><div class="pbar"><div class="pfill g" style="width:71%"></div></div><div class="chips"><span class="chip done">Indus Valley</span><span class="chip done">Vedic Period</span><span class="chip done">Maurya Empire</span><span class="chip done">Gupta Age</span><span class="chip">Medieval India</span><span class="chip done">Art &amp; Architecture</span><span class="chip">Bhakti Movement</span></div></div>
+          <div class="sub-row"><div class="sub-hdr"><span class="sub-name">Modern Indian History</span><span class="sub-meta">22/30</span></div><div class="pbar"><div class="pfill" style="width:73%"></div></div></div>
+          <div class="sub-row"><div class="sub-hdr"><span class="sub-name">Indian &amp; World Geography</span><span class="sub-meta">18/40</span></div><div class="pbar"><div class="pfill b" style="width:45%"></div></div><div class="chips"><span class="chip done">Physical Geography</span><span class="chip done">Indian Monsoon</span><span class="chip">Economic Geography</span><span class="chip">World Geography</span><span class="chip done">Rivers &amp; Drainage</span></div></div>
+          <div class="sub-row"><div class="sub-hdr"><span class="sub-name">Indian Society &amp; Social Issues</span><span class="sub-meta">12/22</span></div><div class="pbar"><div class="pfill g" style="width:55%"></div></div></div>
+          <div class="sub-row"><div class="sub-hdr"><span class="sub-name">World History (post-1750)</span><span class="sub-meta">8/20</span></div><div class="pbar"><div class="pfill" style="width:40%"></div></div></div>
+        </div>
+        <div id="gs2" style="display:none">
+          <div class="sub-row"><div class="sub-hdr"><span class="sub-name">Indian Polity &amp; Constitution</span><span class="sub-meta">28/50</span></div><div class="pbar"><div class="pfill" style="width:56%"></div></div></div>
+          <div class="sub-row"><div class="sub-hdr"><span class="sub-name">Governance &amp; Public Policy</span><span class="sub-meta">10/30</span></div><div class="pbar"><div class="pfill b" style="width:33%"></div></div></div>
+          <div class="sub-row"><div class="sub-hdr"><span class="sub-name">Social Justice &amp; Rights</span><span class="sub-meta">8/20</span></div><div class="pbar"><div class="pfill g" style="width:40%"></div></div></div>
+          <div class="sub-row"><div class="sub-hdr"><span class="sub-name">International Relations</span><span class="sub-meta">6/25</span></div><div class="pbar"><div class="pfill" style="width:24%"></div></div></div>
+        </div>
+        <div id="gs3" style="display:none">
+          <div class="sub-row"><div class="sub-hdr"><span class="sub-name">Indian Economy &amp; Development</span><span class="sub-meta">20/45</span></div><div class="pbar"><div class="pfill" style="width:44%"></div></div></div>
+          <div class="sub-row"><div class="sub-hdr"><span class="sub-name">Agriculture &amp; Food Security</span><span class="sub-meta">8/18</span></div><div class="pbar"><div class="pfill g" style="width:44%"></div></div></div>
+          <div class="sub-row"><div class="sub-hdr"><span class="sub-name">Environment &amp; Ecology</span><span class="sub-meta">12/28</span></div><div class="pbar"><div class="pfill b" style="width:43%"></div></div></div>
+          <div class="sub-row"><div class="sub-hdr"><span class="sub-name">Science &amp; Technology</span><span class="sub-meta">9/25</span></div><div class="pbar"><div class="pfill" style="width:36%"></div></div></div>
+        </div>
+        <div id="gs4" style="display:none">
+          <div class="sub-row"><div class="sub-hdr"><span class="sub-name">Ethics, Integrity &amp; Aptitude</span><span class="sub-meta">18/24</span></div><div class="pbar"><div class="pfill g" style="width:75%"></div></div></div>
+          <div class="sub-row"><div class="sub-hdr"><span class="sub-name">Attitude, Emotions &amp; Values</span><span class="sub-meta">10/14</span></div><div class="pbar"><div class="pfill" style="width:71%"></div></div></div>
+          <div class="sub-row"><div class="sub-hdr"><span class="sub-name">Case Studies &amp; Applications</span><span class="sub-meta">6/12</span></div><div class="pbar"><div class="pfill b" style="width:50%"></div></div></div>
+        </div>
+        <div id="csat" style="display:none">
+          <div class="sub-row"><div class="sub-hdr"><span class="sub-name">Reading Comprehension</span><span class="sub-meta">20/22</span></div><div class="pbar"><div class="pfill g" style="width:91%"></div></div></div>
+          <div class="sub-row"><div class="sub-hdr"><span class="sub-name">Logical Reasoning</span><span class="sub-meta">16/20</span></div><div class="pbar"><div class="pfill" style="width:80%"></div></div></div>
+          <div class="sub-row"><div class="sub-hdr"><span class="sub-name">Maths &amp; Data Interpretation</span><span class="sub-meta">12/18</span></div><div class="pbar"><div class="pfill b" style="width:67%"></div></div></div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="plan-card">
+        <div style="font-size:.8125rem;color:var(--fg3);margin-bottom:16px">Sunday, 18 October 2026</div>
+        <div class="plan-row"><div class="plan-time">6:00</div><div class="plan-pip x"></div><div class="plan-body"><div class="plan-topic done">The Hindu Editorial Analysis</div><div class="plan-detail">Done · 45 min</div></div></div>
+        <div class="plan-row"><div class="plan-time">7:30</div><div class="plan-pip x"></div><div class="plan-body"><div class="plan-topic done">Geography: Tropical Monsoon</div><div class="plan-detail">Done · 90 min</div></div></div>
+        <div class="plan-row"><div class="plan-time">10:00</div><div class="plan-pip"></div><div class="plan-body"><div class="plan-topic">Polity: Constitutional Amendments</div><div class="plan-detail">Planned · 60 min</div></div></div>
+        <div class="plan-row"><div class="plan-time">14:00</div><div class="plan-pip g"></div><div class="plan-body"><div class="plan-topic">GS3 Mock Test — Environment</div><div class="plan-detail">100 Q · 2 hrs · 2,847 enrolled</div></div></div>
+        <div class="plan-row"><div class="plan-time">20:00</div><div class="plan-pip"></div><div class="plan-body"><div class="plan-topic">Answer Writing — Ethics Case</div><div class="plan-detail">Planned · 60 min</div></div></div>
+        <button class="btn btn-ghost" style="width:100%;margin-top:14px;font-size:.875rem">Edit Today's Plan</button>
+      </div>
+      <div class="focus-box">
+        <div class="focus-label">Today's Focus</div>
+        <div class="focus-topic">Constitutional Amendments</div>
+        <div class="focus-note">In 12 of last 15 Prelims papers. Highest-ROI revision today.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CURRENT AFFAIRS -->
+  <div class="sh row">
+    <div><div class="st">Today's Current Affairs</div><div class="ss">Mapped to GS papers · 18 Oct 2026 · 24 stories today</div></div>
+    <button class="btn btn-ghost d-hide" style="font-size:.875rem;white-space:nowrap">View all 24 →</button>
+  </div>
+  <div class="ca-grid" style="padding-bottom:48px">
+    <a href="#" class="ca-card"><div class="ca-cat">Economy · GS3</div><div class="ca-hl">RBI's new digital lending framework takes effect for NBFCs and fintechs</div><div class="ca-src">The Hindu · Business</div><div class="imps"><div class="imp on"></div><div class="imp on"></div><div class="imp on"></div><div class="imp"></div><div class="imp"></div></div></a>
+    <a href="#" class="ca-card"><div class="ca-cat">International Relations · GS2</div><div class="ca-hl">India chairs SCO summit: Key outcomes for regional connectivity and security</div><div class="ca-src">Indian Express · World</div><div class="imps"><div class="imp on"></div><div class="imp on"></div><div class="imp on"></div><div class="imp on"></div><div class="imp on"></div></div></a>
+    <a href="#" class="ca-card"><div class="ca-cat">Environment · GS3</div><div class="ca-hl">IPCC report flags accelerated glacial retreat in Hindu Kush–Himalaya range</div><div class="ca-src">PIB · Environment Ministry</div><div class="imps"><div class="imp on"></div><div class="imp on"></div><div class="imp on"></div><div class="imp on"></div><div class="imp"></div></div></a>
+    <a href="#" class="ca-card"><div class="ca-cat">Polity · GS2</div><div class="ca-hl">SC upholds delimitation commission's mandate under Article 82</div><div class="ca-src">Bar &amp; Bench · Legal</div><div class="imps"><div class="imp on"></div><div class="imp on"></div><div class="imp on"></div><div class="imp"></div><div class="imp"></div></div></a>
+    <a href="#" class="ca-card"><div class="ca-cat">Science &amp; Tech · GS3</div><div class="ca-hl">ISRO's NISAR satellite completes thermal vacuum testing ahead of 2027 launch</div><div class="ca-src">ISRO Official · Space</div><div class="imps"><div class="imp on"></div><div class="imp on"></div><div class="imp on"></div><div class="imp on"></div><div class="imp"></div></div></a>
+    <a href="#" class="ca-card"><div class="ca-cat">Social Justice · GS2</div><div class="ca-hl">PM-JANMAN Phase 2 covers 180 Particularly Vulnerable Tribal Groups</div><div class="ca-src">PIB · Social Welfare</div><div class="imps"><div class="imp on"></div><div class="imp on"></div><div class="imp on"></div><div class="imp"></div><div class="imp"></div></div></a>
+  </div>
+
+  <!-- ANALYTICS -->
+  <div class="sh"><div class="st">Performance Analytics</div><div class="ss">Mock test scores by subject vs. topper average · weekly study hours</div></div>
+  <div class="analytics-grid" style="padding-bottom:48px">
+    <div class="chart-card"><div class="chart-title">Subject-wise Score</div><div class="chart-sub">Your % vs top-50 percentile (last 5 tests)</div><div class="chart-wrap"><canvas id="radarC"></canvas></div></div>
+    <div class="chart-card"><div class="chart-title">Weekly Study Hours</div><div class="chart-sub">Hours logged per week — last 8 weeks</div><div class="chart-wrap"><canvas id="barC"></canvas></div></div>
+  </div>
+
+  <!-- MOCK TESTS -->
+  <div class="sh row">
+    <div><div class="st">Mock Tests</div><div class="ss">Adaptive tests mirroring UPSC pattern and negative marking</div></div>
+    <button class="btn btn-ghost d-hide" style="font-size:.875rem;white-space:nowrap">Full schedule →</button>
+  </div>
+  <div class="tests-grid" style="padding-bottom:52px">
+    <div class="test-card hot"><div class="test-badge">Today — 2 PM</div><div style="margin-top:8px"><div class="test-name">GS3 Sectional — Environment</div><div class="test-meta">Environment · Agriculture · S&amp;T</div><div class="test-nums"><div class="tn"><div class="tn-n">100</div><div class="tn-l">Questions</div></div><div class="tn"><div class="tn-n">120</div><div class="tn-l">Minutes</div></div><div class="tn"><div class="tn-n">2,847</div><div class="tn-l">Enrolled</div></div></div><button class="btn btn-primary" style="width:100%;font-size:.875rem">Attempt Now</button></div></div>
+    <div class="test-card"><div class="test-name">Full UPSC Prelims Simulation</div><div class="test-meta">All subjects · Tomorrow, 9 AM</div><div class="test-nums"><div class="tn"><div class="tn-n">200</div><div class="tn-l">Questions</div></div><div class="tn"><div class="tn-n">120</div><div class="tn-l">Minutes</div></div><div class="tn"><div class="tn-n">8.4K</div><div class="tn-l">Enrolled</div></div></div><button class="btn btn-ghost" style="width:100%;font-size:.875rem">Set Reminder</button></div>
+    <div class="test-card"><div class="test-name">Polity &amp; Constitution Deep Dive</div><div class="test-meta">GS Paper 2 · Wed, 22 Oct</div><div class="test-nums"><div class="tn"><div class="tn-n">80</div><div class="tn-l">Questions</div></div><div class="tn"><div class="tn-n">90</div><div class="tn-l">Minutes</div></div><div class="tn"><div class="tn-n">3.1K</div><div class="tn-l">Enrolled</div></div></div><button class="btn btn-ghost" style="width:100%;font-size:.875rem">Set Reminder</button></div>
+  </div>
+</div><!-- /.c -->
+
+<!-- ═══ CHANGE 3: FEATURE CARDS with icons + mini visuals — not just text boxes ═══ -->
+<section style="background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding-block:56px">
+  <div class="c">
+    <div style="text-align:center;margin-bottom:40px">
+      <div class="eyebrow" style="justify-content:center">What makes us different</div>
+      <h2 style="font-family:'Playfair Display',Georgia,serif;font-size:clamp(1.75rem,3.5vw,2.375rem);font-weight:700;margin:0;text-wrap:balance">Every gap in existing UPSC sites — filled</h2>
+    </div>
+    <div class="feat-grid">
+
+      <!-- Card 1: Study Path -->
+      <div class="feat-card">
+        <div class="feat-icon">🧭</div>
+        <div class="feat-name">Personalised Study Path</div>
+        <div class="feat-desc">Based on your weak areas and days remaining, we generate a day-by-day plan — not a static PDF you never open.</div>
+        <div class="feat-visual">
+          <div style="font-size:.6875rem;font-weight:600;color:var(--fg3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">This week's focus</div>
+          <div class="mini-prog-row"><div class="mini-prog-lbl">Polity</div><div class="mini-pbar"><div class="mini-pfill" style="background:var(--accent);width:40%"></div></div></div>
+          <div class="mini-prog-row"><div class="mini-prog-lbl">History</div><div class="mini-pbar"><div class="mini-pfill" style="background:var(--blue);width:75%"></div></div></div>
+          <div class="mini-prog-row"><div class="mini-prog-lbl">Economy</div><div class="mini-pbar"><div class="mini-pfill" style="background:var(--green);width:28%"></div></div></div>
+        </div>
+      </div>
+
+      <!-- Card 2: Current Affairs -->
+      <div class="feat-card">
+        <div class="feat-icon">📰</div>
+        <div class="feat-name">GS-Tagged Current Affairs</div>
+        <div class="feat-desc">Every news story mapped to its GS paper and importance level. No more hunting across 6 different newspapers.</div>
+        <div class="feat-visual">
+          <div style="display:flex;flex-direction:column;gap:5px">
+            <div style="display:flex;align-items:center;gap:6px"><span style="font-size:.6875rem;font-weight:700;color:var(--blue);background:rgba(96,165,250,.12);padding:1px 6px;border-radius:4px">GS-II</span><span style="font-size:.75rem;color:var(--fg2)">SCO Summit outcomes</span></div>
+            <div style="display:flex;align-items:center;gap:6px"><span style="font-size:.6875rem;font-weight:700;color:var(--green);background:rgba(16,185,129,.12);padding:1px 6px;border-radius:4px">GS-III</span><span style="font-size:.75rem;color:var(--fg2)">IPCC Himalaya report</span></div>
+            <div style="display:flex;align-items:center;gap:6px"><span style="font-size:.6875rem;font-weight:700;color:var(--accent);background:rgba(245,158,11,.12);padding:1px 6px;border-radius:4px">GS-II</span><span style="font-size:.75rem;color:var(--fg2)">RBI digital lending</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3: Analytics -->
+      <div class="feat-card">
+        <div class="feat-icon">📊</div>
+        <div class="feat-name">Deep Performance Analytics</div>
+        <div class="feat-desc">Track scores, accuracy per topic, time per question, and percentile rank among 2 lakh real aspirants.</div>
+        <div class="feat-visual">
+          <div style="display:flex;align-items:flex-end;gap:5px;height:36px">
+            <div style="flex:1;background:var(--border);border-radius:3px 3px 0 0;height:58%"></div>
+            <div style="flex:1;background:var(--border);border-radius:3px 3px 0 0;height:72%"></div>
+            <div style="flex:1;background:var(--border);border-radius:3px 3px 0 0;height:55%"></div>
+            <div style="flex:1;background:var(--accent);border-radius:3px 3px 0 0;height:80%"></div>
+            <div style="flex:1;background:var(--accent);border-radius:3px 3px 0 0;height:84%"></div>
+            <div style="flex:1;background:var(--green);border-radius:3px 3px 0 0;height:91%"></div>
+          </div>
+          <div style="font-size:.6875rem;color:var(--fg3);margin-top:5px">Score improving ↑ 32% in 8 weeks</div>
+        </div>
+      </div>
+
+      <!-- Card 4: Answer Writing -->
+      <div class="feat-card">
+        <div class="feat-icon">✍️</div>
+        <div class="feat-name">Answer Writing Feedback</div>
+        <div class="feat-desc">Submit Mains answers and receive structured feedback on structure, content, and presentation within 24 hours.</div>
+        <div class="feat-visual">
+          <div style="display:flex;flex-direction:column;gap:5px">
+            <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:.75rem;color:var(--fg2)">Content depth</span><span style="font-size:.75rem;font-weight:600;color:var(--green)">8/10</span></div>
+            <div class="pbar" style="height:5px"><div class="pfill g" style="width:80%"></div></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:3px"><span style="font-size:.75rem;color:var(--fg2)">Structure</span><span style="font-size:.75rem;font-weight:600;color:var(--accent)">6/10</span></div>
+            <div class="pbar" style="height:5px"><div class="pfill" style="width:60%"></div></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:3px"><span style="font-size:.75rem;color:var(--fg2)">Examples</span><span style="font-size:.75rem;font-weight:600;color:var(--blue)">7/10</span></div>
+            <div class="pbar" style="height:5px"><div class="pfill b" style="width:70%"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 5: Study Planner -->
+      <div class="feat-card">
+        <div class="feat-icon">📅</div>
+        <div class="feat-name">Adaptive Study Planner</div>
+        <div class="feat-desc">Missed a session? The planner redistributes topics automatically — prep stays on track even when life doesn't cooperate.</div>
+        <div class="feat-visual">
+          <div style="font-size:.6875rem;font-weight:600;color:var(--fg3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:7px">October 2026</div>
+          <div class="cal-grid">
+            <div class="cal-dot done"></div><div class="cal-dot done"></div><div class="cal-dot done"></div><div class="cal-dot done"></div><div class="cal-dot done"></div><div class="cal-dot"></div><div class="cal-dot done"></div>
+            <div class="cal-dot done"></div><div class="cal-dot done"></div><div class="cal-dot done"></div><div class="cal-dot done"></div><div class="cal-dot done"></div><div class="cal-dot done"></div><div class="cal-dot done"></div>
+            <div class="cal-dot done"></div><div class="cal-dot done"></div><div class="cal-dot done"></div><div class="cal-dot today"></div><div class="cal-dot plan"></div><div class="cal-dot plan"></div><div class="cal-dot plan"></div>
+          </div>
+          <div style="display:flex;gap:10px;margin-top:6px"><span style="display:flex;align-items:center;gap:4px;font-size:.6875rem;color:var(--fg3)"><span style="width:8px;height:8px;border-radius:2px;background:var(--green);flex-shrink:0"></span>Done</span><span style="display:flex;align-items:center;gap:4px;font-size:.6875rem;color:var(--fg3)"><span style="width:8px;height:8px;border-radius:2px;background:var(--accent);flex-shrink:0"></span>Today</span><span style="display:flex;align-items:center;gap:4px;font-size:.6875rem;color:var(--fg3)"><span style="width:8px;height:8px;border-radius:2px;background:rgba(245,158,11,.35);flex-shrink:0"></span>Planned</span></div>
+        </div>
+      </div>
+
+      <!-- Card 6: Notifications -->
+      <div class="feat-card">
+        <div class="feat-icon">🔔</div>
+        <div class="feat-name">Exam Notification Hub</div>
+        <div class="feat-desc">Admit cards, PDFs, result dates, and interview call letters — tracked and delivered before you think to check.</div>
+        <div class="feat-visual">
+          <div class="notif-row"><div class="notif-pip" style="background:var(--green)"></div><div class="notif-text">CSE 2025 Final Result — 1009 selected</div></div>
+          <div class="notif-row"><div class="notif-pip" style="background:var(--accent)"></div><div class="notif-text">CDS II 2026 Admit Card now live</div></div>
+          <div class="notif-row"><div class="notif-pip" style="background:var(--blue)"></div><div class="notif-text">CSE 2027 Notification released</div></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══ CHANGE 4: TOPPER STORIES — data driven, no illustrated portraits ═══ -->
+<div class="c" style="padding-top:56px;padding-bottom:56px">
+  <div class="sh row">
+    <div>
+      <div class="st">Toppers Who Used Compass</div>
+      <div class="ss">AIR ranks with their subject strength data — not illustrated avatars, real results</div>
+    </div>
+  </div>
+  <div class="toppers-scroll">
+
+    <div class="topper-card gold">
+      <div class="air-badge"><span class="air-label">AIR</span><span class="air-num">47</span></div>
+      <div class="topper-name">Arjun Mehta</div>
+      <div class="topper-meta">UPSC CSE 2025 · Delhi</div>
+      <div class="topper-quote">"The GS-tagged current affairs saved me 2 hours a day. I cleared Prelims with 148 marks."</div>
+      <div class="topper-bars">
+        <div class="tb-row"><div class="tb-lbl">History</div><div class="tb-wrap"><div class="tb-fill" style="background:var(--accent);width:88%"></div></div><div class="tb-val">88%</div></div>
+        <div class="tb-row"><div class="tb-lbl">Polity</div><div class="tb-wrap"><div class="tb-fill" style="background:var(--green);width:92%"></div></div><div class="tb-val">92%</div></div>
+        <div class="tb-row"><div class="tb-lbl">Ethics</div><div class="tb-wrap"><div class="tb-fill" style="background:var(--blue);width:84%"></div></div><div class="tb-val">84%</div></div>
+      </div>
+    </div>
+
+    <div class="topper-card silver">
+      <div class="air-badge"><span class="air-label">AIR</span><span class="air-num">68</span></div>
+      <div class="topper-name">Priya Sharma</div>
+      <div class="topper-meta">UPSC CSE 2025 · Mumbai</div>
+      <div class="topper-quote">"The adaptive mock tests felt exactly like the real Prelims. My accuracy improved from 54% to 79%."</div>
+      <div class="topper-bars">
+        <div class="tb-row"><div class="tb-lbl">Geography</div><div class="tb-wrap"><div class="tb-fill" style="background:var(--accent);width:91%"></div></div><div class="tb-val">91%</div></div>
+        <div class="tb-row"><div class="tb-lbl">Economy</div><div class="tb-wrap"><div class="tb-fill" style="background:var(--green);width:78%"></div></div><div class="tb-val">78%</div></div>
+        <div class="tb-row"><div class="tb-lbl">S&amp;T</div><div class="tb-wrap"><div class="tb-fill" style="background:var(--blue);width:82%"></div></div><div class="tb-val">82%</div></div>
+      </div>
+    </div>
+
+    <div class="topper-card blue">
+      <div class="air-badge"><span class="air-label">AIR</span><span class="air-num">132</span></div>
+      <div class="topper-name">Rohit Verma</div>
+      <div class="topper-meta">UPSC CSE 2024 · Jaipur</div>
+      <div class="topper-quote">"Missed 3 weeks due to illness — the adaptive planner restructured my schedule automatically. Still cleared."</div>
+      <div class="topper-bars">
+        <div class="tb-row"><div class="tb-lbl">Polity</div><div class="tb-wrap"><div class="tb-fill" style="background:var(--accent);width:85%"></div></div><div class="tb-val">85%</div></div>
+        <div class="tb-row"><div class="tb-lbl">Ethics</div><div class="tb-wrap"><div class="tb-fill" style="background:var(--green);width:90%"></div></div><div class="tb-val">90%</div></div>
+        <div class="tb-row"><div class="tb-lbl">History</div><div class="tb-wrap"><div class="tb-fill" style="background:var(--blue);width:76%"></div></div><div class="tb-val">76%</div></div>
+      </div>
+    </div>
+
+    <div class="topper-card green">
+      <div class="air-badge"><span class="air-label">AIR</span><span class="air-num">201</span></div>
+      <div class="topper-name">Sneha Reddy</div>
+      <div class="topper-meta">UPSC CSE 2024 · Hyderabad</div>
+      <div class="topper-quote">"The syllabus progress tracker kept me honest. I could see exactly which topics I was avoiding."</div>
+      <div class="topper-bars">
+        <div class="tb-row"><div class="tb-lbl">Geography</div><div class="tb-wrap"><div class="tb-fill" style="background:var(--accent);width:88%"></div></div><div class="tb-val">88%</div></div>
+        <div class="tb-row"><div class="tb-lbl">Economy</div><div class="tb-wrap"><div class="tb-fill" style="background:var(--green);width:72%"></div></div><div class="tb-val">72%</div></div>
+        <div class="tb-row"><div class="tb-lbl">IR</div><div class="tb-wrap"><div class="tb-fill" style="background:var(--blue);width:80%"></div></div><div class="tb-val">80%</div></div>
+      </div>
+    </div>
+
+    <div class="topper-card bronze">
+      <div class="air-badge"><span class="air-label">AIR</span><span class="air-num">312</span></div>
+      <div class="topper-name">Amit Kulkarni</div>
+      <div class="topper-meta">UPSC CSE 2024 · Pune</div>
+      <div class="topper-quote">"Coming from a non-humanities background — the answer writing feedback helped me structure GS essays."</div>
+      <div class="topper-bars">
+        <div class="tb-row"><div class="tb-lbl">Ethics</div><div class="tb-wrap"><div class="tb-fill" style="background:var(--accent);width:86%"></div></div><div class="tb-val">86%</div></div>
+        <div class="tb-row"><div class="tb-lbl">S&amp;T</div><div class="tb-wrap"><div class="tb-fill" style="background:var(--green);width:94%"></div></div><div class="tb-val">94%</div></div>
+        <div class="tb-row"><div class="tb-lbl">Economy</div><div class="tb-wrap"><div class="tb-fill" style="background:var(--blue);width:78%"></div></div><div class="tb-val">78%</div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══ CHANGE 5: COMPARISON TABLE — no UPSC site shows this ═══ -->
+<section class="compare-section">
+  <div class="c">
+    <div style="text-align:center;margin-bottom:36px">
+      <div class="eyebrow" style="justify-content:center">Honest comparison</div>
+      <h2 style="font-family:'Playfair Display',Georgia,serif;font-size:clamp(1.75rem,3.5vw,2.375rem);font-weight:700;margin:0">UPSC Compass vs. the alternatives</h2>
+    </div>
+    <div class="compare-table-wrap">
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th class="hl col-us">UPSC Compass</th>
+            <th>Coaching Classes</th>
+            <th>Other Apps</th>
+            <th>UPSC.gov.in</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Live syllabus progress tracker</td><td class="col-us"><span class="check">✓</span> Full coverage</td><td><span class="cross">✗</span></td><td><span class="part">Partial</span></td><td><span class="cross">✗</span></td></tr>
+          <tr><td>GS-paper tagged current affairs</td><td class="col-us"><span class="check">✓</span> Daily · 6 sources</td><td><span class="cross">✗</span></td><td><span class="cross">✗</span></td><td><span class="cross">✗</span></td></tr>
+          <tr><td>Adaptive mock tests</td><td class="col-us"><span class="check">✓</span> 12,400+ tests</td><td><span class="part">Fixed schedule</span></td><td><span class="part">Partial</span></td><td><span class="cross">✗</span></td></tr>
+          <tr><td>Answer writing feedback</td><td class="col-us"><span class="check">✓</span> Within 24 hrs</td><td><span class="check">✓</span> Slow</td><td><span class="cross">✗</span></td><td><span class="cross">✗</span></td></tr>
+          <tr><td>Performance analytics</td><td class="col-us"><span class="check">✓</span> Subject-level</td><td><span class="cross">✗</span></td><td><span class="part">Basic scores</span></td><td><span class="cross">✗</span></td></tr>
+          <tr><td>Dark mode</td><td class="col-us"><span class="check">✓</span> System/Dark/Light</td><td>—</td><td><span class="cross">✗</span></td><td><span class="cross">✗</span></td></tr>
+          <tr><td>Exam notification alerts</td><td class="col-us"><span class="check">✓</span> Instant push</td><td><span class="cross">✗</span></td><td><span class="part">Some</span></td><td><span class="check">✓</span></td></tr>
+          <tr><td>Free to start</td><td class="col-us"><span class="check">✓</span> 30 days free</td><td><span class="cross">✗</span> ₹50,000+/yr</td><td><span class="part">Limited</span></td><td><span class="check">✓</span> Free</td></tr>
+          <tr><td>Mobile responsive</td><td class="col-us"><span class="check">✓</span> First-class</td><td>—</td><td><span class="part">App only</span></td><td><span class="cross">✗</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ CHANGE 6: FAQ ACCORDION ═══ -->
+<div class="c" style="padding-block:56px">
+  <div style="text-align:center;margin-bottom:36px">
+    <div class="eyebrow" style="justify-content:center">Got questions</div>
+    <h2 style="font-family:'Playfair Display',Georgia,serif;font-size:clamp(1.75rem,3.5vw,2.375rem);font-weight:700;margin:0">Frequently Asked Questions</h2>
+  </div>
+  <div class="faq-list" id="faqList">
+    <div class="faq-item open">
+      <button class="faq-q"><span>What makes UPSC Compass different from other apps like Unacademy or BYJU's?</span><span class="faq-icon">+</span></button>
+      <div class="faq-a"><div class="faq-a-inner">Other apps focus on video lectures, which are passive. We focus on active preparation: tracking your own syllabus coverage, tagging every current affairs story to its GS paper, adaptive tests that adjust difficulty to your level, and showing you your exact percentile rank in real time — not a pre-recorded certificate.</div></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q"><span>Is it really free? What's the catch?</span><span class="faq-icon">+</span></button>
+      <div class="faq-a"><div class="faq-a-inner">The first 30 days are completely free — full access, no credit card required. After that, there's a monthly plan at ₹299/month or an annual plan at ₹1,999/year (less than ₹6 a day). That's it. No upsells inside the platform.</div></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q"><span>How are your mock tests different from the ones on other platforms?</span><span class="faq-icon">+</span></button>
+      <div class="faq-a"><div class="faq-a-inner">Our tests are adaptive: the next question's difficulty adjusts based on how you answered the previous one — just like the computerised scoring UPSC uses in its own analysis. We also map each question to UPSC's own weightage data from 2011–2026, so the topic distribution mirrors what actually appears on paper.</div></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q"><span>Can I use this for both Prelims and Mains preparation?</span><span class="faq-icon">+</span></button>
+      <div class="faq-a"><div class="faq-a-inner">Yes. The syllabus tracker covers all GS papers (GS1 through GS4 and CSAT) for Prelims, and the Mains-specific section has answer writing prompts, past Mains questions organised by GS paper and year, and a dedicated Ethics case study bank. The study planner lets you switch between Prelims mode and Mains mode.</div></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q"><span>What happens if I miss several days of study?</span><span class="faq-icon">+</span></button>
+      <div class="faq-a"><div class="faq-a-inner">The adaptive planner detects the missed sessions and redistributes the pending topics across the remaining days before your target exam date — without overloading any single day. You'll see a notice when you log back in showing exactly what was rescheduled and why, with the option to accept the new plan or customise it yourself.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ CHANGE 7: BOLD FINAL CTA BAND — no existing UPSC site has a proper one ═══ -->
+<section class="cta-band">
+  <div class="c">
+    <h2>231 days to UPSC Prelims 2027.<br>How many will you waste?</h2>
+    <p>Join 2,40,000 aspirants who prep smarter, not just harder.</p>
+    <div class="cta-buttons">
+      <button class="btn btn-white">Start Free — No Credit Card</button>
+      <button class="btn btn-outline-white">Watch 2-min Demo</button>
+    </div>
+    <div style="margin-top:20px;font-size:.875rem;color:rgba(255,255,255,.7)">30 days free · Cancel anytime · ₹299/mo after</div>
+  </div>
+</section>
+
+<!-- ═══ FOOTER ═══ -->
 <footer>
   <div class="c footer-row">
     <div>
-      <a href="#" class="footer-brand">
-        <div class="logo-mark" style="width:24px;height:24px;font-size:0.6875rem">IAS</div>
-        UPSC Compass
-      </a>
+      <a href="#" class="footer-brand"><div class="logo-mark" style="width:24px;height:24px;font-size:.6875rem">IAS</div>UPSC Compass</a>
       <div class="footer-copy">© 2026 UPSC Compass. Built for serious aspirants.</div>
     </div>
     <div class="footer-links">
-      <a href="#">Privacy</a>
-      <a href="#">Terms</a>
-      <a href="#">About</a>
-      <a href="#">Contact</a>
-      <a href="#">Blog</a>
+      <a href="#">Privacy</a><a href="#">Terms</a><a href="#">About</a><a href="#">Contact</a><a href="#">Blog</a>
     </div>
   </div>
 </footer>
 
-<!-- ═══════════════════ SCRIPTS ═════════════════════════════ -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script>
-  /* ── THEME TOGGLE ─────────────────────────────────── */
-  const root = document.documentElement;
-  const btn  = document.getElementById('themeBtn');
-  const ICONS = { system: '🌓', dark: '☀️', light: '🌙' };
-  let theme = 'system';
-  try { theme = localStorage.getItem('upsc-theme') || 'system'; } catch(e) {}
+/* ── THEME ── */
+const root = document.documentElement;
+const themeBtn = document.getElementById('themeBtn');
+const ICONS = {system:'🌓',dark:'☀️',light:'🌙'};
+let theme = 'system';
+try { theme = localStorage.getItem('upsc-theme')||'system'; } catch(e){}
+function applyTheme(t){
+  if(t==='dark'){root.setAttribute('data-theme','dark');themeBtn.textContent=ICONS.dark;}
+  else if(t==='light'){root.setAttribute('data-theme','light');themeBtn.textContent=ICONS.light;}
+  else{root.removeAttribute('data-theme');themeBtn.textContent=ICONS.system;}
+}
+applyTheme(theme);
+themeBtn.addEventListener('click',()=>{
+  const next={system:'dark',dark:'light',light:'system'};
+  theme=next[theme]||'dark';
+  try{localStorage.setItem('upsc-theme',theme);}catch(e){}
+  applyTheme(theme);buildCharts();
+});
 
-  function applyTheme(t) {
-    if (t === 'dark')  { root.setAttribute('data-theme','dark');  btn.textContent = ICONS.dark; }
-    else if (t === 'light') { root.setAttribute('data-theme','light'); btn.textContent = ICONS.light; }
-    else { root.removeAttribute('data-theme'); btn.textContent = ICONS.system; }
-  }
-  applyTheme(theme);
+/* ── COUNTDOWN ── */
+const TARGET=new Date('2027-06-06T09:00:00+05:30');
+function pad(n,w){return String(n).padStart(w,'0');}
+function tick(){
+  const diff=TARGET-Date.now();
+  if(diff<=0)return;
+  document.getElementById('cdD').textContent=pad(Math.floor(diff/86400000),3);
+  document.getElementById('cdH').textContent=pad(Math.floor(diff%86400000/3600000),2);
+  document.getElementById('cdM').textContent=pad(Math.floor(diff%3600000/60000),2);
+  document.getElementById('cdS').textContent=pad(Math.floor(diff%60000/1000),2);
+}
+tick();setInterval(tick,1000);
 
-  btn.addEventListener('click', () => {
-    const next = { system: 'dark', dark: 'light', light: 'system' };
-    theme = next[theme] || 'dark';
-    try { localStorage.setItem('upsc-theme', theme); } catch(e) {}
-    applyTheme(theme);
-    buildCharts();
+/* ── SYLLABUS TABS ── */
+const ALL_TABS=['gs1','gs2','gs3','gs4','csat'];
+document.getElementById('sylTabs').addEventListener('click',e=>{
+  const b=e.target.closest('.syl-tab');if(!b)return;
+  document.querySelectorAll('.syl-tab').forEach(t=>t.classList.remove('on'));
+  b.classList.add('on');
+  const id=b.dataset.tab;
+  ALL_TABS.forEach(t=>{const el=document.getElementById(t);if(el)el.style.display=t===id?'':'none';});
+});
+
+/* ── DEMO TABS ── */
+document.getElementById('demoTabs').addEventListener('click',e=>{
+  const b=e.target.closest('.demo-tab');if(!b)return;
+  document.querySelectorAll('.demo-tab').forEach(t=>t.classList.remove('on'));
+  b.classList.add('on');
+  const pid=b.dataset.panel;
+  document.querySelectorAll('.demo-panel').forEach(p=>{
+    p.classList.toggle('on',p.id===pid);
   });
+});
 
-  /* ── COUNTDOWN ────────────────────────────────────── */
-  const TARGET = new Date('2027-06-06T09:00:00+05:30');
-  function pad(n, w) { return String(n).padStart(w, '0'); }
+/* ── FAQ ACCORDION ── */
+document.getElementById('faqList').addEventListener('click',e=>{
+  const q=e.target.closest('.faq-q');if(!q)return;
+  const item=q.closest('.faq-item');
+  const wasOpen=item.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(i=>i.classList.remove('open'));
+  if(!wasOpen)item.classList.add('open');
+});
 
-  function tick() {
-    const diff = TARGET - Date.now();
-    if (diff <= 0) {
-      ['cdD','cdH','cdM','cdS'].forEach((id,i) => document.getElementById(id).textContent = pad(0,[3,2,2,2][i]));
-      return;
-    }
-    document.getElementById('cdD').textContent = pad(Math.floor(diff/86400000),   3);
-    document.getElementById('cdH').textContent = pad(Math.floor(diff%86400000/3600000), 2);
-    document.getElementById('cdM').textContent = pad(Math.floor(diff%3600000/60000),    2);
-    document.getElementById('cdS').textContent = pad(Math.floor(diff%60000/1000),       2);
-  }
-  tick();
-  setInterval(tick, 1000);
-
-  /* ── SYLLABUS TABS ────────────────────────────────── */
-  const ALL_TABS = ['gs1','gs2','gs3','gs4','csat'];
-  document.getElementById('sylTabs').addEventListener('click', e => {
-    const btn = e.target.closest('.syl-tab');
-    if (!btn) return;
-    document.querySelectorAll('.syl-tab').forEach(t => t.classList.remove('on'));
-    btn.classList.add('on');
-    const id = btn.dataset.tab;
-    ALL_TABS.forEach(t => {
-      const el = document.getElementById(t);
-      if (el) el.style.display = t === id ? '' : 'none';
-    });
+/* ── CHARTS ── */
+let rChart,bChart;
+function tok(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim();}
+function buildCharts(){
+  const fg2=tok('--fg2'),fg3=tok('--fg3'),border=tok('--border'),accent=tok('--accent'),blue=tok('--blue');
+  Chart.defaults.font.family="'Inter',system-ui,sans-serif";
+  Chart.defaults.font.size=12;
+  if(rChart)rChart.destroy();
+  if(bChart)bChart.destroy();
+  const rc=document.getElementById('radarC');
+  rChart=new Chart(rc,{type:'radar',data:{
+    labels:['History','Geography','Polity','Economy','Environment','Ethics','CSAT'],
+    datasets:[
+      {label:'Your Score %',data:[72,58,64,48,55,80,88],backgroundColor:accent+'22',borderColor:accent,borderWidth:2,pointBackgroundColor:accent,pointRadius:4},
+      {label:'Top 50th Percentile',data:[78,72,75,70,68,74,90],backgroundColor:blue+'14',borderColor:blue,borderWidth:1.5,borderDash:[4,4],pointBackgroundColor:blue,pointRadius:3}
+    ]
+  },options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{position:'bottom',labels:{boxWidth:10,padding:14,color:fg2}}},
+    scales:{r:{min:0,max:100,ticks:{stepSize:25,color:fg3,backdropColor:'transparent',font:{size:10}},grid:{color:border},angleLines:{color:border},pointLabels:{color:fg2,font:{size:11}}}}}
   });
-
-  /* ── CHARTS ───────────────────────────────────────── */
-  let rChart, bChart;
-
-  function tok(name) {
-    return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-  }
-
-  function buildCharts() {
-    const fg2    = tok('--fg2');
-    const fg3    = tok('--fg3');
-    const border = tok('--border');
-    const accent = tok('--accent');
-    const blue   = tok('--blue');
-    const green  = tok('--green');
-
-    Chart.defaults.font.family = "'Inter', system-ui, sans-serif";
-    Chart.defaults.font.size   = 12;
-
-    if (rChart) rChart.destroy();
-    if (bChart) bChart.destroy();
-
-    /* radar */
-    const rc = document.getElementById('radarC');
-    rChart = new Chart(rc, {
-      type: 'radar',
-      data: {
-        labels: ['History','Geography','Polity','Economy','Environment','Ethics','CSAT'],
-        datasets: [
-          {
-            label: 'Your Score %',
-            data: [72, 58, 64, 48, 55, 80, 88],
-            backgroundColor: accent + '22',
-            borderColor: accent,
-            borderWidth: 2,
-            pointBackgroundColor: accent,
-            pointRadius: 4,
-          },
-          {
-            label: 'Top 50th Percentile',
-            data: [78, 72, 75, 70, 68, 74, 90],
-            backgroundColor: blue + '14',
-            borderColor: blue,
-            borderWidth: 1.5,
-            borderDash: [4,4],
-            pointBackgroundColor: blue,
-            pointRadius: 3,
-          }
-        ]
-      },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        plugins: {
-          legend: { position: 'bottom', labels: { boxWidth: 10, padding: 14, color: fg2 } }
-        },
-        scales: {
-          r: {
-            min: 0, max: 100,
-            ticks: { stepSize: 25, color: fg3, backdropColor: 'transparent', font: { size: 10 } },
-            grid: { color: border },
-            angleLines: { color: border },
-            pointLabels: { color: fg2, font: { size: 11 } }
-          }
-        }
-      }
-    });
-
-    /* bar */
-    const bc = document.getElementById('barC');
-    bChart = new Chart(bc, {
-      type: 'bar',
-      data: {
-        labels: ['Wk 1','Wk 2','Wk 3','Wk 4','Wk 5','Wk 6','Wk 7','Wk 8'],
-        datasets: [{
-          label: 'Study Hours',
-          data: [28, 32, 25, 38, 35, 40, 42, 44],
-          backgroundColor: accent + 'cc',
-          borderRadius: 6,
-          borderSkipped: false,
-        }]
-      },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
-        scales: {
-          x: { grid: { display: false }, ticks: { color: fg3 } },
-          y: { grid: { color: border },  ticks: { color: fg3 }, min: 0 }
-        }
-      }
-    });
-  }
-
-  buildCharts();
-
-  /* Re-render charts when system preference changes */
-  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', buildCharts);
+  const bc=document.getElementById('barC');
+  bChart=new Chart(bc,{type:'bar',data:{
+    labels:['Wk1','Wk2','Wk3','Wk4','Wk5','Wk6','Wk7','Wk8'],
+    datasets:[{label:'Study Hours',data:[28,32,25,38,35,40,42,44],backgroundColor:accent+'cc',borderRadius:6,borderSkipped:false}]
+  },options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false}},
+    scales:{x:{grid:{display:false},ticks:{color:fg3}},y:{grid:{color:border},ticks:{color:fg3},min:0}}}
+  });
+}
+buildCharts();
+window.matchMedia('(prefers-color-scheme:dark)').addEventListener('change',buildCharts);
 </script>
