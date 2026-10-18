@@ -1,0 +1,1368 @@
+<title>UPSC Compass</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+
+<style>
+/*
+ * Layout: full-bleed bands with centred max-width containers
+ * Dark-first: midnight navy + amber accent + slate neutrals
+ */
+
+:root {
+  --bg:       #F7F8FA;
+  --bg2:      #EFF1F5;
+  --surface:  #FFFFFF;
+  --card:     #FFFFFF;
+  --border:   #DDE1EA;
+  --fg:       #0F1629;
+  --fg2:      #4A5568;
+  --fg3:      #8A9BBB;
+  --accent:   #D4860A;
+  --accent2:  #F59E0B;
+  --green:    #059669;
+  --red:      #DC2626;
+  --blue:     #2563EB;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg:      #090D1A;
+    --bg2:     #0F1525;
+    --surface: #141D30;
+    --card:    #192236;
+    --border:  #252F47;
+    --fg:      #EEF2FF;
+    --fg2:     #8A9BBB;
+    --fg3:     #4A5A7A;
+    --accent:  #F59E0B;
+    --accent2: #FCD34D;
+    --green:   #10B981;
+    --red:     #F87171;
+    --blue:    #60A5FA;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg:      #090D1A;
+  --bg2:     #0F1525;
+  --surface: #141D30;
+  --card:    #192236;
+  --border:  #252F47;
+  --fg:      #EEF2FF;
+  --fg2:     #8A9BBB;
+  --fg3:     #4A5A7A;
+  --accent:  #F59E0B;
+  --accent2: #FCD34D;
+  --green:   #10B981;
+  --red:     #F87171;
+  --blue:    #60A5FA;
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: 'Inter', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── CONTAINER ─────────────────────────────────────────────── */
+.c {
+  max-width: 1248px;
+  margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+
+/* ── NAV ────────────────────────────────────────────────────── */
+nav {
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  z-index: 200;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-block: 13px;
+}
+
+.logo {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.1875rem;
+  font-weight: 700;
+  color: var(--fg);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex-shrink: 0;
+}
+
+.logo-mark {
+  width: 30px;
+  height: 30px;
+  background: var(--accent);
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #fff;
+  letter-spacing: -0.03em;
+}
+
+.nav-links {
+  display: flex;
+  gap: 2px;
+  margin-left: 20px;
+}
+
+.nl {
+  padding: 6px 11px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--fg2);
+  text-decoration: none;
+  border-radius: 7px;
+  transition: color .15s, background .15s;
+}
+.nl:hover   { color: var(--fg); background: var(--bg2); }
+.nl.on      { color: var(--accent); }
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: 'Inter', system-ui, sans-serif;
+  cursor: pointer;
+  border: none;
+  transition: opacity .15s, transform .1s;
+}
+.btn:hover  { opacity: .88; }
+.btn:active { transform: scale(.97); }
+
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-ghost   {
+  background: transparent;
+  color: var(--fg2);
+  border: 1.5px solid var(--border);
+}
+.btn-ghost:hover { border-color: var(--fg3); color: var(--fg); }
+
+.theme-btn {
+  width: 36px; height: 36px; padding: 0;
+  background: var(--bg2);
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  color: var(--fg2);
+  cursor: pointer;
+  font-size: 0.9375rem;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .15s;
+}
+.theme-btn:hover { background: var(--border); }
+
+/* ── HERO ───────────────────────────────────────────────────── */
+.hero {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 56px;
+  align-items: center;
+  padding-block: 72px 64px;
+}
+
+.eyebrow {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .14em;
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+.eyebrow::before { content: ''; width: 22px; height: 2px; background: var(--accent); flex-shrink: 0; }
+
+h1 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(2.25rem, 5vw, 3.5rem);
+  font-weight: 700;
+  line-height: 1.08;
+  text-wrap: balance;
+  letter-spacing: -.025em;
+  margin: 0 0 20px;
+}
+h1 em { font-style: normal; color: var(--accent); }
+
+.hero-sub {
+  color: var(--fg2);
+  font-size: 1.0625rem;
+  line-height: 1.75;
+  margin: 0 0 32px;
+  max-width: 460px;
+}
+
+.hero-ctas {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+}
+
+.hero-ctas .btn { padding: 12px 28px; font-size: 1rem; }
+
+.trust-row {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.trust-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8125rem;
+  color: var(--fg3);
+}
+.trust-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--green);
+  flex-shrink: 0;
+}
+
+/* ── COUNTDOWN ──────────────────────────────────────────────── */
+.cd-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 30px;
+  position: relative;
+  overflow: hidden;
+}
+.cd-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 90% 10%, rgba(245,158,11,.09) 0%, transparent 55%);
+  pointer-events: none;
+}
+
+.cd-label {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--fg3);
+  margin-bottom: 4px;
+}
+.cd-exam {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.1875rem;
+  font-weight: 700;
+  margin-bottom: 24px;
+}
+
+.cd-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 22px;
+}
+.cd-unit {
+  background: var(--bg2);
+  border-radius: 11px;
+  padding: 14px 8px;
+  text-align: center;
+}
+.cd-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--accent);
+  line-height: 1;
+  margin-bottom: 4px;
+  font-variant-numeric: tabular-nums;
+}
+.cd-ulabel {
+  font-size: 0.625rem;
+  text-transform: uppercase;
+  letter-spacing: .09em;
+  color: var(--fg3);
+}
+
+.prep-bar {
+  margin-bottom: 18px;
+}
+.prep-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8125rem;
+  margin-bottom: 7px;
+  color: var(--fg2);
+}
+.prep-pct { font-family: 'JetBrains Mono', monospace; color: var(--accent); font-variant-numeric: tabular-nums; }
+
+.pbar { height: 7px; background: var(--bg2); border-radius: 100px; overflow: hidden; }
+.pfill {
+  height: 100%;
+  border-radius: 100px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  transition: width .5s ease;
+}
+.pfill.g { background: linear-gradient(90deg, var(--green), #34D399); }
+.pfill.b { background: linear-gradient(90deg, var(--blue), #93C5FD); }
+
+.tag-row { display: flex; gap: 7px; flex-wrap: wrap; }
+.tag {
+  padding: 4px 10px;
+  border-radius: 100px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  background: var(--bg2);
+  color: var(--fg2);
+  border: 1px solid var(--border);
+}
+.tag.a { background: rgba(245,158,11,.12); color: var(--accent); border-color: rgba(245,158,11,.25); }
+.tag.g { background: rgba(16,185,129,.11); color: var(--green); border-color: rgba(16,185,129,.22); }
+.tag.b { background: rgba(96,165,250,.11); color: var(--blue); border-color: rgba(96,165,250,.22); }
+
+/* ── STATS BAR ──────────────────────────────────────────────── */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  padding-bottom: 44px;
+}
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 19px 19px 17px;
+  position: relative;
+}
+.stat-icon { font-size: 1.25rem; margin-bottom: 9px; }
+.stat-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--fg);
+  line-height: 1;
+  margin-bottom: 3px;
+  font-variant-numeric: tabular-nums;
+}
+.stat-lbl { font-size: 0.8125rem; color: var(--fg2); }
+.stat-delta {
+  position: absolute;
+  top: 16px; right: 16px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--green);
+  font-variant-numeric: tabular-nums;
+}
+.stat-delta.down { color: var(--red); }
+
+/* ── SECTION HEADINGS ───────────────────────────────────────── */
+.sec-head { margin-bottom: 20px; }
+.sec-head.row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+.sec-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.4375rem;
+  font-weight: 700;
+  margin: 0 0 3px;
+}
+.sec-sub {
+  font-size: 0.875rem;
+  color: var(--fg2);
+  margin: 0;
+}
+
+/* ── MAIN GRID ──────────────────────────────────────────────── */
+.main-grid {
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  gap: 22px;
+  padding-bottom: 48px;
+}
+
+/* SYLLABUS */
+.syllabus-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 22px;
+}
+.syl-tabs {
+  display: flex;
+  gap: 3px;
+  background: var(--bg2);
+  padding: 4px;
+  border-radius: 10px;
+  margin-bottom: 22px;
+}
+.syl-tab {
+  flex: 1;
+  padding: 7px 4px;
+  text-align: center;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  border-radius: 7px;
+  cursor: pointer;
+  color: var(--fg2);
+  border: none;
+  background: transparent;
+  font-family: 'Inter', system-ui, sans-serif;
+  transition: all .15s;
+  white-space: nowrap;
+}
+.syl-tab.on {
+  background: var(--surface);
+  color: var(--fg);
+  box-shadow: 0 1px 3px rgba(0,0,0,.12);
+}
+
+.sub-row { margin-bottom: 17px; }
+.sub-hdr {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 6px;
+}
+.sub-name { font-size: 0.9375rem; font-weight: 500; }
+.sub-meta {
+  font-size: 0.8125rem;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--fg3);
+  font-variant-numeric: tabular-nums;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 7px;
+}
+.chip {
+  font-size: 0.6875rem;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: var(--bg2);
+  color: var(--fg3);
+  border: 1px solid var(--border);
+}
+.chip.done {
+  background: rgba(16,185,129,.09);
+  color: var(--green);
+  border-color: rgba(16,185,129,.2);
+  text-decoration: line-through;
+}
+
+/* TODAY PLAN */
+.plan-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 22px;
+}
+.plan-row {
+  display: flex;
+  gap: 11px;
+  align-items: flex-start;
+  padding-bottom: 13px;
+  margin-bottom: 13px;
+  border-bottom: 1px solid var(--border);
+}
+.plan-row:last-of-type { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.plan-time {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--fg3);
+  width: 36px;
+  flex-shrink: 0;
+  padding-top: 2px;
+  font-variant-numeric: tabular-nums;
+}
+.plan-pip {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex-shrink: 0;
+  margin-top: 7px;
+}
+.plan-pip.g { background: var(--green); }
+.plan-pip.b { background: var(--blue); }
+.plan-pip.x { background: var(--fg3); }
+.plan-body { flex: 1; min-width: 0; }
+.plan-topic {
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 2px;
+}
+.plan-topic.done { color: var(--fg3); text-decoration: line-through; }
+.plan-detail { font-size: 0.8125rem; color: var(--fg3); }
+
+.focus-box {
+  background: rgba(245,158,11,.07);
+  border: 1px solid rgba(245,158,11,.22);
+  border-radius: 11px;
+  padding: 15px;
+  margin-top: 14px;
+}
+.focus-label {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--accent);
+  margin-bottom: 5px;
+}
+.focus-topic { font-size: 0.9375rem; font-weight: 600; margin-bottom: 3px; }
+.focus-note { font-size: 0.8125rem; color: var(--fg2); }
+
+/* ── CURRENT AFFAIRS ────────────────────────────────────────── */
+.ca-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  padding-bottom: 48px;
+}
+.ca-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px;
+  cursor: pointer;
+  transition: border-color .15s, transform .15s;
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+}
+.ca-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+.ca-cat {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--accent);
+  margin-bottom: 7px;
+}
+.ca-hl {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.4;
+  margin-bottom: 7px;
+  flex: 1;
+}
+.ca-src { font-size: 0.8125rem; color: var(--fg3); }
+.imps {
+  display: flex;
+  gap: 3px;
+  margin-top: 10px;
+}
+.imp { width: 6px; height: 6px; border-radius: 50%; background: var(--border); }
+.imp.on { background: var(--accent); }
+
+/* ── ANALYTICS ──────────────────────────────────────────────── */
+.analytics-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px;
+  padding-bottom: 48px;
+}
+.chart-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 22px;
+}
+.chart-title { font-size: 1rem; font-weight: 600; margin-bottom: 3px; }
+.chart-sub { font-size: 0.8125rem; color: var(--fg2); margin-bottom: 18px; }
+.chart-wrap { position: relative; height: 240px; }
+
+/* ── MOCK TESTS ─────────────────────────────────────────────── */
+.tests-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  padding-bottom: 48px;
+}
+.test-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+  position: relative;
+}
+.test-card.hot { border-color: var(--accent); }
+.test-badge {
+  position: absolute;
+  top: -9px; left: 16px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  padding: 2px 9px;
+  border-radius: 100px;
+}
+.test-name { font-weight: 600; font-size: 0.9375rem; margin-bottom: 3px; }
+.test-meta { font-size: 0.8125rem; color: var(--fg2); margin-bottom: 12px; }
+.test-nums {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+.tn { }
+.tn-n {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.125rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.tn-l {
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--fg3);
+}
+
+/* ── FEATURES BAND ──────────────────────────────────────────── */
+.features-band {
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding-block: 64px;
+}
+.features-heading {
+  text-align: center;
+  margin-bottom: 44px;
+}
+.features-heading .eyebrow { justify-content: center; }
+.features-heading .eyebrow::before { display: none; }
+.features-heading h2 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 700;
+  text-wrap: balance;
+  margin: 0;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+.feat {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 22px;
+}
+.feat-icon { font-size: 1.75rem; margin-bottom: 11px; }
+.feat-name { font-weight: 600; font-size: 0.9375rem; margin-bottom: 6px; }
+.feat-desc { font-size: 0.875rem; color: var(--fg2); line-height: 1.65; }
+
+/* ── FOOTER ─────────────────────────────────────────────────── */
+footer {
+  border-top: 1px solid var(--border);
+  padding-block: 36px;
+}
+.footer-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+.footer-brand {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--fg);
+  text-decoration: none;
+}
+.footer-copy { font-size: 0.8125rem; color: var(--fg3); margin-top: 4px; }
+.footer-links { display: flex; gap: 20px; }
+.footer-links a {
+  font-size: 0.875rem;
+  color: var(--fg3);
+  text-decoration: none;
+  transition: color .15s;
+}
+.footer-links a:hover { color: var(--fg2); }
+
+/* ── RESPONSIVE ─────────────────────────────────────────────── */
+@media (max-width: 920px) {
+  .hero       { grid-template-columns: 1fr; gap: 32px; padding-block: 48px 36px; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .main-grid  { grid-template-columns: 1fr; }
+  .ca-grid    { grid-template-columns: repeat(2, 1fr); }
+  .analytics-grid { grid-template-columns: 1fr; }
+  .tests-grid { grid-template-columns: 1fr 1fr; }
+  .features-grid { grid-template-columns: repeat(2, 1fr); }
+  .d-hide     { display: none; }
+}
+@media (max-width: 600px) {
+  .ca-grid    { grid-template-columns: 1fr; }
+  .tests-grid { grid-template-columns: 1fr; }
+  .features-grid { grid-template-columns: 1fr; }
+  .cd-grid    { gap: 7px; }
+  .cd-num     { font-size: 1.4375rem; }
+  .syl-tabs   { overflow-x: auto; }
+}
+
+/* ── MOTION ─────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: no-preference) {
+  .hero-content > * { animation: rise .5s ease both; }
+  .hero-content > *:nth-child(2) { animation-delay: .08s; }
+  .hero-content > *:nth-child(3) { animation-delay: .16s; }
+  .hero-content > *:nth-child(4) { animation-delay: .22s; }
+  .cd-card    { animation: rise .5s .1s ease both; }
+}
+@keyframes rise {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+</style>
+
+<!-- ═══════════════════════════════ NAV ═══════════════════════ -->
+<nav>
+  <div class="c nav-row">
+    <a href="#" class="logo">
+      <div class="logo-mark">IAS</div>
+      UPSC Compass
+    </a>
+    <nav class="nav-links d-hide">
+      <a href="#" class="nl on">Dashboard</a>
+      <a href="#" class="nl">Syllabus</a>
+      <a href="#" class="nl">Current Affairs</a>
+      <a href="#" class="nl">Mock Tests</a>
+      <a href="#" class="nl">Community</a>
+    </nav>
+    <div class="nav-right">
+      <button class="theme-btn" id="themeBtn" aria-label="Toggle colour theme">🌓</button>
+      <button class="btn btn-ghost d-hide">Log in</button>
+      <button class="btn btn-primary">Start Free</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════ HERO ══════════════════════ -->
+<div class="c">
+  <section class="hero">
+    <div class="hero-content">
+      <div class="eyebrow">India's smartest UPSC prep platform</div>
+      <h1>Crack IAS with a <em>clear strategy,</em> not just hard work</h1>
+      <p class="hero-sub">Track your entire syllabus, master current affairs with mapped tags, take AI-adaptive mock tests, and see exactly how you stack up — all in one place. No clutter. No outdated UI.</p>
+      <div class="hero-ctas">
+        <button class="btn btn-primary">Start for Free</button>
+        <button class="btn btn-ghost">Watch Demo</button>
+      </div>
+      <div class="trust-row">
+        <div class="trust-item"><div class="trust-dot"></div>2,40,000+ aspirants</div>
+        <div class="trust-item"><div class="trust-dot"></div>847 IAS / IPS selected</div>
+        <div class="trust-item"><div class="trust-dot"></div>Free for 30 days</div>
+      </div>
+    </div>
+
+    <!-- COUNTDOWN -->
+    <div class="cd-card">
+      <div class="cd-label">Next major exam</div>
+      <div class="cd-exam">UPSC CSE Prelims 2027</div>
+      <div class="cd-grid">
+        <div class="cd-unit"><div class="cd-num" id="cdD">---</div><div class="cd-ulabel">Days</div></div>
+        <div class="cd-unit"><div class="cd-num" id="cdH">--</div><div class="cd-ulabel">Hours</div></div>
+        <div class="cd-unit"><div class="cd-num" id="cdM">--</div><div class="cd-ulabel">Mins</div></div>
+        <div class="cd-unit"><div class="cd-num" id="cdS">--</div><div class="cd-ulabel">Secs</div></div>
+      </div>
+      <div class="prep-bar">
+        <div class="prep-header">
+          <span>Preparation progress</span>
+          <span class="prep-pct">54%</span>
+        </div>
+        <div class="pbar"><div class="pfill" style="width:54%"></div></div>
+      </div>
+      <div class="tag-row">
+        <span class="tag a">Prelims GS</span>
+        <span class="tag g">Mains</span>
+        <span class="tag b">Interview</span>
+        <span class="tag">CSAT</span>
+        <span class="tag">Optional</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════ STATS BAR ════════════════════ -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon">🔥</div>
+      <div class="stat-num">42</div>
+      <div class="stat-lbl">Day study streak</div>
+      <div class="stat-delta">+3 this week</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">📚</div>
+      <div class="stat-num">847</div>
+      <div class="stat-lbl">Topics covered of 2,340</div>
+      <div class="stat-delta">+12 today</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">📝</div>
+      <div class="stat-num">118/200</div>
+      <div class="stat-lbl">Mock test average</div>
+      <div class="stat-delta down">−4 vs last test</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🎯</div>
+      <div class="stat-num">Top 5%</div>
+      <div class="stat-lbl">Among active users</div>
+      <div class="stat-delta">↑ 2% this month</div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════ SYLLABUS + PLAN ═══════════════════ -->
+  <div class="sec-head">
+    <div class="sec-title">Study Dashboard</div>
+    <div class="sec-sub">Your syllabus coverage and today's schedule at a glance</div>
+  </div>
+  <div class="main-grid">
+
+    <!-- SYLLABUS TRACKER -->
+    <div>
+      <div class="syllabus-card">
+        <div class="syl-tabs" id="sylTabs">
+          <button class="syl-tab on" data-tab="gs1">GS Paper 1</button>
+          <button class="syl-tab"    data-tab="gs2">GS Paper 2</button>
+          <button class="syl-tab"    data-tab="gs3">GS Paper 3</button>
+          <button class="syl-tab"    data-tab="gs4">GS Paper 4</button>
+          <button class="syl-tab"    data-tab="csat">CSAT</button>
+        </div>
+
+        <div id="gs1">
+          <div class="sub-row">
+            <div class="sub-hdr"><span class="sub-name">Indian History &amp; Culture</span><span class="sub-meta">34/48</span></div>
+            <div class="pbar"><div class="pfill g" style="width:71%"></div></div>
+            <div class="chips">
+              <span class="chip done">Indus Valley</span><span class="chip done">Vedic Period</span>
+              <span class="chip done">Maurya Empire</span><span class="chip done">Gupta Age</span>
+              <span class="chip">Medieval India</span><span class="chip done">Art &amp; Architecture</span>
+              <span class="chip">Bhakti Movement</span>
+            </div>
+          </div>
+          <div class="sub-row">
+            <div class="sub-hdr"><span class="sub-name">Modern Indian History</span><span class="sub-meta">22/30</span></div>
+            <div class="pbar"><div class="pfill" style="width:73%"></div></div>
+          </div>
+          <div class="sub-row">
+            <div class="sub-hdr"><span class="sub-name">Indian &amp; World Geography</span><span class="sub-meta">18/40</span></div>
+            <div class="pbar"><div class="pfill b" style="width:45%"></div></div>
+            <div class="chips">
+              <span class="chip done">Physical Geography</span><span class="chip done">Indian Monsoon</span>
+              <span class="chip">Economic Geography</span><span class="chip">World Geography</span>
+              <span class="chip done">Rivers &amp; Drainage</span>
+            </div>
+          </div>
+          <div class="sub-row">
+            <div class="sub-hdr"><span class="sub-name">Indian Society &amp; Social Issues</span><span class="sub-meta">12/22</span></div>
+            <div class="pbar"><div class="pfill g" style="width:55%"></div></div>
+          </div>
+          <div class="sub-row">
+            <div class="sub-hdr"><span class="sub-name">World History (post-1750)</span><span class="sub-meta">8/20</span></div>
+            <div class="pbar"><div class="pfill" style="width:40%"></div></div>
+          </div>
+        </div>
+
+        <div id="gs2" style="display:none">
+          <div class="sub-row">
+            <div class="sub-hdr"><span class="sub-name">Indian Polity &amp; Constitution</span><span class="sub-meta">28/50</span></div>
+            <div class="pbar"><div class="pfill" style="width:56%"></div></div>
+          </div>
+          <div class="sub-row">
+            <div class="sub-hdr"><span class="sub-name">Governance &amp; Public Policy</span><span class="sub-meta">10/30</span></div>
+            <div class="pbar"><div class="pfill b" style="width:33%"></div></div>
+          </div>
+          <div class="sub-row">
+            <div class="sub-hdr"><span class="sub-name">Social Justice &amp; Rights</span><span class="sub-meta">8/20</span></div>
+            <div class="pbar"><div class="pfill g" style="width:40%"></div></div>
+          </div>
+          <div class="sub-row">
+            <div class="sub-hdr"><span class="sub-name">International Relations</span><span class="sub-meta">6/25</span></div>
+            <div class="pbar"><div class="pfill" style="width:24%"></div></div>
+          </div>
+        </div>
+
+        <div id="gs3" style="display:none">
+          <div class="sub-row">
+            <div class="sub-hdr"><span class="sub-name">Indian Economy &amp; Development</span><span class="sub-meta">20/45</span></div>
+            <div class="pbar"><div class="pfill" style="width:44%"></div></div>
+          </div>
+          <div class="sub-row">
+            <div class="sub-hdr"><span class="sub-name">Agriculture &amp; Food Security</span><span class="sub-meta">8/18</span></div>
+            <div class="pbar"><div class="pfill g" style="width:44%"></div></div>
+          </div>
+          <div class="sub-row">
+            <div class="sub-hdr"><span class="sub-name">Environment &amp; Ecology</span><span class="sub-meta">12/28</span></div>
+            <div class="pbar"><div class="pfill b" style="width:43%"></div></div>
+          </div>
+          <div class="sub-row">
+            <div class="sub-hdr"><span class="sub-name">Science &amp; Technology</span><span class="sub-meta">9/25</span></div>
+            <div class="pbar"><div class="pfill" style="width:36%"></div></div>
+          </div>
+        </div>
+
+        <div id="gs4" style="display:none">
+          <div class="sub-row">
+            <div class="sub-hdr"><span class="sub-name">Ethics, Integrity &amp; Aptitude</span><span class="sub-meta">18/24</span></div>
+            <div class="pbar"><div class="pfill g" style="width:75%"></div></div>
+          </div>
+          <div class="sub-row">
+            <div class="sub-hdr"><span class="sub-name">Attitude, Emotions &amp; Values</span><span class="sub-meta">10/14</span></div>
+            <div class="pbar"><div class="pfill" style="width:71%"></div></div>
+          </div>
+          <div class="sub-row">
+            <div class="sub-hdr"><span class="sub-name">Case Studies &amp; Applications</span><span class="sub-meta">6/12</span></div>
+            <div class="pbar"><div class="pfill b" style="width:50%"></div></div>
+          </div>
+        </div>
+
+        <div id="csat" style="display:none">
+          <div class="sub-row">
+            <div class="sub-hdr"><span class="sub-name">Reading Comprehension</span><span class="sub-meta">20/22</span></div>
+            <div class="pbar"><div class="pfill g" style="width:91%"></div></div>
+          </div>
+          <div class="sub-row">
+            <div class="sub-hdr"><span class="sub-name">Logical Reasoning</span><span class="sub-meta">16/20</span></div>
+            <div class="pbar"><div class="pfill" style="width:80%"></div></div>
+          </div>
+          <div class="sub-row">
+            <div class="sub-hdr"><span class="sub-name">Maths &amp; Data Interpretation</span><span class="sub-meta">12/18</span></div>
+            <div class="pbar"><div class="pfill b" style="width:67%"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TODAY'S PLAN -->
+    <div>
+      <div class="plan-card">
+        <div style="font-size:0.8125rem;color:var(--fg3);margin-bottom:16px;font-variant-numeric:tabular-nums;">Sunday, 18 October 2026</div>
+        <div class="plan-row">
+          <div class="plan-time">6:00</div>
+          <div class="plan-pip x"></div>
+          <div class="plan-body">
+            <div class="plan-topic done">The Hindu Editorial Analysis</div>
+            <div class="plan-detail">Done · 45 min</div>
+          </div>
+        </div>
+        <div class="plan-row">
+          <div class="plan-time">7:30</div>
+          <div class="plan-pip x"></div>
+          <div class="plan-body">
+            <div class="plan-topic done">Geography: Tropical Monsoon Systems</div>
+            <div class="plan-detail">Done · 90 min</div>
+          </div>
+        </div>
+        <div class="plan-row">
+          <div class="plan-time">10:00</div>
+          <div class="plan-pip"></div>
+          <div class="plan-body">
+            <div class="plan-topic">Polity: Constitutional Amendments</div>
+            <div class="plan-detail">Planned · 60 min</div>
+          </div>
+        </div>
+        <div class="plan-row">
+          <div class="plan-time">14:00</div>
+          <div class="plan-pip g"></div>
+          <div class="plan-body">
+            <div class="plan-topic">GS3 Mock Test — Environment</div>
+            <div class="plan-detail">100 Q · 2 hrs · 2,847 enrolled</div>
+          </div>
+        </div>
+        <div class="plan-row">
+          <div class="plan-time">17:00</div>
+          <div class="plan-pip b"></div>
+          <div class="plan-body">
+            <div class="plan-topic">Current Affairs Weekly Digest</div>
+            <div class="plan-detail">Review · 45 min</div>
+          </div>
+        </div>
+        <div class="plan-row">
+          <div class="plan-time">20:00</div>
+          <div class="plan-pip"></div>
+          <div class="plan-body">
+            <div class="plan-topic">Answer Writing — Ethics Case Study</div>
+            <div class="plan-detail">Planned · 60 min</div>
+          </div>
+        </div>
+        <button class="btn btn-ghost" style="width:100%;margin-top:14px;font-size:0.875rem;">Edit Today's Plan</button>
+      </div>
+      <div class="focus-box">
+        <div class="focus-label">Today's Focus Topic</div>
+        <div class="focus-topic">Constitutional Amendments</div>
+        <div class="focus-note">Appeared in 12 of the last 15 Prelims papers. High-priority revision.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═════════════════════ CURRENT AFFAIRS ═══════════════════ -->
+  <div class="sec-head row">
+    <div>
+      <div class="sec-title">Today's Current Affairs</div>
+      <div class="sec-sub">Curated from The Hindu, Indian Express &amp; PIB — mapped to GS papers</div>
+    </div>
+    <button class="btn btn-ghost d-hide" style="font-size:0.875rem;white-space:nowrap">View all 24 →</button>
+  </div>
+  <div class="ca-grid">
+    <a href="#" class="ca-card">
+      <div class="ca-cat">Economy · GS3</div>
+      <div class="ca-hl">RBI's new digital lending framework takes effect for NBFCs and fintechs</div>
+      <div class="ca-src">The Hindu · Business</div>
+      <div class="imps"><div class="imp on"></div><div class="imp on"></div><div class="imp on"></div><div class="imp"></div><div class="imp"></div></div>
+    </a>
+    <a href="#" class="ca-card">
+      <div class="ca-cat">International Relations · GS2</div>
+      <div class="ca-hl">India chairs SCO summit: Key outcomes for regional connectivity and security</div>
+      <div class="ca-src">Indian Express · World</div>
+      <div class="imps"><div class="imp on"></div><div class="imp on"></div><div class="imp on"></div><div class="imp on"></div><div class="imp on"></div></div>
+    </a>
+    <a href="#" class="ca-card">
+      <div class="ca-cat">Environment · GS3</div>
+      <div class="ca-hl">IPCC report flags accelerated glacial retreat in Hindu Kush–Himalaya range</div>
+      <div class="ca-src">PIB · Environment Ministry</div>
+      <div class="imps"><div class="imp on"></div><div class="imp on"></div><div class="imp on"></div><div class="imp on"></div><div class="imp"></div></div>
+    </a>
+    <a href="#" class="ca-card">
+      <div class="ca-cat">Polity &amp; Governance · GS2</div>
+      <div class="ca-hl">SC upholds delimitation commission's mandate under Article 82</div>
+      <div class="ca-src">Bar &amp; Bench · Legal</div>
+      <div class="imps"><div class="imp on"></div><div class="imp on"></div><div class="imp on"></div><div class="imp"></div><div class="imp"></div></div>
+    </a>
+    <a href="#" class="ca-card">
+      <div class="ca-cat">Science &amp; Tech · GS3</div>
+      <div class="ca-hl">ISRO's NISAR satellite completes thermal vacuum testing ahead of 2027 launch</div>
+      <div class="ca-src">ISRO Official · Space News</div>
+      <div class="imps"><div class="imp on"></div><div class="imp on"></div><div class="imp on"></div><div class="imp on"></div><div class="imp"></div></div>
+    </a>
+    <a href="#" class="ca-card">
+      <div class="ca-cat">Social Justice · GS2</div>
+      <div class="ca-hl">PM-JANMAN Phase 2 covers 180 Particularly Vulnerable Tribal Groups</div>
+      <div class="ca-src">PIB · Social Welfare</div>
+      <div class="imps"><div class="imp on"></div><div class="imp on"></div><div class="imp on"></div><div class="imp"></div><div class="imp"></div></div>
+    </a>
+  </div>
+
+  <!-- ═══════════════════════ ANALYTICS ═══════════════════════ -->
+  <div class="sec-head">
+    <div class="sec-title">Performance Analytics</div>
+    <div class="sec-sub">Mock test scores by subject vs. topper averages · weekly study hours over 8 weeks</div>
+  </div>
+  <div class="analytics-grid">
+    <div class="chart-card">
+      <div class="chart-title">Subject-wise Score</div>
+      <div class="chart-sub">Your % vs. top-50 percentile (last 5 tests)</div>
+      <div class="chart-wrap"><canvas id="radarC"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Weekly Study Hours</div>
+      <div class="chart-sub">Hours logged per week — last 8 weeks</div>
+      <div class="chart-wrap"><canvas id="barC"></canvas></div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════ MOCK TESTS ══════════════════════ -->
+  <div class="sec-head row">
+    <div>
+      <div class="sec-title">Mock Tests</div>
+      <div class="sec-sub">Adaptive tests that mirror UPSC's question pattern and negative marking</div>
+    </div>
+    <button class="btn btn-ghost d-hide" style="font-size:0.875rem;white-space:nowrap">Full schedule →</button>
+  </div>
+  <div class="tests-grid">
+    <div class="test-card hot">
+      <div class="test-badge">Today — 2 PM</div>
+      <div style="margin-top:8px">
+        <div class="test-name">GS3 Sectional — Environment</div>
+        <div class="test-meta">Environment · Agriculture · S&amp;T</div>
+        <div class="test-nums">
+          <div class="tn"><div class="tn-n">100</div><div class="tn-l">Questions</div></div>
+          <div class="tn"><div class="tn-n">120</div><div class="tn-l">Minutes</div></div>
+          <div class="tn"><div class="tn-n">2,847</div><div class="tn-l">Enrolled</div></div>
+        </div>
+        <button class="btn btn-primary" style="width:100%;font-size:0.875rem">Attempt Now</button>
+      </div>
+    </div>
+    <div class="test-card">
+      <div class="test-name">Full UPSC Prelims Simulation</div>
+      <div class="test-meta">All subjects · Tomorrow, 9 AM</div>
+      <div class="test-nums">
+        <div class="tn"><div class="tn-n">200</div><div class="tn-l">Questions</div></div>
+        <div class="tn"><div class="tn-n">120</div><div class="tn-l">Minutes</div></div>
+        <div class="tn"><div class="tn-n">8.4K</div><div class="tn-l">Enrolled</div></div>
+      </div>
+      <button class="btn btn-ghost" style="width:100%;font-size:0.875rem">Set Reminder</button>
+    </div>
+    <div class="test-card">
+      <div class="test-name">Polity &amp; Constitution Deep Dive</div>
+      <div class="test-meta">GS Paper 2 · Wed, 22 Oct</div>
+      <div class="test-nums">
+        <div class="tn"><div class="tn-n">80</div><div class="tn-l">Questions</div></div>
+        <div class="tn"><div class="tn-n">90</div><div class="tn-l">Minutes</div></div>
+        <div class="tn"><div class="tn-n">3.1K</div><div class="tn-l">Enrolled</div></div>
+      </div>
+      <button class="btn btn-ghost" style="width:100%;font-size:0.875rem">Set Reminder</button>
+    </div>
+  </div>
+</div><!-- /.c -->
+
+<!-- ═══════════════════ FEATURES BAND ════════════════════════ -->
+<section class="features-band">
+  <div class="c">
+    <div class="features-heading">
+      <div class="eyebrow">What makes us different</div>
+      <h2>Everything existing UPSC sites get wrong — we fixed it</h2>
+    </div>
+    <div class="features-grid">
+      <div class="feat">
+        <div class="feat-icon">🧭</div>
+        <div class="feat-name">Personalised Study Path</div>
+        <div class="feat-desc">Based on your weak areas and time left, we generate a day-by-day syllabus plan — not a static PDF you never open.</div>
+      </div>
+      <div class="feat">
+        <div class="feat-icon">📰</div>
+        <div class="feat-name">GS-Tagged Current Affairs</div>
+        <div class="feat-desc">Every news story is mapped to its GS paper, topic, and UPSC importance level. No more hunting across six newspapers.</div>
+      </div>
+      <div class="feat">
+        <div class="feat-icon">📊</div>
+        <div class="feat-name">Deep Performance Analytics</div>
+        <div class="feat-desc">Track mock scores, accuracy by topic, time per question, and percentile rank across 2 lakh real aspirants.</div>
+      </div>
+      <div class="feat">
+        <div class="feat-icon">✍️</div>
+        <div class="feat-name">Answer Writing Feedback</div>
+        <div class="feat-desc">Submit Mains answers and receive structured feedback on structure, content, and presentation within 24 hours.</div>
+      </div>
+      <div class="feat">
+        <div class="feat-icon">📅</div>
+        <div class="feat-name">Adaptive Study Planner</div>
+        <div class="feat-desc">Miss a session? The planner automatically redistributes topics — your prep stays on track even when life doesn't cooperate.</div>
+      </div>
+      <div class="feat">
+        <div class="feat-icon">🔔</div>
+        <div class="feat-name">Exam Notification Hub</div>
+        <div class="feat-desc">Admit cards, notification PDFs, result dates, and interview call letters — tracked and delivered before you need to check.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════ FOOTER ═══════════════════════════ -->
+<footer>
+  <div class="c footer-row">
+    <div>
+      <a href="#" class="footer-brand">
+        <div class="logo-mark" style="width:24px;height:24px;font-size:0.6875rem">IAS</div>
+        UPSC Compass
+      </a>
+      <div class="footer-copy">© 2026 UPSC Compass. Built for serious aspirants.</div>
+    </div>
+    <div class="footer-links">
+      <a href="#">Privacy</a>
+      <a href="#">Terms</a>
+      <a href="#">About</a>
+      <a href="#">Contact</a>
+      <a href="#">Blog</a>
+    </div>
+  </div>
+</footer>
+
+<!-- ═══════════════════ SCRIPTS ═════════════════════════════ -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+  /* ── THEME TOGGLE ─────────────────────────────────── */
+  const root = document.documentElement;
+  const btn  = document.getElementById('themeBtn');
+  const ICONS = { system: '🌓', dark: '☀️', light: '🌙' };
+  let theme = 'system';
+  try { theme = localStorage.getItem('upsc-theme') || 'system'; } catch(e) {}
+
+  function applyTheme(t) {
+    if (t === 'dark')  { root.setAttribute('data-theme','dark');  btn.textContent = ICONS.dark; }
+    else if (t === 'light') { root.setAttribute('data-theme','light'); btn.textContent = ICONS.light; }
+    else { root.removeAttribute('data-theme'); btn.textContent = ICONS.system; }
+  }
+  applyTheme(theme);
+
+  btn.addEventListener('click', () => {
+    const next = { system: 'dark', dark: 'light', light: 'system' };
+    theme = next[theme] || 'dark';
+    try { localStorage.setItem('upsc-theme', theme); } catch(e) {}
+    applyTheme(theme);
+    buildCharts();
+  });
+
+  /* ── COUNTDOWN ────────────────────────────────────── */
+  const TARGET = new Date('2027-06-06T09:00:00+05:30');
+  function pad(n, w) { return String(n).padStart(w, '0'); }
+
+  function tick() {
+    const diff = TARGET - Date.now();
+    if (diff <= 0) {
+      ['cdD','cdH','cdM','cdS'].forEach((id,i) => document.getElementById(id).textContent = pad(0,[3,2,2,2][i]));
+      return;
+    }
+    document.getElementById('cdD').textContent = pad(Math.floor(diff/86400000),   3);
+    document.getElementById('cdH').textContent = pad(Math.floor(diff%86400000/3600000), 2);
+    document.getElementById('cdM').textContent = pad(Math.floor(diff%3600000/60000),    2);
+    document.getElementById('cdS').textContent = pad(Math.floor(diff%60000/1000),       2);
+  }
+  tick();
+  setInterval(tick, 1000);
+
+  /* ── SYLLABUS TABS ────────────────────────────────── */
+  const ALL_TABS = ['gs1','gs2','gs3','gs4','csat'];
+  document.getElementById('sylTabs').addEventListener('click', e => {
+    const btn = e.target.closest('.syl-tab');
+    if (!btn) return;
+    document.querySelectorAll('.syl-tab').forEach(t => t.classList.remove('on'));
+    btn.classList.add('on');
+    const id = btn.dataset.tab;
+    ALL_TABS.forEach(t => {
+      const el = document.getElementById(t);
+      if (el) el.style.display = t === id ? '' : 'none';
+    });
+  });
+
+  /* ── CHARTS ───────────────────────────────────────── */
+  let rChart, bChart;
+
+  function tok(name) {
+    return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  }
+
+  function buildCharts() {
+    const fg2    = tok('--fg2');
+    const fg3    = tok('--fg3');
+    const border = tok('--border');
+    const accent = tok('--accent');
+    const blue   = tok('--blue');
+    const green  = tok('--green');
+
+    Chart.defaults.font.family = "'Inter', system-ui, sans-serif";
+    Chart.defaults.font.size   = 12;
+
+    if (rChart) rChart.destroy();
+    if (bChart) bChart.destroy();
+
+    /* radar */
+    const rc = document.getElementById('radarC');
+    rChart = new Chart(rc, {
+      type: 'radar',
+      data: {
+        labels: ['History','Geography','Polity','Economy','Environment','Ethics','CSAT'],
+        datasets: [
+          {
+            label: 'Your Score %',
+            data: [72, 58, 64, 48, 55, 80, 88],
+            backgroundColor: accent + '22',
+            borderColor: accent,
+            borderWidth: 2,
+            pointBackgroundColor: accent,
+            pointRadius: 4,
+          },
+          {
+            label: 'Top 50th Percentile',
+            data: [78, 72, 75, 70, 68, 74, 90],
+            backgroundColor: blue + '14',
+            borderColor: blue,
+            borderWidth: 1.5,
+            borderDash: [4,4],
+            pointBackgroundColor: blue,
+            pointRadius: 3,
+          }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'bottom', labels: { boxWidth: 10, padding: 14, color: fg2 } }
+        },
+        scales: {
+          r: {
+            min: 0, max: 100,
+            ticks: { stepSize: 25, color: fg3, backdropColor: 'transparent', font: { size: 10 } },
+            grid: { color: border },
+            angleLines: { color: border },
+            pointLabels: { color: fg2, font: { size: 11 } }
+          }
+        }
+      }
+    });
+
+    /* bar */
+    const bc = document.getElementById('barC');
+    bChart = new Chart(bc, {
+      type: 'bar',
+      data: {
+        labels: ['Wk 1','Wk 2','Wk 3','Wk 4','Wk 5','Wk 6','Wk 7','Wk 8'],
+        datasets: [{
+          label: 'Study Hours',
+          data: [28, 32, 25, 38, 35, 40, 42, 44],
+          backgroundColor: accent + 'cc',
+          borderRadius: 6,
+          borderSkipped: false,
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid: { display: false }, ticks: { color: fg3 } },
+          y: { grid: { color: border },  ticks: { color: fg3 }, min: 0 }
+        }
+      }
+    });
+  }
+
+  buildCharts();
+
+  /* Re-render charts when system preference changes */
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', buildCharts);
+</script>
