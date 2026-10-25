@@ -144,12 +144,12 @@ public class MainActivity extends AppCompatActivity {
         WifiManager wm = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
         if (wm != null && wm.isWifiEnabled()) {
             WifiInfo info = wm.getConnectionInfo();
-            String ssid = info.getSSID();
-            if (ssid != null) {
+            String ssid = info != null ? info.getSSID() : null;
+            if (ssid != null && !ssid.equals("<unknown ssid>") && !ssid.equals("0x")) {
                 ssid = ssid.replace("\"", "");
                 mBtnWifi.setText(ssid);
             } else {
-                mBtnWifi.setText("Wi-Fi");
+                mBtnWifi.setText("Connected");
             }
         } else {
             mBtnWifi.setText("Wi-Fi");
