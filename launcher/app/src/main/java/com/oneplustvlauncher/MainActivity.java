@@ -162,9 +162,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateClock() {
         Date now = new Date();
-        mTvClock.setText(new SimpleDateFormat("h:mm", Locale.getDefault()).format(now));
+        mTvClock.setText(new SimpleDateFormat("h:mm", Locale.ENGLISH).format(now));
         mTvAmPm.setText(new SimpleDateFormat("a", Locale.ENGLISH).format(now).toUpperCase());
-        mTvDate.setText(new SimpleDateFormat("EEEE, d MMMM", Locale.getDefault()).format(now).toUpperCase());
+        mTvDate.setText(new SimpleDateFormat("EEEE, d MMMM", Locale.ENGLISH).format(now).toUpperCase());
 
         int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
         String greeting;
