@@ -20,7 +20,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent" />
 
-    <!-- Dark gradient overlay (left dark → right transparent) -->
+    <!-- Dark gradient overlay -->
     <View
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -61,7 +61,6 @@
                 android:fontFamily="@font/outfit_light"
                 android:letterSpacing="0.12" />
 
-            <!-- Clock row: time + AM/PM -->
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -120,7 +119,6 @@
                 android:fontFamily="@font/outfit_regular"
                 android:focusable="true"
                 android:focusableInTouchMode="true"
-                android:nextFocusDown="@id/btn_inputs"
                 android:text="Wi-Fi" />
 
             <TextView
@@ -158,46 +156,52 @@
         </LinearLayout>
     </LinearLayout>
 
-    <!-- Focused dock app name + ambient glow -->
+    <!-- Focused dock app name -->
     <TextView
         android:id="@+id/tv_focused_app"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dock_margin_h"
-        android:layout_marginBottom="4dp"
+        android:layout_marginBottom="8dp"
         android:textColor="@color/text_primary"
         android:textSize="@dimen/focused_app_name_size"
         android:fontFamily="@font/outfit_light"
         android:alpha="0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@id/dock_container" />
 
-    <!-- App grid scrolls in the space between top bar and dock -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/grid_recycler"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:paddingStart="@dimen/dock_margin_h"
-        android:paddingEnd="@dimen/dock_margin_h"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp"
-        android:clipToPadding="false"
-        android:overScrollMode="never"
-        android:focusable="true"
-        app:layout_constraintTop_toBottomOf="@id/top_bar"
-        app:layout_constraintBottom_toTopOf="@id/tv_focused_app"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <!-- Dock band -->
+    <!-- More apps panel (floating, above dock right side, hidden by default) -->
     <FrameLayout
+        android:id="@+id/more_panel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/dock_margin_h"
+        android:layout_marginBottom="8dp"
+        android:background="@color/inputs_dropdown_bg"
+        android:padding="8dp"
+        android:elevation="8dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/dock_container"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/more_recycler"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:overScrollMode="never"
+            android:focusable="true" />
+    </FrameLayout>
+
+    <!-- Dock band (horizontal: main dock + Apps nav button) -->
+    <LinearLayout
         android:id="@+id/dock_container"
         android:layout_width="0dp"
         android:layout_height="@dimen/dock_height"
         android:layout_marginStart="@dimen/dock_margin_h"
         android:layout_marginEnd="@dimen/dock_margin_h"
         android:layout_marginBottom="@dimen/dock_margin_v"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
         android:background="@drawable/bg_dock"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -205,23 +209,42 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/dock_recycler"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_weight="1"
             android:overScrollMode="never"
             android:focusable="true" />
 
-        <!-- Glass highlight overlay (slides between tiles) -->
-        <View
-            android:id="@+id/glass_highlight"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:background="@drawable/bg_highlight"
-            android:alpha="0"
-            android:visibility="invisible" />
+        <!-- Apps nav button -->
+        <LinearLayout
+            android:id="@+id/more_btn"
+            android:layout_width="70dp"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:focusable="true"
+            android:clickable="true"
+            android:focusableInTouchMode="true"
+            android:background="@drawable/bg_pill">
 
-    </FrameLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="&#8942;"
+                android:textSize="22sp"
+                android:textColor="@android:color/white" />
 
-    <!-- Inputs dropdown (shown/hidden) -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Apps"
+                android:textSize="11sp"
+                android:textColor="@android:color/white"
+                android:fontFamily="@font/outfit_regular" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Inputs dropdown -->
     <LinearLayout
         android:id="@+id/inputs_dropdown"
         android:layout_width="220dp"

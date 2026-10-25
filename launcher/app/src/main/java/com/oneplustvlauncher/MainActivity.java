@@ -1,16 +1,12 @@
 package com.oneplustvlauncher;
 
-import android.animation.ObjectAnimator;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.hardware.display.DisplayManager;
 import android.media.tv.TvInputInfo;
 import android.media.tv.TvInputManager;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
@@ -44,15 +40,17 @@ public class MainActivity extends AppCompatActivity {
 
     private Handler mClockHandler;
     private Runnable mClockRunnable;
+    private Handler mHideHandler;
+    private Runnable mHidePanel;
 
     private TextView mTvClock, mTvAmPm, mTvDate, mTvGreeting, mTvFocusedApp;
     private TextView mBtnWifi, mBtnInputs, mBtnSettings;
-    private RecyclerView mGridRecycler, mDockRecycler;
+    private RecyclerView mDockRecycler, mMoreRecycler;
     private LinearLayout mInputsDropdown;
-    private View mGlassHighlight;
+    private View mMoreBtn, mMorePanel;
 
-    private AppGridAdapter mGridAdapter;
     private DockAdapter mDockAdapter;
+    private NavAdapter mNavAdapter;
 
     private List<AppInfo> mAllApps = new ArrayList<>();
     private List<AppInfo> mDockApps = new ArrayList<>();
@@ -75,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
         updateWifi();
         loadApps();
         setupInputsDropdown();
+        setupHideHandler();
 
         IntentFilter filter = new IntentFilter(ACTION_REFRESH_APPS);
         registerReceiver(mAppChangeReceiver, filter);
@@ -89,26 +88,65 @@ public class MainActivity extends AppCompatActivity {
         mBtnWifi       = findViewById(R.id.btn_wifi);
         mBtnInputs     = findViewById(R.id.btn_inputs);
         mBtnSettings   = findViewById(R.id.btn_settings);
-        mGridRecycler  = findViewById(R.id.grid_recycler);
         mDockRecycler  = findViewById(R.id.dock_recycler);
+        mMoreRecycler  = findViewById(R.id.more_recycler);
+        mMoreBtn       = findViewById(R.id.more_btn);
+        mMorePanel     = findViewById(R.id.more_panel);
         mInputsDropdown = findViewById(R.id.inputs_dropdown);
-        mGlassHighlight = findViewById(R.id.glass_highlight);
 
         mBtnSettings.setOnClickListener(v -> openSettings());
         mBtnInputs.setOnClickListener(v -> toggleInputsDropdown());
+        mMoreBtn.setOnClickListener(v -> toggleMorePanel());
 
-        // Track focus on pill buttons
         View.OnFocusChangeListener pillFocus = (v, hasFocus) -> {
             v.setBackgroundResource(hasFocus ? R.drawable.bg_pill_focused : R.drawable.bg_pill);
         };
         mBtnWifi.setOnFocusChangeListener(pillFocus);
         mBtnInputs.setOnFocusChangeListener(pillFocus);
         mBtnSettings.setOnFocusChangeListener(pillFocus);
+
+        mMoreBtn.setOnFocusChangeListener((v, hasFocus) -> {
+            v.setBackgroundResource(hasFocus ? R.drawable.bg_pill_focused : R.drawable.bg_pill);
+            if (hasFocus) {
+                cancelHidePanel();
+                showMorePanel();
+            } else {
+                scheduleHidePanel();
+            }
+        });
     }
 
     private void loadFont() {
         // Outfit font is declared in res/font/; XML references handle the assignment.
-        // Nothing to do here at runtime.
+    }
+
+    // ── More panel ────────────────────────────────────────────────────────────
+
+    private void setupHideHandler() {
+        mHideHandler = new Handler(Looper.getMainLooper());
+        mHidePanel = () -> mMorePanel.setVisibility(View.GONE);
+    }
+
+    private void showMorePanel() {
+        cancelHidePanel();
+        mMorePanel.setVisibility(View.VISIBLE);
+    }
+
+    private void toggleMorePanel() {
+        if (mMorePanel.getVisibility() == View.VISIBLE) {
+            mMorePanel.setVisibility(View.GONE);
+        } else {
+            showMorePanel();
+        }
+    }
+
+    private void scheduleHidePanel() {
+        mHideHandler.removeCallbacks(mHidePanel);
+        mHideHandler.postDelayed(mHidePanel, 500);
+    }
+
+    private void cancelHidePanel() {
+        mHideHandler.removeCallbacks(mHidePanel);
     }
 
     // ── Clock ─────────────────────────────────────────────────────────────────
@@ -203,25 +241,27 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupAdapters(List<AppInfo> grid, List<AppInfo> dock) {
-        int columns = getResources().getInteger(R.integer.columns);
-
-        // Grid
-        mGridAdapter = new AppGridAdapter(grid);
-        mGridAdapter.setFocusListener((app, view) -> onAppFocused(app, view, false));
-        mGridAdapter.setClickListener(this::launchApp);
-        mGridRecycler.setLayoutManager(new GridLayoutManager(this, columns));
-        mGridRecycler.setAdapter(mGridAdapter);
-
         // Dock
         mDockAdapter = new DockAdapter(dock);
-        mDockAdapter.setFocusListener((app, view, pos) -> {
-            onAppFocused(app, view, true);
-            animateHighlight(view);
-        });
+        mDockAdapter.setFocusListener((app, view, pos) -> onAppFocused(app, view, true));
         mDockAdapter.setClickListener(this::launchApp);
         mDockRecycler.setLayoutManager(
                 new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         mDockRecycler.setAdapter(mDockAdapter);
+
+        // More panel (all non-dock apps)
+        mNavAdapter = new NavAdapter(grid);
+        mNavAdapter.setClickListener(app -> {
+            mMorePanel.setVisibility(View.GONE);
+            launchApp(app);
+        });
+        mNavAdapter.setFocusListener(hasFocus -> {
+            if (hasFocus) cancelHidePanel();
+            else scheduleHidePanel();
+        });
+        mMoreRecycler.setLayoutManager(
+                new GridLayoutManager(this, 6));
+        mMoreRecycler.setAdapter(mNavAdapter);
     }
 
     // ── Focus & glow ──────────────────────────────────────────────────────────
@@ -250,32 +290,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void animateHighlight(View targetView) {
-        if (mGlassHighlight.getVisibility() != View.VISIBLE) {
-            mGlassHighlight.setVisibility(View.VISIBLE);
-            mGlassHighlight.setAlpha(0f);
-        }
-
-        // Position the highlight over the target tile
-        int[] loc = new int[2];
-        targetView.getLocationInWindow(loc);
-        int[] dockLoc = new int[2];
-        mDockRecycler.getLocationInWindow(dockLoc);
-
-        float targetX = loc[0] - dockLoc[0];
-        float targetY = loc[1] - dockLoc[1];
-
-        if (mGlassHighlight.getWidth() == 0) {
-            mGlassHighlight.getLayoutParams().width  = targetView.getWidth();
-            mGlassHighlight.getLayoutParams().height = targetView.getHeight();
-            mGlassHighlight.requestLayout();
-        }
-
-        ObjectAnimator.ofFloat(mGlassHighlight, View.TRANSLATION_X, targetX)
-                .setDuration(180).start();
-        ObjectAnimator.ofFloat(mGlassHighlight, View.TRANSLATION_Y, targetY)
-                .setDuration(180).start();
-        ObjectAnimator.ofFloat(mGlassHighlight, View.ALPHA, 1f)
-                .setDuration(180).start();
+        // glass highlight removed; no-op
     }
 
     // ── Inputs dropdown ───────────────────────────────────────────────────────
@@ -349,6 +364,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
+            if (mMorePanel.getVisibility() == View.VISIBLE) {
+                mMorePanel.setVisibility(View.GONE);
+                return true;
+            }
             if (mInputsDropdown.getVisibility() == View.VISIBLE) {
                 mInputsDropdown.setVisibility(View.GONE);
                 return true;
