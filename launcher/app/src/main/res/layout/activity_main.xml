@@ -73,7 +73,7 @@
                     android:layout_height="wrap_content"
                     android:textColor="@color/text_clock"
                     android:textSize="@dimen/clock_text_size"
-                    android:fontFamily="@font/outfit_thin"
+                    android:fontFamily="@font/outfit_light"
                     android:letterSpacing="-0.02" />
 
                 <TextView
@@ -96,7 +96,7 @@
                 android:fontFamily="@font/outfit_light" />
         </LinearLayout>
 
-        <!-- Right: pill buttons -->
+        <!-- Right: icon pill buttons -->
         <LinearLayout
             android:id="@+id/pill_row"
             android:layout_width="wrap_content"
@@ -104,59 +104,44 @@
             android:orientation="horizontal"
             android:gravity="center_vertical">
 
-            <TextView
+            <ImageView
                 android:id="@+id/btn_wifi"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
                 android:layout_marginEnd="@dimen/pill_margin"
-                android:paddingStart="@dimen/pill_padding_h"
-                android:paddingEnd="@dimen/pill_padding_h"
-                android:paddingTop="@dimen/pill_padding_v"
-                android:paddingBottom="@dimen/pill_padding_v"
+                android:padding="9dp"
                 android:background="@drawable/bg_pill"
-                android:textColor="@color/pill_text"
-                android:textSize="13sp"
-                android:fontFamily="@font/outfit_regular"
+                android:src="@drawable/ic_wifi_on"
                 android:focusable="true"
                 android:focusableInTouchMode="true"
-                android:text="Wi-Fi" />
+                android:scaleType="centerInside" />
 
-            <TextView
+            <ImageView
                 android:id="@+id/btn_inputs"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
                 android:layout_marginEnd="@dimen/pill_margin"
-                android:paddingStart="@dimen/pill_padding_h"
-                android:paddingEnd="@dimen/pill_padding_h"
-                android:paddingTop="@dimen/pill_padding_v"
-                android:paddingBottom="@dimen/pill_padding_v"
+                android:padding="9dp"
                 android:background="@drawable/bg_pill"
-                android:textColor="@color/pill_text"
-                android:textSize="13sp"
-                android:fontFamily="@font/outfit_regular"
+                android:src="@drawable/ic_input"
                 android:focusable="true"
                 android:focusableInTouchMode="true"
-                android:text="@string/btn_inputs" />
+                android:scaleType="centerInside" />
 
-            <TextView
+            <ImageView
                 android:id="@+id/btn_settings"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingStart="@dimen/pill_padding_h"
-                android:paddingEnd="@dimen/pill_padding_h"
-                android:paddingTop="@dimen/pill_padding_v"
-                android:paddingBottom="@dimen/pill_padding_v"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:padding="9dp"
                 android:background="@drawable/bg_pill"
-                android:textColor="@color/pill_text"
-                android:textSize="13sp"
-                android:fontFamily="@font/outfit_regular"
+                android:src="@drawable/ic_settings"
                 android:focusable="true"
                 android:focusableInTouchMode="true"
-                android:text="@string/btn_settings" />
+                android:scaleType="centerInside" />
         </LinearLayout>
     </LinearLayout>
 
-    <!-- Focused dock app name -->
+    <!-- Focused dock app name (hidden) -->
     <TextView
         android:id="@+id/tv_focused_app"
         android:layout_width="wrap_content"
@@ -167,6 +152,7 @@
         android:textSize="@dimen/focused_app_name_size"
         android:fontFamily="@font/outfit_light"
         android:alpha="0"
+        android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toTopOf="@id/dock_container" />
 

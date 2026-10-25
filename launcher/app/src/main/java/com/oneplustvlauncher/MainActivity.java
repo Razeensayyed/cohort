@@ -7,7 +7,6 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.media.tv.TvInputInfo;
 import android.media.tv.TvInputManager;
-import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -15,6 +14,7 @@ import android.os.Looper;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
     private Runnable mHidePanel;
 
     private TextView mTvClock, mTvAmPm, mTvDate, mTvGreeting, mTvFocusedApp;
-    private TextView mBtnWifi, mBtnInputs, mBtnSettings;
+    private ImageView mBtnWifi, mBtnInputs, mBtnSettings;
     private RecyclerView mDockRecycler, mMoreRecycler;
     private LinearLayout mInputsDropdown;
     private View mMoreBtn, mMorePanel;
@@ -85,9 +85,9 @@ public class MainActivity extends AppCompatActivity {
         mTvDate        = findViewById(R.id.tv_date);
         mTvGreeting    = findViewById(R.id.tv_greeting);
         mTvFocusedApp  = findViewById(R.id.tv_focused_app);
-        mBtnWifi       = findViewById(R.id.btn_wifi);
-        mBtnInputs     = findViewById(R.id.btn_inputs);
-        mBtnSettings   = findViewById(R.id.btn_settings);
+        mBtnWifi       = (ImageView) findViewById(R.id.btn_wifi);
+        mBtnInputs     = (ImageView) findViewById(R.id.btn_inputs);
+        mBtnSettings   = (ImageView) findViewById(R.id.btn_settings);
         mDockRecycler  = findViewById(R.id.dock_recycler);
         mMoreRecycler  = findViewById(R.id.more_recycler);
         mMoreBtn       = findViewById(R.id.more_btn);
@@ -179,18 +179,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateWifi() {
         WifiManager wm = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
-        if (wm != null && wm.isWifiEnabled()) {
-            WifiInfo info = wm.getConnectionInfo();
-            String ssid = info != null ? info.getSSID() : null;
-            if (ssid != null && !ssid.equals("<unknown ssid>") && !ssid.equals("0x")) {
-                ssid = ssid.replace("\"", "");
-                mBtnWifi.setText(ssid);
-            } else {
-                mBtnWifi.setText("Connected");
-            }
-        } else {
-            mBtnWifi.setText("Wi-Fi");
-        }
+        boolean connected = wm != null && wm.isWifiEnabled();
+        mBtnWifi.setImageResource(connected ? R.drawable.ic_wifi_on : R.drawable.ic_wifi_off);
     }
 
     // ── App loading ───────────────────────────────────────────────────────────
