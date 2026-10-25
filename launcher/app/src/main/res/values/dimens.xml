@@ -11,7 +11,7 @@
     <dimen name="dock_margin_h">40dp</dimen>
     <dimen name="dock_margin_v">16dp</dimen>
 
-    <dimen name="clock_text_size">64sp</dimen>
+    <dimen name="clock_text_size">52sp</dimen>
     <dimen name="date_text_size">18sp</dimen>
     <dimen name="greeting_text_size">16sp</dimen>
     <dimen name="focused_app_name_size">28sp</dimen>
@@ -22,7 +22,7 @@
     <dimen name="pill_corner">24dp</dimen>
     <dimen name="pill_margin">8dp</dimen>
 
-    <dimen name="top_bar_height">80dp</dimen>
+    <dimen name="top_bar_height">110dp</dimen>
     <dimen name="top_bar_padding">24dp</dimen>
 
     <dimen name="glow_radius">80dp</dimen>

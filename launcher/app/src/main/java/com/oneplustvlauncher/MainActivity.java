@@ -168,18 +168,25 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateClock() {
-        Date now = new Date();
-        mTvClock.setText(new SimpleDateFormat("h:mm", Locale.ENGLISH).format(now));
-        mTvAmPm.setText(new SimpleDateFormat("a", Locale.ENGLISH).format(now).toUpperCase());
-        mTvDate.setText(new SimpleDateFormat("EEEE, d MMMM", Locale.ENGLISH).format(now).toUpperCase());
+        Calendar cal = Calendar.getInstance();
+        int hour24 = cal.get(Calendar.HOUR_OF_DAY);
+        int hour12 = cal.get(Calendar.HOUR);
+        if (hour12 == 0) hour12 = 12;
+        int minute = cal.get(Calendar.MINUTE);
+        boolean isAm = cal.get(Calendar.AM_PM) == Calendar.AM;
 
-        int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+        // String.format with Locale.ENGLISH guarantees ASCII digits regardless of system locale
+        mTvClock.setText(String.format(Locale.ENGLISH, "%d:%02d", hour12, minute));
+        mTvAmPm.setText(isAm ? "AM" : "PM");
+        mTvDate.setText(new SimpleDateFormat("EEEE, d MMMM", Locale.ENGLISH)
+                .format(cal.getTime()).toUpperCase(Locale.ENGLISH));
+
         String greeting;
-        if (hour < 12)      greeting = getString(R.string.greeting_morning);
-        else if (hour < 17) greeting = getString(R.string.greeting_afternoon);
-        else if (hour < 21) greeting = getString(R.string.greeting_evening);
-        else                greeting = getString(R.string.greeting_night);
-        mTvGreeting.setText(greeting.toUpperCase());
+        if (hour24 < 12)      greeting = getString(R.string.greeting_morning);
+        else if (hour24 < 17) greeting = getString(R.string.greeting_afternoon);
+        else if (hour24 < 21) greeting = getString(R.string.greeting_evening);
+        else                  greeting = getString(R.string.greeting_night);
+        mTvGreeting.setText(greeting.toUpperCase(Locale.ENGLISH));
     }
 
     // ── Wi-Fi ─────────────────────────────────────────────────────────────────
