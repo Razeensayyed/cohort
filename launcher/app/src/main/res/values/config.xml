@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Dock: number of slots and app package names (left → right) -->
+    <integer name="columns">5</integer>
+
+    <string-array name="dock_apps">
+        <item>com.google.android.youtube.tv</item>
+        <item>com.netflix.ninja</item>
+        <item>com.amazon.amazonvideo.livingroom</item>
+        <item>in.startv.hotstar</item>
+        <item>com.apple.atve.androidtv.appletv</item>
+    </string-array>
+
+    <!-- Key services (set to 1 to enable) -->
+    <integer name="INPUT_KEY_SERVICE">1</integer>
+    <integer name="HOME_KEY_SERVICE">1</integer>
+
+    <!-- Keycodes that open the Inputs dropdown (KEYCODE_TV_INPUT = 178) -->
+    <integer-array name="input_key_keycodes">
+        <item>178</item>
+    </integer-array>
+
+    <!-- Keycodes that open Settings (KEYCODE_SETTINGS = 176) -->
+    <integer-array name="settings_key_keycodes">
+        <item>176</item>
+    </integer-array>
+
+    <!-- Boot behaviour: "home" or "live_tv" -->
+    <string name="power_on_target">home</string>
+</resources>

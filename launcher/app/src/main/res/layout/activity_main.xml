@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_root"
+    android:focusable="false">
+
+    <!-- Top bar: clock left, pills right -->
+    <LinearLayout
+        android:id="@+id/top_bar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/top_bar_height"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/top_bar_padding"
+        android:paddingEnd="@dimen/top_bar_padding"
+        android:paddingTop="16dp"
+        android:gravity="center_vertical"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- Left: greeting + clock + date -->
+        <LinearLayout
+            android:id="@+id/clock_block"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_greeting"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_secondary"
+                android:textSize="@dimen/greeting_text_size"
+                android:fontFamily="@font/outfit_light" />
+
+            <TextView
+                android:id="@+id/tv_clock"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_clock"
+                android:textSize="@dimen/clock_text_size"
+                android:fontFamily="@font/outfit_thin"
+                android:letterSpacing="-0.02" />
+
+            <TextView
+                android:id="@+id/tv_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_secondary"
+                android:textSize="@dimen/date_text_size"
+                android:fontFamily="@font/outfit_light" />
+        </LinearLayout>
+
+        <!-- Right: pill buttons -->
+        <LinearLayout
+            android:id="@+id/pill_row"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/btn_wifi"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/pill_margin"
+                android:paddingStart="@dimen/pill_padding_h"
+                android:paddingEnd="@dimen/pill_padding_h"
+                android:paddingTop="@dimen/pill_padding_v"
+                android:paddingBottom="@dimen/pill_padding_v"
+                android:background="@drawable/bg_pill"
+                android:textColor="@color/pill_text"
+                android:textSize="13sp"
+                android:fontFamily="@font/outfit_regular"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:nextFocusDown="@id/btn_inputs"
+                android:text="Wi-Fi" />
+
+            <TextView
+                android:id="@+id/btn_inputs"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/pill_margin"
+                android:paddingStart="@dimen/pill_padding_h"
+                android:paddingEnd="@dimen/pill_padding_h"
+                android:paddingTop="@dimen/pill_padding_v"
+                android:paddingBottom="@dimen/pill_padding_v"
+                android:background="@drawable/bg_pill"
+                android:textColor="@color/pill_text"
+                android:textSize="13sp"
+                android:fontFamily="@font/outfit_regular"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:text="@string/btn_inputs" />
+
+            <TextView
+                android:id="@+id/btn_settings"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="@dimen/pill_padding_h"
+                android:paddingEnd="@dimen/pill_padding_h"
+                android:paddingTop="@dimen/pill_padding_v"
+                android:paddingBottom="@dimen/pill_padding_v"
+                android:background="@drawable/bg_pill"
+                android:textColor="@color/pill_text"
+                android:textSize="13sp"
+                android:fontFamily="@font/outfit_regular"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:text="@string/btn_settings" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Focused dock app name + ambient glow -->
+    <TextView
+        android:id="@+id/tv_focused_app"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dock_margin_h"
+        android:layout_marginBottom="4dp"
+        android:textColor="@color/text_primary"
+        android:textSize="@dimen/focused_app_name_size"
+        android:fontFamily="@font/outfit_light"
+        android:alpha="0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/dock_container" />
+
+    <!-- App grid scrolls in the space between top bar and dock -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/grid_recycler"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:paddingStart="@dimen/dock_margin_h"
+        android:paddingEnd="@dimen/dock_margin_h"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:clipToPadding="false"
+        android:overScrollMode="never"
+        android:focusable="true"
+        app:layout_constraintTop_toBottomOf="@id/top_bar"
+        app:layout_constraintBottom_toTopOf="@id/tv_focused_app"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Dock band -->
+    <FrameLayout
+        android:id="@+id/dock_container"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/dock_height"
+        android:layout_marginStart="@dimen/dock_margin_h"
+        android:layout_marginEnd="@dimen/dock_margin_h"
+        android:layout_marginBottom="@dimen/dock_margin_v"
+        android:background="@drawable/bg_dock"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/dock_recycler"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:overScrollMode="never"
+            android:focusable="true" />
+
+        <!-- Glass highlight overlay (slides between tiles) -->
+        <View
+            android:id="@+id/glass_highlight"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@drawable/bg_highlight"
+            android:alpha="0"
+            android:visibility="invisible" />
+
+    </FrameLayout>
+
+    <!-- Inputs dropdown (shown/hidden) -->
+    <LinearLayout
+        android:id="@+id/inputs_dropdown"
+        android:layout_width="220dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@color/inputs_dropdown_bg"
+        android:padding="8dp"
+        android:visibility="gone"
+        android:elevation="8dp"
+        app:layout_constraintTop_toBottomOf="@id/btn_inputs"
+        app:layout_constraintEnd_toEndOf="@id/btn_inputs" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

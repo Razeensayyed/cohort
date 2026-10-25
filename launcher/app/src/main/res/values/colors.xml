@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Apple TV style palette -->
+    <color name="bg_root">#000000</color>
+    <color name="bg_dock">#141414</color>
+    <color name="highlight_glass">#33FFFFFF</color>
+    <color name="highlight_border">#55FFFFFF</color>
+    <color name="text_primary">#FFFFFFFF</color>
+    <color name="text_secondary">#99FFFFFF</color>
+    <color name="text_clock">#FFFFFFFF</color>
+    <color name="pill_bg">#44FFFFFF</color>
+    <color name="pill_text">#FFFFFFFF</color>
+    <color name="glow_default">#FF6060</color>
+    <color name="tile_name_bg">#00000000</color>
+    <color name="inputs_dropdown_bg">#CC1A1A1A</color>
+</resources>
