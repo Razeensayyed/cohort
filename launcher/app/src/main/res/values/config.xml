@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    config.xml – all user-adjustable launcher settings
+    Edit here, rebuild and re-install to apply.
+-->
+<resources>
+
+    <!-- Number of columns in the app grid AND the dock -->
+    <integer name="columns">5</integer>
+
+    <!--
+        Dock apps – package names in order (left to right).
+        Up to <columns> entries. Unlisted apps appear in the grid.
+        Replace with your own packages.
+    -->
+    <string-array name="dock_apps">
+        <item>com.google.android.youtube.tv</item>
+        <item>com.netflix.ninja</item>
+        <item>com.amazon.amazonvideo.livingroom</item>
+        <item>com.google.android.tvlauncher</item>
+        <item>com.android.tv.settings</item>
+    </string-array>
+
+    <!-- Key services (set to 1 to enable, 0 to disable) -->
+    <!--
+        INPUT_KEY_SERVICE – remaps Input/Source + app shortcut buttons
+        HOME_KEY_SERVICE  – remaps Settings/Dashboard button, handles power-on
+        Set both 0 until you verify key repeat still works (TCL G09 issue).
+    -->
+    <integer name="INPUT_KEY_SERVICE">0</integer>
+    <integer name="HOME_KEY_SERVICE">0</integer>
+
+    <!-- Keycodes to handle in InputKeyService (comma-separated integers) -->
+    <string name="input_key_keycodes">277</string>      <!-- KEYCODE_TV_INPUT -->
+    <string name="settings_key_keycodes">176</string>   <!-- KEYCODE_SETTINGS  -->
+    <string name="app_keys">170,171,172,173</string>     <!-- Netflix/YT/etc shortcut keys -->
+
+    <!-- Scancodes for buttons that show up as KEY_UNKNOWN (use getevent -lt) -->
+    <string name="settings_key_scancodes"></string>
+
+    <!-- Boot behaviour: "home" or "live_tv" -->
+    <string name="power_on_target">home</string>
+
+    <!-- Clock / greeting -->
+    <string name="greeting_morning">Good morning</string>
+    <string name="greeting_afternoon">Good afternoon</string>
+    <string name="greeting_evening">Good evening</string>
+
+</resources>

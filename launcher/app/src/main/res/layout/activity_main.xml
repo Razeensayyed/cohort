@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Root layout: pitch-black background.
+    Top bar: greeting + clock (left), pill buttons (right).
+    Middle: RecyclerView grid of all non-dock apps.
+    Bottom: dock band with selected-app name above it + dock row.
+-->
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/black">
+
+    <!-- ── Top bar ────────────────────────────────────────────────── -->
+    <TextView
+        android:id="@+id/tv_greeting"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#CCFFFFFF"
+        android:textSize="16sp"
+        android:fontFamily="sans-serif-light"
+        android:layout_marginStart="48dp"
+        android:layout_marginTop="32dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <TextView
+        android:id="@+id/tv_clock"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#FFFFFFFF"
+        android:textSize="52sp"
+        android:fontFamily="sans-serif-thin"
+        android:layout_marginStart="48dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_greeting"/>
+
+    <TextView
+        android:id="@+id/tv_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#99FFFFFF"
+        android:textSize="14sp"
+        android:fontFamily="sans-serif-light"
+        android:layout_marginStart="48dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_clock"/>
+
+    <!-- Pill buttons (top-right) -->
+    <LinearLayout
+        android:id="@+id/top_pills"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginEnd="48dp"
+        android:layout_marginTop="32dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/pill_inputs"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:gravity="center"
+            android:text="@string/inputs"
+            android:textColor="#FFFFFFFF"
+            android:textSize="13sp"
+            android:background="@drawable/bg_pill"
+            android:layout_marginEnd="12dp"
+            android:focusable="true"
+            android:focusableInTouchMode="true"/>
+
+        <TextView
+            android:id="@+id/pill_wifi"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:gravity="center"
+            android:text="@string/wifi"
+            android:textColor="#FFFFFFFF"
+            android:textSize="13sp"
+            android:background="@drawable/bg_pill"
+            android:layout_marginEnd="12dp"
+            android:focusable="true"
+            android:focusableInTouchMode="true"/>
+
+        <TextView
+            android:id="@+id/pill_settings"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:gravity="center"
+            android:text="@string/settings"
+            android:textColor="#FFFFFFFF"
+            android:textSize="13sp"
+            android:background="@drawable/bg_pill"
+            android:focusable="true"
+            android:focusableInTouchMode="true"/>
+    </LinearLayout>
+
+    <!-- ── App grid (scrollable) ──────────────────────────────────── -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_grid"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="48dp"
+        android:layout_marginEnd="48dp"
+        android:layout_marginTop="16dp"
+        android:clipToPadding="false"
+        android:focusable="true"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_date"
+        app:layout_constraintBottom_toTopOf="@id/tv_dock_label"/>
+
+    <!-- ── Dock label (focused app name above dock) ───────────────── -->
+    <TextView
+        android:id="@+id/tv_dock_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#FFFFFFFF"
+        android:textSize="20sp"
+        android:fontFamily="sans-serif-light"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="48dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/dock_band"/>
+
+    <!-- ── Dock band ──────────────────────────────────────────────── -->
+    <FrameLayout
+        android:id="@+id/dock_band"
+        android:layout_width="match_parent"
+        android:layout_height="128dp"
+        android:background="@drawable/bg_dock_band"
+        android:layout_marginBottom="32dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_dock"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:paddingStart="48dp"
+            android:paddingEnd="48dp"
+            android:clipToPadding="false"
+            android:focusable="true"/>
+
+    </FrameLayout>
+
+    <!-- Glass highlight overlay (moved programmatically) -->
+    <View
+        android:id="@+id/highlight"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/bg_highlight"
+        android:visibility="invisible"/>
+
+    <!-- Inputs dropdown -->
+    <LinearLayout
+        android:id="@+id/inputs_dropdown"
+        android:layout_width="220dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/bg_dropdown"
+        android:padding="8dp"
+        android:visibility="gone"
+        android:elevation="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/top_pills"
+        android:layout_marginEnd="48dp"
+        android:layout_marginTop="4dp"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
