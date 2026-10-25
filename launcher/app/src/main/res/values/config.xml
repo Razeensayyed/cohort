@@ -6,18 +6,18 @@
 <resources>
 
     <!-- Number of columns in the app grid AND the dock -->
-    <integer name="columns">5</integer>
+    <integer name="columns">6</integer>
 
     <!--
         Dock apps – package names in order (left to right).
         Up to <columns> entries. Unlisted apps appear in the grid.
-        Replace with your own packages.
     -->
     <string-array name="dock_apps">
         <item>com.google.android.youtube.tv</item>
         <item>com.netflix.ninja</item>
         <item>com.amazon.amazonvideo.livingroom</item>
-        <item>com.google.android.tvlauncher</item>
+        <item>in.startv.hotstar</item>
+        <item>com.apple.atve.androidtv.appletv</item>
         <item>com.android.tv.settings</item>
     </string-array>
 

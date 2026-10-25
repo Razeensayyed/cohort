@@ -39,7 +39,7 @@ def get_signer():
     return PythonRSASigner(pub, priv)
 
 def connect():
-    dev = AdbDeviceTcp(TV_HOST, TV_PORT, default_timeout_s=30)
+    dev = AdbDeviceTcp(TV_HOST, TV_PORT, default_transport_timeout_s=30)
     dev.connect(rsa_keys=[get_signer()], auth_timeout_s=20)
     return dev
 
