@@ -58,7 +58,7 @@
                 android:layout_height="wrap_content"
                 android:textColor="@color/text_secondary"
                 android:textSize="@dimen/greeting_text_size"
-                android:fontFamily="@font/outfit_light"
+                android:fontFamily="sans-serif-light"
                 android:letterSpacing="0.12" />
 
             <LinearLayout
@@ -73,7 +73,7 @@
                     android:layout_height="wrap_content"
                     android:textColor="@color/text_clock"
                     android:textSize="@dimen/clock_text_size"
-                    android:fontFamily="@font/outfit_light"
+                    android:fontFamily="sans-serif-light"
                     android:letterSpacing="-0.02" />
 
                 <TextView
@@ -84,7 +84,7 @@
                     android:layout_marginBottom="10dp"
                     android:textColor="@color/text_clock"
                     android:textSize="20sp"
-                    android:fontFamily="@font/outfit_light" />
+                    android:fontFamily="sans-serif-light" />
             </LinearLayout>
 
             <TextView
@@ -93,7 +93,7 @@
                 android:layout_height="wrap_content"
                 android:textColor="@color/text_secondary"
                 android:textSize="@dimen/date_text_size"
-                android:fontFamily="@font/outfit_light" />
+                android:fontFamily="sans-serif-light" />
         </LinearLayout>
 
         <!-- Right: icon pill buttons -->
