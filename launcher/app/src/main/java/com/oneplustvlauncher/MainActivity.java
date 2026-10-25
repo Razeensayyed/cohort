@@ -107,10 +107,7 @@ public class MainActivity extends AppCompatActivity {
 
         mMoreBtn.setOnFocusChangeListener((v, hasFocus) -> {
             v.setBackgroundResource(hasFocus ? R.drawable.bg_pill_focused : R.drawable.bg_pill);
-            if (hasFocus) {
-                cancelHidePanel();
-                showMorePanel();
-            } else {
+            if (!hasFocus && mMorePanel.getVisibility() == View.VISIBLE) {
                 scheduleHidePanel();
             }
         });
@@ -256,8 +253,11 @@ public class MainActivity extends AppCompatActivity {
             launchApp(app);
         });
         mNavAdapter.setFocusListener(hasFocus -> {
-            if (hasFocus) cancelHidePanel();
-            else scheduleHidePanel();
+            if (hasFocus) {
+                cancelHidePanel();
+            } else {
+                scheduleHidePanel();
+            }
         });
         mMoreRecycler.setLayoutManager(
                 new GridLayoutManager(this, 6));
