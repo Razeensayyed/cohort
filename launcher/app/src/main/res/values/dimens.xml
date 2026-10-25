@@ -6,12 +6,12 @@
     <dimen name="tile_margin">8dp</dimen>
     <dimen name="tile_scale_focused">1.12</dimen>
 
-    <dimen name="dock_height">120dp</dimen>
+    <dimen name="dock_height">130dp</dimen>
     <dimen name="dock_corner">18dp</dimen>
     <dimen name="dock_margin_h">40dp</dimen>
     <dimen name="dock_margin_v">16dp</dimen>
 
-    <dimen name="clock_text_size">48sp</dimen>
+    <dimen name="clock_text_size">64sp</dimen>
     <dimen name="date_text_size">18sp</dimen>
     <dimen name="greeting_text_size">16sp</dimen>
     <dimen name="focused_app_name_size">28sp</dimen>

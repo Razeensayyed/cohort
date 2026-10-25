@@ -45,7 +45,7 @@ public class DockAdapter extends RecyclerView.Adapter<DockAdapter.VH> {
     @Override
     public void onBindViewHolder(@NonNull VH holder, int position) {
         AppInfo app = mApps.get(position);
-        holder.icon.setImageDrawable(app.icon);
+        holder.banner.setImageDrawable(app.banner);
         holder.name.setText(app.label);
 
         holder.itemView.setOnFocusChangeListener((v, hasFocus) -> {
@@ -68,11 +68,11 @@ public class DockAdapter extends RecyclerView.Adapter<DockAdapter.VH> {
     public int getItemCount() { return mApps.size(); }
 
     static class VH extends RecyclerView.ViewHolder {
-        ImageView icon;
+        ImageView banner;
         TextView name;
         VH(@NonNull View v) {
             super(v);
-            icon = v.findViewById(R.id.app_icon);
+            banner = v.findViewById(R.id.app_banner);
             name = v.findViewById(R.id.app_name);
         }
     }
