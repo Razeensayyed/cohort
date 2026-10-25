@@ -51,11 +51,9 @@ public class DockAdapter extends RecyclerView.Adapter<DockAdapter.VH> {
         holder.itemView.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
                 holder.itemView.animate().scaleX(1.15f).scaleY(1.15f).setDuration(150).start();
-                holder.name.setVisibility(View.VISIBLE);
                 if (mFocusListener != null) mFocusListener.onDockFocused(app, holder.itemView, position);
             } else {
                 holder.itemView.animate().scaleX(1f).scaleY(1f).setDuration(150).start();
-                holder.name.setVisibility(View.INVISIBLE);
             }
         });
 

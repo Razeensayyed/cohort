@@ -84,6 +84,13 @@ public class MainActivity extends AppCompatActivity {
         mTvAmPm        = findViewById(R.id.tv_ampm);
         mTvDate        = findViewById(R.id.tv_date);
         mTvGreeting    = findViewById(R.id.tv_greeting);
+
+        // Force Latin digit rendering regardless of system locale
+        mTvClock.setTextLocale(java.util.Locale.ENGLISH);
+        mTvAmPm.setTextLocale(java.util.Locale.ENGLISH);
+        mTvDate.setTextLocale(java.util.Locale.ENGLISH);
+        mTvGreeting.setTextLocale(java.util.Locale.ENGLISH);
+        mTvClock.setTypeface(android.graphics.Typeface.DEFAULT);
         mTvFocusedApp  = findViewById(R.id.tv_focused_app);
         mBtnWifi       = (ImageView) findViewById(R.id.btn_wifi);
         mBtnInputs     = (ImageView) findViewById(R.id.btn_inputs);
